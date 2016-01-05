@@ -1,4 +1,4 @@
-<?php
+<?
 	class VIEW_GENERATE_DB extends VIEW {
 
 		private $_classname 	= "";

@@ -6,9 +6,6 @@
 		    <a class="navbar-brand" href="/"> <?=SERVER_UTIL::get_server_host()?>	</a>
 		</div>
 		
-		<div class="pt8 pr8 fr">
-			<?=HTML_UTIL::dropdown("application",$applications,$application,array("class"=>"wa"))?>
-		</div>	
 		<div class="collapse navbar-collapse">
 	    	<ul class="nav navbar-nav">
 

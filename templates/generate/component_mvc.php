@@ -7,22 +7,26 @@
 		
 	$task_name_div = HTML_UTIL::get_div("",array("id"=>"task_name"));
 	
-	$data[] = array("ACL Roles",HTML_UTIL::get_dropdown("security_roles",$security_roles,$selected_security_roles,array("class"=>"w100p"),count($security_roles),true));
+	$data[] = array("ACL Roles",HTML_UTIL::dropdown("security_roles",$security_roles,$selected_security_roles,array("class"=>"w100p"),count($security_roles),true));
 	
 	if($show_view_type)
-		$data[] = array("Type",HTML_UTIL::get_dropdown("view_type",$view_types,$view_type,array("class"=>"w100p")));
+		$data[] = array("Type",HTML_UTIL::dropdown("view_type",$view_types,$view_type,array("class"=>"w100p")));
+		
+
+	$data[] = array("Controller",HTML_UTIL::input("controller",$controller,array("class"=>"w100p")));
 	
-	if($show_page_title)
-		$data[] = array("Page Title",HTML_UTIL::get_input("page_title",$page_title,array("class"=>"w100p")));
-	
-	$data[] = array("Override",HTML_UTIL::get_checkbox("override","1",$override));
+	$data[] = array($task_name_div,HTML_UTIL::input("task",$task,array("class"=>"w100p")));
+
+
+	$data[] = array("Location",HTML_UTIL::dropdown("location",CMODEL_GENERATOR::get_locations(),"",array("class"=>"wa")));
 	
 	if($show_is_form)
-		$data[] = array("Has Form",HTML_UTIL::get_checkbox("has_form","1",$has_form));
+		$data[] = array("",HTML_UTIL::get_checkbox("has_form","1",$has_form,[],"Has Form"));
 		
-	$data[] = array("Controller",HTML_UTIL::get_input("controller",$controller,array("class"=>"w100p")));
-	$data[] = array($task_name_div,HTML_UTIL::get_input("task",$task,array("class"=>"w100p")));
-	$data[] = array("",HTML_UTIL::get_button("cmd_generate","Generate"));
+			
+	$data[] = array("",HTML_UTIL::get_checkbox("override","1",$override,[],"Override"));
+	
+	$data[] = array("",HTML_UTIL::get_button("cmd_generate","Generate",array("class"=>"btn-primary")));
 	
 	$html_table = new HTML_TABLE_UTIL();
 	$html_table->set_data($data);

@@ -4,10 +4,11 @@
 	
 	$model_type_list = HTML_UTIL::get_checkboxes("model_types",array("c"=>"Complex","h"=>"Handler"),$model_types,array());
 
-	$data[] = array("Model Type",$model_type_list);	
-	$data[] = array("Override",HTML_UTIL::get_checkbox("override","1",$override));
+	$data[] = array("Model Type",$model_type_list);		
 	$data[] = array("Model",HTML_UTIL::get_input("model",$model,array("style"=>"width:300px")));
 	$data[] = array("Extends Model",HTML_UTIL::get_input("extends",$extends,array("style"=>"width:300px")));
+	$data[] = array("Location:",HTML_UTIL::dropdown("location",CMODEL_GENERATOR::get_locations(),"",array("class"=>"wa")));
+	$data[] = array("",HTML_UTIL::get_checkbox("override","1",$override,[],"Override"));
 	$data[] = array("",HTML_UTIL::link("javascript:;","Generate",array("class"=>"btn btn-primary","id"=>"generate")));
 	
 	$db_table = HTML_TABLE_UTIL::create()

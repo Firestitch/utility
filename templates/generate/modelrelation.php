@@ -1,38 +1,50 @@
 <h1>Model Relationships</h1>
 
-<?php
-	$dd_count = count($model_list)>30 ? 30 : count($model_list);
-	
-	$tablename_dd = HTML_UTIL::get_dropdown("source_model",$model_list,$model,array(),$dd_count);
-	
-	$generate 	= HTML_UTIL::get_div(HTML_UTIL::get_button("generate","Generate"),array("class"=>"pt10"));
-	$relationships 	= HTML_UTIL::get_radiobuttons("relationship",array("O"=>"one-to-one","M"=>"one-to-many","N"=>"many-to-many"));
-	
-	echo HTML_UTIL::get_div(HTML_UTIL::get_div("Relationship",array("class"=>"fwb")).$relationships.$generate,array("class"=>"fl pr10"));
-	
-	$source_fields 		= HTML_UTIL::get_div("",array("class"=>"","id"=>"source_fields"));
-	$reference_fields 	= HTML_UTIL::get_div("",array("class"=>"","id"=>"reference_fields"));
-	$joiner_fields 		= HTML_UTIL::get_div("",array("class"=>"","id"=>"joiner_fields"));
-	
-	echo HTML_UTIL::get_div(HTML_UTIL::get_div("Source Models",array("class"=>"fwb")).$tablename_dd.$source_fields,array("class"=>"fl pr10"));
-	
-	$dd_count 		= count($joiner_list)>30 ? 30 : count($joiner_list);
-	
-	$joiner_dd 		= HTML_UTIL::get_dropdown("joiner",$joiner_list,$joiner,array(),$dd_count);
+<div class="mt15">
+	<div class="fwb">Relationship</div>
 
-	echo HTML_UTIL::get_div(HTML_UTIL::get_div("Joiner Tables",array("class"=>"fwb")).$joiner_dd.$joiner_fields,array("class"=>"fl dn","id"=>"joiner"));	
-	
-	$dd_count 		= count($model_list)>30 ? 30 : count($model_list);
-	
-	$reference_model_dd 	= HTML_UTIL::get_dropdown("reference_model",$model_list,$reference_model,array(),$dd_count);
+	<?=HTML_UTIL::radiobuttons("relationship",array("O"=>"one-to-one","M"=>"one-to-many","N"=>"many-to-many"))?>
+</div>
 
-	echo HTML_UTIL::get_div(HTML_UTIL::get_div("Reference Models",array("class"=>"fwb")).$reference_model_dd.$reference_fields,array("class"=>"fl"));	
-	
-	echo HTML_UTIL::get_div("",array("class"=>"fl","id"=>"model-options"));
-	
-	echo HTML_UTIL::get_div("",array("class"=>"cb"));
+<div class="model">
+	<h3>Source Model</h3>
+	<div class="fl w200">
+		<div class="lbl">Model</div>	
+		<?=HTML_UTIL::dropdown("source_model",$model_list,$model,array(""),15)?>
+	</div>
 
-?>
+	<div class="fl ml20 w200">
+		<div class="lbl">Model Field</div>	
+		<div id="source_fields"></div>
+	</div>
+</div>
+
+<div class="model dn" id="joiner">
+	<h3>Joiner Model</h3>
+	<div class="fl">
+		<div class="lbl">Model</div>	
+		<?=HTML_UTIL::dropdown("joiner",$joiner_list,$joiner,array(),15)?>
+	</div>
+
+	<div class="fl ml20">		
+		<div id="joiner_fields"></div>
+	</div>
+</div>
+
+<div class="model">
+	<h3>Reference Model</h3>
+	<div class="fl">
+		<div class="lbl">Model</div>	
+		<?=HTML_UTIL::dropdown("reference_model",$model_list,$reference_model,array(),15)?>
+	</div>
+
+	<div class="fl ml20">
+		<div class="lbl">Model Field</div>	
+		<div id="reference_fields"></div>
+	</div>
+</div>
+
+<div class="cb pt30"><?=HTML_UTIL::get_button("generate","Generate",array("class"=>"btn-primary"))?></div>
 <script>
 		
 	$(function() {
@@ -72,3 +84,13 @@
 	
 </script>
 
+<style>
+.lbl {
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+.model {
+	float: left;
+	margin-right: 50px;
+}
+</style>

@@ -55,5 +55,19 @@
 			}
 		}
 
+		static function get_locations() {
+			
+			$dirs = FILE_UTIL::get_directory_listing(DIR_INSTANCE);
+			
+			$applications = array();
+			
+			foreach($dirs as $dir) 
+				if(is_file(DIR_INSTANCE.$dir."/system/managers/system_manager.inc"))
+					$applications[$dir] = $dir;
+
+			$applications["framework"] = "framework";
+
+			return $applications;
+		}
 	}
 		
