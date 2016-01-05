@@ -1,28 +1,24 @@
-<?php
-	
+<?
 	class ACTION_GENERATE_MVC extends ACTION {
 		
 		function __construct() {
 			$this->disable_authorization();	
 		}
 		
-		
 		function process() {
-		
-			$registry = REGISTRY::get_instance();
 			
-			$task 			= strtolower($registry->get_request_parm("task"));
-			$controller		= strtolower($registry->get_request_parm("controller"));
-			$application		= strtolower($registry->get_request_parm("application"));
-			$page_title		= strtolower($registry->get_request_parm("page_title"));
-			$mva_components 	= is_array($registry->get_request_parm("mva_components")) ? $registry->get_request_parm("mva_components") : array();
-			$has_form 		= $registry->get_request_parm("has_form");
-			$override 		= $registry->get_request_parm("override");
-			$view_type 		= $registry->get_request_parm("view_type");
-			$security_roles 	= is_array($registry->get_request_parm("security_roles")) ? $registry->get_request_parm("security_roles") : array();			
-			$app_dir		= $application ? DIR_INSTANCE.$application."/" : APPLICATION::get_main_application_directory();
+			$task 			= strtolower($this->post("task"));
+			$controller		= strtolower($this->post("controller"));
+			$location		= strtolower($this->post("location"));
+			$page_title		= strtolower($this->post("page_title"));
+			$mva_components = is_array($this->post("mva_components")) ? $this->post("mva_components") : array();
+			$has_form 		= $this->post("has_form");
+			$override 		= $this->post("override");
+			$view_type 		= $this->post("view_type");
+			$security_roles = is_array($this->post("security_roles")) ? $this->post("security_roles") : array();			
+			$app_dir		= DIR_INSTANCE.$location."/";
 			
-			if($registry->get_request_parm("cmd_generate") && $this->is_form_valid($task,$controller,$mva_components)) {				
+			if($this->post("cmd_generate") && $this->is_form_valid($task,$controller,$mva_components)) {				
 				
 				$has_success = false;
 				

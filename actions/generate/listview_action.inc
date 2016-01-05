@@ -13,7 +13,7 @@
 			$context			= strtolower($this->post("context"));
 			$model 				= strtolower($this->post("model"));
 			$model_plural 		= strtolower($this->post("model_plural"));
-			$application		= $this->post("application");
+			$location			= $this->post("location");
 			$list_body 			= $this->post("list","body");
 			$view_settings 		= $this->post("view_settings");
 			$relation_field		= strtolower($this->post("relation_field"));
@@ -23,7 +23,7 @@
 			$list_options 		= is_array($this->post("list_options")) ? $this->post("list_options") : array();
 			$security_roles 	= is_array($this->post("security_roles")) ? $this->post("security_roles") : array();
 			$frameworks 		= is_array($this->post("frameworks")) ? $this->post("frameworks") : array();
-			$dir				= $application ? DIR_INSTANCE.$application."/" : APPLICATION::get_main_application_directory();
+			$dir				= DIR_INSTANCE.$location."/";
 
 			COOKIE_UTIL::set("list-view",JSON_UTIL::encode($this->posts()));
 

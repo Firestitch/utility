@@ -52,7 +52,23 @@ $(document).ready(function() {
 			url += "/model:" + active_model;
 
 		$(this).attr("href",url);
-	});	
+	});
+
+	$.ajaxSetup({
+	    error : function(xhr, textStatus, errorThrown) {
+
+			try {
+
+				var response = $.parseJSON(xhr.responseText);
+				
+				FF.msg.error(response.errors);
+
+			} catch(e) {
+				FF.msg.error(xhr.responseText);
+			}
+	    }
+	});
+		
 });
 
 

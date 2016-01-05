@@ -22,7 +22,7 @@
 
 	$data[] = array("Method: ",HTML_UTIL::radiobuttons("format[list]",array("A"=>"Ajax","P"=>"Post"),get_value($format,"list")));
 	
-	$data[] = array("Options",HTML_UTIL::get_checkbox("list_options[search_form]","1",get_value($list_options,"search_form"),array(),"Search Form"));
+	$data[] = array("Options",HTML_UTIL::checkbox("list_options[search_form]","1",get_value($list_options,"search_form"),array(),"Search Form"));
 	
 	$data[] = array('<h3>View Settings</h3>',"");
 	
@@ -32,11 +32,15 @@
 
 	$data[] = array('<h3>Options</h3>',"");
 	
-	$data[] = array("Framework: ",HTML_UTIL::dropdown("frameworks",$frameworks,$selected_frameworks,array(),count($frameworks),true));
+	$data[] = array("Frontend: ",HTML_UTIL::dropdown("frameworks",$frameworks,$selected_frameworks,array(),count($frameworks),true));
 	
-	$data[] = array("",HTML_UTIL::get_button("generate","Generate",array("id"=>"generate"))." ".HTML_UTIL::get_checkbox("override","1",$override,array(),"Override"));
+	$data[] = array("Location:",HTML_UTIL::dropdown("location",CMODEL_GENERATOR::get_locations(),"",array("class"=>"wa")));
 	
-	$data[] = array("",HTML_UTIL::get_div("",array("class"=>"pt20")));
+	$data[] = array("",HTML_UTIL::get_checkbox("override","1",$override,array(),"Override"));
+	
+	$data[] = array("",HTML_UTIL::button("generate","Generate",array("id"=>"generate","class"=>"btn-primary")));
+	
+	$data[] = array("",HTML_UTIL::div("",array("class"=>"pt20")));
 		
 	$html_table = new HTML_TABLE_UTIL();
 	$html_table->set_data($data);
