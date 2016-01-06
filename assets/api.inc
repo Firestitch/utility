@@ -14,7 +14,7 @@
 					${$model}_hmodel->set_{$model_id}(${$model_id});
 {if $has_state}
 
-				$state = $this->post("state") ? $this->post("state") : CMODEL_{$model_upper}::STATE_ACTIVE;
+				$state = $this->get("state") ? $this->get("state") : CMODEL_{$model_upper}::STATE_ACTIVE;
 				${$model}_hmodel->set_state($state);
 {/if}
 				
@@ -56,9 +56,6 @@
 			} elseif($this->is_post()) {
 				
 				${$model}_cmodel = CMODEL_{$model_upper}::create();
-
-				if(!${$model}_cmodel)
-					throw new Exception("Failed to load the {$model}");
 				
 {foreach $accessible_fields as $field}				if(!is_null($value=$this->post("{$field}")))
 					${$model}_cmodel->set_{$field}($value);
