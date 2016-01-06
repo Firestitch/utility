@@ -13,15 +13,15 @@
 	if($create_dbq)
 		$select_object_list[] = "dbq";
 	
-	$data[] = array("Override:",HTML_UTIL::get_checkbox("override","1",$override));
-	$data[] = array("Generate Classes:",HTML_UTIL::get_checkboxes("objects",$object_list,$select_object_list));
+	$data[] = array("Generate:",HTML_UTIL::get_checkboxes("objects",$object_list,$select_object_list));
 	$data[] = array("Class Name:",HTML_UTIL::get_input("classname",$classname,array("class"=>"w300")));
+	$data[] = array("Location:",HTML_UTIL::dropdown("location",CMODEL_GENERATOR::get_locations(),"",array("class"=>"wa")));
+	$data[] = array("",HTML_UTIL::get_checkbox("override","1",$override,[],"Override"));
 	$data[] = array("",HTML_UTIL::link("javascript:;","Generate",array("id"=>"generate","class"=>"btn btn-primary")));
 	
 	
 	$db_table = new HTML_TABLE_UTIL();
 	$db_table->set_data($data);
-	$db_table->set_default_column_attribute("class","vat");	
 	$db_table->set_column_attribute(0,"style","padding-top:2px");
 	$db_table->set_row_id_prefix("row-");
 	$db_table->set_class("");
@@ -63,12 +63,9 @@
 	$("#generate").click(function() {
 		$.post("/generate/dodb",$("#form-db").serializeArray(),function(response) {
 
-			if(response.has_success) {
-				if(response.data.messages)
-					FF.msg.success(response.data.messages);
-			} else
-				FF.msg.error(response.errors);
-
+			if(response.data.messages)
+				FF.msg.success(response.data.messages);
+		
 			if(response.data.warnings.length)
 				FF.msg.warning(response.data.warnings,{ append: true });
 		});

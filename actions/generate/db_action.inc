@@ -7,16 +7,15 @@
 
 		function process() {
 		
-			$registry 		= REGISTRY::get_instance();
-			$tablename 		= strtolower($registry->get_request_parm("tablename"));
-			$classname 		= strtoupper($registry->get_request_parm("classname"));
-			$application	= $registry->get_request_parm("application");
-			$override 		= $registry->get_request_parm("override");
-			$objects 		= is_array($registry->get_request_parm("objects")) ? $registry->get_request_parm("objects") : array();
+			$tablename 		= strtolower($this->post("tablename"));
+			$classname 		= strtoupper($this->post("classname"));
+			$location		= $this->post("location");
+			$override 		= $this->post("override");
+			$objects 		= is_array($this->post("objects")) ? $this->post("objects") : array();
 			$create_dbo 	= in_array("dbo",$objects);
 			$create_dbq 	= in_array("dbq",$objects);			
-			$dir			= $application ? DIR_INSTANCE.$application."/" : APPLICATION::get_main_application_directory();
-			$framework		= $application=="framework";
+			$dir			= DIR_INSTANCE.$location.DIRECTORY_SEPARATOR;
+			$framework		= $location=="framework";
 			
 			$messages = $warnings = array();
 			if($this->is_form_valid($tablename,$classname,$create_dbo,$create_dbq)) {
