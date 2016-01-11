@@ -19,6 +19,7 @@
 {else}		if(SERVER_UTIL::is_post())
 				$this->load();
 {/if}
+
 			$this->set_var("{$lower_models}",$this->_{$lower_model}_cmodels);	
 		}
 
@@ -33,8 +34,10 @@
 {if $has_state}			$state 		= value($search,"state")!==null ? value($search,"state") : CMODEL_{$upper_model}::STATE_ACTIVE;
 {/if}{/if}						
 			${$lower_model}_hmodel = HMODEL_{$upper_model}::create(false);
-{if $has_state}{if $is_search_form}			if($state)
-			${$lower_model}_hmodel->set_state($state);
+{if $has_state}{if $is_search_form}
+
+			if($state)
+				${$lower_model}_hmodel->set_state($state);
 			
 			if($keyword=value($search,"keyword")) {
 				${$lower_model}_hmodel->where("{$id_column}","=",$keyword,"OR","searchgroup");
