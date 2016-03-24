@@ -9,7 +9,8 @@
 {/if}
 
 		public function __construct() {
-			return parent::__construct(DBO_{$upper_model}::create());
+			parent::__construct();
+			return $this->register_dbo(DBO_{$upper_model}::create());
 		}
 		
 {foreach $consts as $const}{if $const!="state"}		public function is_{$const.const|lower}()	{ return $this->get_{$const.field}()==self::{$const.const}; }{/if}
