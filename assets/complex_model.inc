@@ -41,9 +41,7 @@
 
 {/if}
 			if(is_numeric(self::get_{$primary_key}())) {
-				if(!$this->dbo("{$lower_model}")->update())
-					throw new Exception("Error updating ".get_class());
-				
+				$this->dbo("{$lower_model}")->update();
 			} else {
 {if $has_guid}
 				if(!$this->get_guid())
@@ -61,12 +59,11 @@
 					
 {/if}
 {if $extended}
-				if(!$this->dbo("{$lower_model}")
+				$this->dbo("{$lower_model}")
 					->set_{$extend_id}(parent::get_{$extend_id}())
-					->insert())
-						throw new Exception("Error inserting ".get_class());
-{else}				if(!$this->dbo("{$lower_model}")->insert())
-					throw new Exception("Error inserting ".get_class());
+					->insert();
+						
+{else}				$this->dbo("{$lower_model}")->insert();
 {/if}
 			}
 {if $extended}
