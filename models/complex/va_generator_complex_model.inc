@@ -22,7 +22,7 @@
 			
 			$security_role_list = array();
 			foreach($security_roles as $security_role)
-				$security_role_list[] = "SECURITY_MANAGER::".$security_role;
+				$security_role_list[] = $security_role;
 							
 			$this->_security_role_str = implode(",",$security_role_list);
 

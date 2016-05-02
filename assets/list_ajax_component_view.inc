@@ -4,7 +4,7 @@
 		protected $_{$lower_model}_cmodels = array();
 
 		function __construct() {
-			parent::__construct("{$lower_controller}","{$lower_task}",array({$security_roles}));
+			parent::__construct("{$lower_controller}","{$lower_task}",[{$security_roles}]);
 
 			{if !$is_format_post}$this->type_blank();
 {/if}

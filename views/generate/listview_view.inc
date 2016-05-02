@@ -33,32 +33,23 @@
 			$this->get_view("mvc")->hide_is_form();
 			$this->get_view("mvc")->hide_view_type();
 			
-			$registry 		= REGISTRY::get_instance();
-			$this->_model 		= $registry->get_request_parm("o");
+			$this->_model 		= $this->get("o");
 
 			$this->set_task($this->_model);
 			
-			$registry->set_parm("active_object",$this->_model);
-			$registry->set_parm("active_table",$registry->get_request_parm("t"));
-
 			$list_view = JSON_UTIL::decode(COOKIE_UTIL::get("list-view"));
 
 			$this->_selected_frameworks = get_value($list_view,"frameworks");
 		}
 
 		function init() {
-		
-			$app_dir = APPLICATION::get_main_application_directory();		
 			
-			$security_manager = FILE_UTIL::get_file_contents($app_dir."system/managers/security_manager.inc");
-					
-			$has_matches = preg_match_all('/const (ROLE_[A-Z_]*)/', $security_manager,$matches);
-			
-			if($has_matches) {				
-				$security_roles = get_value($matches,1);
-					
-				$this->_security_roles = array_combine(array_values($security_roles),$security_roles);			
-			}
+			$app_dir = APPLICATION::get_main_application_directory();
+
+			$response = BCMODEL_INSTANCE_API_CLIENT::create(dirname($app_dir)."/")
+							->get("task_roles");
+
+			$this->_security_roles = value($response,["data","roles"],[]);
 
 			$frameworks = array("bootstrap2"=>"Bootstrap 2.x",
 								"bootstrap3"=>"Bootstrap 3.x");

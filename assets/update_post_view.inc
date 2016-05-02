@@ -5,7 +5,7 @@
 		
 		function __construct() {
 			$this->set_route("{$lower_controller}","{$lower_task}");
-			$this->set_roles(array({$security_roles}));
+			$this->set_roles([{$security_roles}]);
 {if $page_title}			$this->set_title("{$page_title}");
 {/if}
 {if $is_interface_popup}			$this->type_popup();{/if}

@@ -2,7 +2,7 @@
 	class {if $is_framework}BASE_{/if}VIEW_{$upper_controller}_{$upper_task_plural} extends VIEW {
 	
 		function __construct() {
-			parent::__construct("{$lower_controller}","{$lower_task_plural}",array({$security_roles}),"{$hyphen_model}-form");
+			parent::__construct("{$lower_controller}","{$lower_task_plural}",[{$security_roles}],"{$hyphen_model}-form");
 {if $is_list_body_blank}			$this->type_blank();{/if}
 {if $is_list_body_popup}			$this->type_popup();{/if}
 			$this->set_view("{$lower_models}",APPLICATION::get_view("{$lower_controller}","{$lower_task}list"));

@@ -4,7 +4,7 @@
 		protected $_{$lower_model}_cmodel = null;
 		
 		function __construct() {
-			parent::__construct("{$lower_controller}","{$lower_task}",array({$security_roles}));
+			parent::__construct("{$lower_controller}","{$lower_task}",[{$security_roles}]);
 {if $page_title}			$this->set_title("{$page_title}");
 {/if}
 {if $is_interface_popup}			$this->type_popup();{/if}

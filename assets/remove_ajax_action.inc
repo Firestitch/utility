@@ -2,7 +2,7 @@
 	class {if $is_framework}BASE_{/if}ACTION_{$upper_controller}_{$upper_task}REMOVE extends ACTION_JSON {
 	
 		function __construct() {
-			parent::__construct(array({$security_roles}));
+			parent::__construct([{$security_roles}]);
 		}
 		
 		function process() {

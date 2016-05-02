@@ -5,7 +5,7 @@
 			$this->set_route("{$lower_controller}","{$lower_task_plural}");
 			$this->set_form("/{$lower_controller}/{$lower_task_plural}/");
 
-			$this->set_roles(array({$security_roles}));
+			$this->set_roles([{$security_roles}]);
 {if $page_title}			$this->set_title("{$page_title}");
 {/if}
 			{if !$is_format_post}$this->set_view("{$lower_models}",APPLICATION::get_view_instance("{$lower_controller}","{$lower_task}list"));

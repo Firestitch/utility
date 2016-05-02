@@ -5,7 +5,7 @@
 		
 		function __construct() {
 			$this->set_route("{$lower_controller}","{$lower_task}");
-			$this->set_roles(array({$security_roles}));
+			$this->set_roles([{$security_roles}]);
 			$this->set_form("javascript:;",false,"{$hyphen_model}-form");			
 			$this->type_blank();
 			
