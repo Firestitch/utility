@@ -14,8 +14,8 @@
 					${$model}_hmodel->set_{$model_id}(${$model_id});
 {if $has_state}
 
-				if(!is_null($state=$this->get("state")))
-					${$model}_hmodel->set_states(explode(",",$this->get("state")));
+				if(!is_null($value=$this->get("state")))
+					${$model}_hmodel->set_states(explode(",",$value));
 {/if}
 				
 				if(!${$model_id})
