@@ -28,9 +28,9 @@
 			foreach($cmodel->get_dbos() as $dbo)
 				$fields += $dbo->get_columns();
 
-			$accessible_fields = array_values(array_filter(array_keys($fields), function($v, $k) {
+			$accessible_fields = array_values(array_filter(array_keys($fields), function($v) {
 			    return !preg_match("/(".$this->_model."_id$|guid|create_date|configs|_time$)/",$v);
-			}, ARRAY_FILTER_USE_BOTH));
+			}));
 
 			$this
 				->assign("model_upper",strtoupper($this->_model))
