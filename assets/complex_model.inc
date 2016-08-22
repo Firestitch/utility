@@ -18,10 +18,9 @@
 {foreach $columns as $name=>$column}{if $column->is_data_type("CHAR") || $name=="state"}		public function get_{$name}_name()	{ return value(self::get_{$name}s(),$this->get_{$name}()); }
 {/if}{/foreach}
 		public function get_manage_url()	{ return "/manage/{$lower_model|replace:'_':''}/{$id}:".$this->get_{$primary_key}()."/"; }
-		public function get_url()			{ return "/{$lower_model|replace:'_':''}s/{$lower_model|replace:'_':''}/{$id}:".$this->get_{$primary_key}()."/"; }
-{if $has_state}		public function delete()			{ return $this->set_state(self::STATE_DELETED)->save(); }	
-		public function is_state_delete()	{ return $this->get_state()==self::STATE_DELETED; }		
-		public function is_state_active()	{ return $this->get_state()==self::STATE_ACTIVE; }		
+{if $has_state}		public function delete()			{ return $this->set_state(self::STATE_DELETED)->save(); }
+		public function is_state_delete()	{ return $this->get_state()==self::STATE_DELETED; }
+		public function is_state_active()	{ return $this->get_state()==self::STATE_ACTIVE; }
 {/if}
 
 		public function save() {
@@ -40,24 +39,9 @@
 				parent::save();
 
 {/if}
-			if(is_numeric(self::get_{$primary_key}())) {
+			if(self::get_{$primary_key}()) {
 				$this->dbo("{$lower_model}")->update();
 			} else {
-{if $has_guid}
-				if(!$this->get_guid())
-					$this->set_guid(MISC_UTIL::get_guid());
-					
-{/if}
-{if $has_state}
-				if(!$this->get_state())
-					$this->set_state(self::STATE_ACTIVE);
-					
-{/if}
-{if $has_create_date}
-				if(!$this->get_create_date())
-					$this->set_create_date(DB::get_date_time());
-					
-{/if}
 {if $extended}
 				$this->dbo("{$lower_model}")
 					->set_{$extend_id}(parent::get_{$extend_id}())
@@ -77,6 +61,24 @@
 			}
 {/if}		
 			return $this;
+		}
+
+		public function describe() {
+			return [{foreach from=$columns key=name item=column name=columns}{if !preg_match("/_id$/",$name)}
+
+					"{$name}" => [
+{if $name=="state"}						"default"=>self::STATE_ACTIVE,
+{/if}
+{if $name=="guid"}						"default"=>"guid",
+{/if}
+{if $name=="create_date"}						"default"=>"datetime",
+{/if}
+{if $column->is_data_type_datetime() || $column->is_data_type_date()}						"sanitize"=>"time",
+{/if}						"validations"=>[ "required"=>false ]
+					]{if !$smarty.foreach.columns.last},{/if}
+{/if}{/foreach}
+
+			];
 		}
 
 		public function arry($arry=array()) {
