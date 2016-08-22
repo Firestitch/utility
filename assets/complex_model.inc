@@ -1,10 +1,10 @@
 <?
 	class {if $framework}B{/if}CMODEL_{$upper_model} extends {$extends} {
 {if $has_state}
-		
+
 		const STATE_ACTIVE	= "active";
 		const STATE_DELETED	= "deleted";
-				
+
 		public static function get_states()	{ return array(self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"); }
 {/if}
 
@@ -12,7 +12,7 @@
 			parent::__construct();
 			return $this->register_dbo(DBO_{$upper_model}::create());
 		}
-		
+
 {foreach $consts as $const}{if $const!="state"}		public function is_{$const.const|lower}()	{ return $this->get_{$const.field}()==self::{$const.const}; }{/if}
 {/foreach}
 {foreach $columns as $name=>$column}{if $column->is_data_type("CHAR") || $name=="state"}		public function get_{$name}_name()	{ return value(self::get_{$name}s(),$this->get_{$name}()); }
@@ -34,7 +34,7 @@
 
 {if $extended}
 			try {
-				
+
 				DB::start_transaction();
 				parent::save();
 
@@ -46,7 +46,7 @@
 				$this->dbo("{$lower_model}")
 					->set_{$extend_id}(parent::get_{$extend_id}())
 					->insert();
-						
+
 {else}				$this->dbo("{$lower_model}")->insert();
 {/if}
 			}
@@ -54,12 +54,12 @@
 
 				if(!DB::complete_transaction())
 					throw new Exception("Error saving ".get_class());
-			
+
 			} catch(Exception $e) {
 				DB::complete_transaction();
 				throw $e;
 			}
-{/if}		
+{/if}
 			return $this;
 		}
 
@@ -91,5 +91,5 @@
 			{/if}
 
 			return $arry;
-		}		
+		}
 	}
