@@ -2,7 +2,7 @@
 	class {if $is_framework}BASE_{/if}VIEW_{$upper_controller}_{$upper_task} extends VIEW {
 	
 		public function __construct() {
-			parent::__construct("{$lower_controller}","{$lower_task}",array({$security_roles}));
+			parent::__construct("{$lower_controller}","{$lower_task}",[{$security_roles}]);
 {if $has_form==true}			$this->set_form("/{$lower_controller}/do{$lower_task}/");
 {/if}
 {if $is_type_body}

@@ -14,8 +14,8 @@
 					${$model}_hmodel->set_{$model_id}(${$model_id});
 {if $has_state}
 
-				$state = $this->get("state") ? $this->get("state") : CMODEL_{$model_upper}::STATE_ACTIVE;
-				${$model}_hmodel->set_state($state);
+				if(!is_null($value=$this->get("state")))
+					${$model}_hmodel->set_states(explode(",",$value));
 {/if}
 				
 				if(!${$model_id})
@@ -42,11 +42,11 @@
 
 				if(!${$model}_cmodel)
 					throw new Exception("Failed to load the {$model}");
-				
-{foreach $accessible_fields as $field}				if(!is_null($value=$this->post("{$field}")))
-					${$model}_cmodel->set_{$field}($value);
 
-{/foreach}
+				foreach(["{'", "'|implode:$accessible_fields}"] as $field)
+					if(!is_null($value=$this->post($field))) 
+						${$model}_cmodel->{ldelim}"set_$field"{rdelim}($value);
+					
 				${$model}_cmodel->save();
 				
 				$this->data("{$model}",${$model}_cmodel->arry());
@@ -57,10 +57,10 @@
 				
 				${$model}_cmodel = CMODEL_{$model_upper}::create();
 				
-{foreach $accessible_fields as $field}				if(!is_null($value=$this->post("{$field}")))
-					${$model}_cmodel->set_{$field}($value);
+				foreach(["{'", "'|implode:$accessible_fields}"] as $field)
+					if(!is_null($value=$this->post($field))) 
+						${$model}_cmodel->{ldelim}"set_$field"{rdelim}($value);
 
-{/foreach}
 				${$model}_cmodel->save();
 				
 				$this->data("{$model}",${$model}_cmodel->arry());

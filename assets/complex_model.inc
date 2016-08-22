@@ -85,7 +85,7 @@
 
 			$arry = CMODEL_OBJECTER::create($this,
 											array(	{foreach $columns as $name=>$column}{if $column->is_primary()}"id"=>"get_{$name}",
-{else}"get_{$name}",
+{else}"get_{$name}{if $column->is_data_type_datetime()}|iso8601{/if}",
 {/if}													{/foreach}))->arry();
 {if $extended}			$arry += parent::arry();
 			{/if}
