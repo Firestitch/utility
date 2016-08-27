@@ -24,9 +24,14 @@
 			$cmodel_class = "CMODEL_".strtoupper($this->_model);
 			$cmodel = $cmodel_class::create();
 
-			$accessible_fields = $fields = [];
-			foreach($cmodel->get_dbos() as $dbo)
+			$keywords = $accessible_fields = $fields = [];
+			foreach($cmodel->get_dbos() as $dbo) {
 				$fields += $dbo->get_columns();
+
+				foreach($dbo->get_columns() as $name=>$column)
+					if(preg_match("/(name|description)/",$name))
+						$keywords[] = ["name"=>$name,"tablename"=>$dbo->get_tablename()];
+			}
 
 			$accessible_fields = array_values(array_filter(array_keys($fields), function($v) {
 			    return !preg_match("/(".$this->_model."_id$|guid|create_date|configs|_time|_url|_id$)/",$v);
@@ -41,6 +46,7 @@
 				->assign("model_proper",ucwords($this->_model))
 				->assign("model_name",ucwords(str_replace("_"," ",$this->_model)))
 				->assign("model",$this->_model)
+				->assign("keywords",$keywords)
 				->assign("dbos",$cmodel->get_dbos())
 				->assign("accessible_fields",$accessible_fields)
 				->assign("has_state",in_array("state",array_keys($fields)))

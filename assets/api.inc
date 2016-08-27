@@ -9,16 +9,17 @@
 
 				if(${$model_id})
 					${$model}_hmodel->set_{$model_id}(${$model_id});
-{foreach $dbos as $dbo}{foreach $dbo->get_columns() as $name=>$column}{if in_array($name,$accessible_fields)}{if $name=="state"}
+{if $keywords}
+
+				if(!is_null($value=$this->get("keyword")))
+					${$model}_hmodel->group(DB_GROUP::create()
+{foreach $keywords as $keyword}											->where("{$keyword.tablename}.{$keyword.name}","LIKE","%".$value."%","OR"));
+{/foreach}
+{/if}{foreach $dbos as $dbo}{foreach $dbo->get_columns() as $name=>$column}{if in_array($name,$accessible_fields)}{if $name=="state"}
 
 				if(!is_null($value=$this->get("state")))
 					${$model}_hmodel->set_states(explode(",",$value));
-{elseif preg_match("/name/",$name)}
-
-				if(!is_null($value=$this->get("{$name}")))
-					${$model}_hmodel->group(DB_GROUP::create()
-												->where("{$dbo->get_tablename()}.{$name}","LIKE","%".$value."%","OR"));
-{elseif $column->is_data_type("date") || $column->is_data_type("datetime")}
+{elseif preg_match("/(name|description)/",$name)}{continue}{elseif $column->is_data_type("date") || $column->is_data_type("datetime")}
 
 				if(!is_null($value=$this->get("{$name}")))
 					${$model}_hmodel->where("{$dbo->get_tablename()}.{$name}",">",CMODEL_TIME::create($value)->db());
