@@ -64,7 +64,7 @@
 		}
 
 		public function describe() {
-			return [{foreach from=$columns key=name item=column name=columns}{if !preg_match("/_id$/",$name)}
+			return [{foreach from=$columns key=name item=column name=columns}{if !$column->is_primary()}
 
 					"{$name}" => [
 {if $name=="state"}						"default"=>self::STATE_ACTIVE,

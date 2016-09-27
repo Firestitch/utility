@@ -137,8 +137,8 @@
 
 					if(preg_match("/(.*)(}[\s\n]*)$/ism",$hmodel_content,$matches)) {
 
-						$code = "\n\t\tpublic function load_".$plural_reference_name."(\$".$reference_name."_hmodel=null) {\n".
-								"\t\t\treturn \$this->handler(\"".$reference_name."_handler\",\$".$reference_name."_hmodel ? \$".$reference_name."_hmodel : HMODEL_".strtoupper($reference_model)."::create());\n".
+						$code = "\n\t\tpublic function load_".$plural_reference_name."(\$hmodel=null) {\n".
+								"\t\t\treturn \$this->handler(\"".$reference_name."_handler\",\$hmodel ? \$hmodel : HMODEL_".strtoupper($reference_model)."::create());\n".
 								"\t\t}\n\t}";
 
 						if($code && !$this->has_code($hmodel_content,$code))

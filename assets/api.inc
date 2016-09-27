@@ -13,8 +13,10 @@
 
 				if(!is_null($value=$this->get("keyword")))
 					${$model}_hmodel->group(DB_GROUP::create()
-{foreach $keywords as $keyword}											->where("{$keyword.tablename}.{$keyword.name}","LIKE","%".$value."%","OR"));
-{/foreach}
+{foreach from=$keywords item=keyword name=keywords}										->where("{$keyword.tablename}.{$keyword.name}","LIKE","%".$value."%","OR"){if $smarty.foreach.keywords.last});
+{else}
+
+{/if}{/foreach}
 {/if}{foreach $dbos as $dbo}{foreach $dbo->get_columns() as $name=>$column}{if in_array($name,$accessible_fields)}{if $name=="state"}
 
 				if(!is_null($value=$this->get("state")))
