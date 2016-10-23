@@ -1,4 +1,4 @@
-<h1>Frotnend View / Controller</h1>
+<h1>Frontend View / Controller</h1>
 <form id="form-vc">
 
 	<?
@@ -7,6 +7,15 @@
 				->input("form[state]","State Name","","",["placeholder"=>"ie. page.userprofile","class"=>"w400"])
 				->input("form[controller]","Controller Name","","",["placeholder"=>"ie. UserProfile","class"=>"w400"])
 				->input("form[view]","View Name","","",["placeholder"=>"ie. userprofile","class"=>"w400"])
+				->input("form[object]","Object Name","","",["placeholder"=>"ie. user","class"=>"w400"])
+				->dropdown("form[view_format]","View Format",["page"=>"Full Page","modal"=>"Modal","drawer"=>"Drawer"],"")
+				->radiobuttons("form[lister]","Lister",[	""=>"Do not include Lister",
+															"include"=>"Include Lister",
+															"page"=>"Include Lister with edit/delete interface on a full page",
+															"modal"=>"Include Lister with edit/delete interface in a modal",
+															//"drawer"=>"Include Lister with edit/delete interface in a drawer"
+															])
+				->custom("<h3>Will Be Generated</h3>")
 				->text("Controller Class",HTML_UTIL::div("",["id"=>"controller-classname"]))
 				->text("Controller Filename",HTML_UTIL::div("",["id"=>"controller-filename"]))
 				->text("View Filename",HTML_UTIL::div("",["id"=>"view-filename"]))
@@ -105,3 +114,4 @@
 		});
 	});
 </script>
+
