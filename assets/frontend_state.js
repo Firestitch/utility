@@ -1,9 +1,9 @@
 .state('{{$state}}', {
-{{if $view_format=='page'}}		url: '{{$url}}/:id',
+{{if $view_format=='page'}}		url: '{{$url}}{{if $edit}}/:id{{/if}}',
 		controller: '{{$controller}}Ctrl',
 		templateUrl: 'views/{{$view}}.html',{{/if}}
-		params: {
-			id: { squash: true, value: null },
+		params: { {{if $view_format=='page' && $edit}}
+			id: { squash: true, value: null },{{/if}}
 			time: { squash: true, value: null },{{if !$lister}}
 			{{$object}}: { squash: true, value: null }{{/if}}
 		},{{if $view_format=='page'}}

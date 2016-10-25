@@ -15,7 +15,7 @@
 															"modal"=>"Include Lister with edit/delete interface in a modal",
 															//"drawer"=>"Include Lister with edit/delete interface in a drawer"
 															])
-				->custom("<h3>Will Be Generated</h3>")
+				->custom("<h3>What Will Be Generated</h3>")
 				->text("Controller Class",HTML_UTIL::div("",["id"=>"controller-classname"]))
 				->text("Controller Filename",HTML_UTIL::div("",["id"=>"controller-filename"]))
 				->text("View Filename",HTML_UTIL::div("",["id"=>"view-filename"]))
