@@ -2,7 +2,7 @@
     'use strict';
 
     angular.module('app')
-    .controller('{$controller}Ctrl', function($scope,$state,{{$object}}Service{{if $lister=='modal'}},fsModal{{/if}}{{if $edit}},fsModal,{{$object}}{{/if}}) {
+    .controller('{$controller}Ctrl', function($scope,$state,{{$object}}Service{{if $lister=='modal'}},fsModal{{/if}}{{if $edit}},fsAlert,fsModal,{{$object}}{{/if}}) {
 
 {{if $edit}}		$scope.{{$object}} = {{$object}};
 {{/if}}{{if $lister}}		$scope.lister = {
@@ -16,7 +16,7 @@
             topActions: [
                 {
                     click: function() {
-                    	$state.go('{{rtrim($state,'s')}}',{ {{$object}}: {}, time: Date.now() },{ notify: false });
+                    	$scope.update({});
                     },
                     label: 'Add {{$object}}'
                 }
@@ -26,12 +26,20 @@
                     name: 'keyword',
                     type: 'text',
                     label: 'Search'
+                },
+                {
+                    name: 'state',
+                    label: 'Show Deleted',
+                    type: 'checkbox',
+                    unchecked: 'active',
+                    checked: 'deleted'
                 }
             ],
             columns: [
                 {   title: 'Name',
                     value: function(data) {
-                        return '<a href ng-click="click(data)">{literal}{{data.name}}{/literal}</a>';
+                        return '<a href ng-click="click(data)" ng-hide="data.state==\'deleted\'">{literal}{{data.name}}{/literal}</a>\
+                        		<div ng-show="data.state==\'deleted\'">{literal}{{data.name}}{/literal}</span>';
                     },
                     scope: {
                     	click: function(data) {
@@ -46,6 +54,9 @@
                     icon: 'edit',
                     click: function(data) {
                     	$scope.update(data);
+                    },
+                    show: function(data) {
+                    	return data.state!='deleted';
                     }
                 },
                 {
@@ -54,6 +65,22 @@
                         ok: function(data) {
                             return {{$object}}Service.delete(data.id)
                         }
+                    },
+                    show: function(data) {
+                    	return data.state!='deleted';
+                    }
+                },
+                {
+                    label: 'Restore',
+                    icon: 'restore',
+                    click: function(data) {
+                    	{{$object}}Service.put({ id: data.id, state: 'active' })
+                    	.then(function() {
+                    		$scope.{{$object}}.instance.reload();
+                    	});
+                    },
+                    show: function(data) {
+                    	return data.state=='deleted';
                     }
                 }
             ]{{/if}}
@@ -67,6 +94,7 @@
             {{$object}}Service
             .save($scope.{{$object}})
             .then(function() {
+            	fsAlert.success('Saved Changes');
                 {{if $view_format=='modal'}}fsModal.hide();{{/if}}
             });
 		}{{/if}}
