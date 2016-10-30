@@ -86,7 +86,7 @@
 
 			} elseif($this->is_delete()) {
 
-				${$model}_cmodel = $this->acl()->write(HMODEL_{$model_upper}::create(){if $parent_model}
+				${$model}_cmodel = $this->acl()->write(HMODEL_{$model_upper}::create(false){if $parent_model}
 
 														->set_{$parent_model}_id(${$parent_model}_id){/if}
 

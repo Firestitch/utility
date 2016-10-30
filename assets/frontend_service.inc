@@ -29,23 +29,23 @@
         }
 
         function gets(data, options) {
-            return fsApi.get('{$service}s', data, fsApi.options({ key: '{$service}s', apply: { key: '{$service}s', function: create, array: true }},options));
+            return fsApi.get('{$service|plural|lower}', data, fsApi.options({ key: '{$plural_json_name}', apply: { key: '{$plural_json_name}', function: create, array: true }},options));
         }
 
         function get(id, data, options) {
-            return fsApi.get('{$service}s/' + id, data, fsApi.options({ key: '{$service}', apply: { key: '{$service}', function: create }},options));
+            return fsApi.get('{$service|plural|lower}/' + id, data, fsApi.options({ key: '{$json_name}', apply: { key: '{$json_name}', function: create }},options));
         }
 
         function put(data, options) {
-            return fsApi.put('{$service}s/' + data.id, data, fsApi.options({ key: '{$service}' },options));
+            return fsApi.put('{$service|plural|lower}/' + data.id, data, fsApi.options({ key: '{$json_name}' },options));
         }
 
         function post(data, options) {
-            return fsApi.post('{$service}s', data, fsApi.options({ key: '{$service}' },options));
+            return fsApi.post('{$service|plural|lower}', data, fsApi.options({ key: '{$json_name}' },options));
         }
 
         function remove(id, data) {
-            return fsApi.delete('{$service}s/' + id, data, { key: '{$service}' });
+            return fsApi.delete('{$service|plural|lower}/' + id, data, { key: '{$json_name}' });
         }
 
     });

@@ -3,9 +3,11 @@
 
 	<?
 		HTML_FORM_UTIL::create()
-				->input("form[service]","Name","","",["placeholder"=>"ie. user","class"=>"w400"])
+				->input("service","Name","","",["placeholder"=>"ie. accountUser","class"=>"w400"])
+				->input("json-name","JSON Object Name","","",["placeholder"=>"ie. user_account","class"=>"w400"])
 				->text("Service Class",HTML_UTIL::div("",["id"=>"service-classname"]))
 				->text("Service Filename",HTML_UTIL::div("",["id"=>"service-filename"]))
+
 				->button("generate","Generate",["type"=>"button"])
 				->render();
 	?>
@@ -20,10 +22,12 @@
 
 	$(function() {
 
-		$("input[name='form[service]'").on("keyup input",function(e) {
+		$("input[name='service'").on("keyup input",function(e) {
 
 			$("#service-classname").text($(this).val() + "Service");
 			$("#service-filename").text("/scripts/services/" + $(this).val().toLowerCase() + ".js");
+
+			$("input[name='json-name']").val($(this).val().match(/[A-Z]*[^A-Z]+/g).join('_').toLowerCase());
 		});
 	});
 

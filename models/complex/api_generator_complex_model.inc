@@ -72,7 +72,7 @@
 
 			$cmodel_class = "CMODEL_".strtoupper($this->_model);
 
-			if(!class_exists($cmodel_class))
+			if(!@class_exists($cmodel_class))
 				throw new Exception("Class ".$cmodel_class." does not exist");
 
 			$cmodel = $cmodel_class::create();
