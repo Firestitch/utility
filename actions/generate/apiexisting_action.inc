@@ -1,5 +1,5 @@
 <?
-	class ACTION_GENERATE_API extends ACTION_JSON {
+	class ACTION_GENERATE_APIEXISTING extends ACTION_JSON {
 
 		public function __construct() {
 			parent::__construct()->disable_authorization();
@@ -17,8 +17,8 @@
 			if(!$model_plural)
 				throw new Exception("Plural model");
 
-			$messages = array();
-			CMODEL_API_GENERATOR::create($dir,$model_plural,$model,$model_plural)->generate($this->post("override"),$messages);
+			$messages = [];
+			CMODEL_API_GENERATOR::create($dir,$this->post("api"),$model,$model_plural,rtrim($this->post("api"),"s"))->append($messages);
 
 			$this->data("messages",$messages)->success();
 		}

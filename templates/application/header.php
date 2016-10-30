@@ -28,13 +28,21 @@
 		        	</ul>
 		    	</li>
 
-		    	<li><a href="javascript:;" class="update-link" data-url="/generate/api">API</a></li>
+				<li class="dropdown">
+		    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">API <b class="caret"></b></a>
+		        	<ul class="dropdown-menu">
+						<li><a href="/generate/api/">New API</a></li>
+						<li><a href="/generate/apiexisting">Existing API</a></li>
+		        	</ul>
+		    	</li>
+
 
 				<li class="dropdown">
 		    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Frontend <b class="caret"></b></a>
 		        	<ul class="dropdown-menu">
 						<li><a href="/generate/vc">View / Controller</a></li>
-						<li><a href="/generate/service">Service</a></li>
+						<li><a href="/generate/service">New Service</a></li>
+						<li><a href="/generate/serviceexisting">Existing Service</a></li>
 		        	</ul>
 		    	</li>
 
