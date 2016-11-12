@@ -17,6 +17,7 @@
 {/foreach}
 {foreach $columns as $name=>$column}{if $column->is_data_type("CHAR") || $name=="state"}		public function get_{$name}_name()	{ return value(self::get_{$name}s(),$this->get_{$name}()); }
 {/if}{/foreach}
+		public function get_manage_url()	{ return "/manage/{$lower_model|replace:'_':''}/{$id}:".$this->get_{$primary_key}()."/"; }
 {if $has_state}		public function delete()			{ return $this->set_state(self::STATE_DELETED)->save(); }
 		public function is_state_delete()	{ return $this->get_state()==self::STATE_DELETED; }
 		public function is_state_active()	{ return $this->get_state()==self::STATE_ACTIVE; }
