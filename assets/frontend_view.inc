@@ -1,8 +1,7 @@
 {{if $view_format=='modal'}}<md-dialog aria-label="{{$path}}" id="md-dialog-{{$path}}">
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <h2 ng-show="!{{$object}}.id">Add {{$controller}}</h2>
-            <h2 ng-show="{{$object}}.id">Edit {{$controller}}</h2>
+            <h2>{{{{$object}}.state=='active' ? 'Edit {{$object|capitalize}}' : 'Add {{$object|capitalize}}'}}</h2>
         </div>
     </md-toolbar>
     <form fs-validate="save()">
