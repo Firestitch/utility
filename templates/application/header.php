@@ -1,5 +1,5 @@
 
-<div id="header" class="container">
+<div id="header">
 	<div class="navbar navbar-default">
 
 	  	<div class="navbar-header">

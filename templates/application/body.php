@@ -3,25 +3,22 @@
 	<head>
 		<title>Firestitch Utility</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	
+
 		<? $web_asset_manager->render() ?>
-		
+
 	</head>
 	<body>
 
-		<? $this->show_view("header"); ?>	
+		<? $this->show_view("header"); ?>
 
-		<div class="container">
+		<div class="alert alert-warning dn" id="utility-alert"></div>
 
-			<div class="alert alert-warning dn" id="utility-alert"></div>
+		<? $this->show_view("messages"); ?>
 
-			<? $this->show_view("messages"); ?>
+		<? $this->show_view("body"); ?>
 
-			<? $this->show_view("body"); ?>
+		<? $this->show_view("footer"); ?>
 
-			<? $this->show_view("footer"); ?>
-		</div>
-		
-		
+
 	</body>
 </html>

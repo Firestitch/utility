@@ -2,17 +2,17 @@
     'use strict';
 
     angular.module('app')
-    .controller('{$controller}Ctrl', function($scope,$state,{{$object}}Service{{if $lister=='modal'}},fsModal{{/if}}{{if $edit}},fsAlert,fsModal,{{$object}}{{/if}}) {
+    .controller('{$controller}Ctrl', function($scope,$state{{if $object}},{{$object}}Service{{/if}}{{if $interface=="form"}},fsAlert{{if $object}},{{$object}}{{/if}}{{/if}}{{if $view_format=="modal"}},fsModal{{/if}}) {
 
-{{if $edit}}		$scope.{{$object}} = {{$object}};
-{{/if}}{{if $lister}}		$scope.lister = {
-			data: function(query, cb) {
-                {{$object}}Service
+{{if $interface=="form"}}		$scope.{{$object}} = {{$object}} || {};
+{{/if}}{{if $interface=="lister"}}		$scope.lister = {
+			data: function(query) {
+                return {{$object}}Service
                 .gets(angular.merge(query,{}),{ key: null })
                 .then(function(result) {
-                    cb(result.{{$object}}s,result.paging);
+                    return { data: result.{{$object}}s, paging: result.paging };
                 });
-            },{{if $lister=='page' || $lister=='modal' || $lister=='drawer'}}
+            },{{if $child}}
             topActions: [
                 {
                     click: function() {
@@ -20,8 +20,8 @@
                     },
                     label: 'Add {{$object}}'
                 }
-            ],{{/if}}
-            filters: [
+            ],
+{{/if}}			filters: [
                 {
                     name: 'keyword',
                     type: 'text',
@@ -37,18 +37,17 @@
             ],
             columns: [
                 {   title: 'Name',
-                    value: function(data) {
-                        return '<a href ng-click="click(data)" ng-hide="data.state==\'deleted\'">{literal}{{data.name}}{/literal}</a>\
-                        		<div ng-show="data.state==\'deleted\'">{literal}{{data.name}}{/literal}</span>';
-                    },
+                    value: '{{if $child.view_format=="modal"}}<a href ng-click="click(data)" ng-hide="data.state==\'deleted\'">{{else}}<a href="{{preg_replace("/:.*/","",$child.url)}}{literal}{{data.id}}{/literal}" ng-hide="data.state==\'deleted\'">{{/if}}{literal}{{data.name}}{/literal}</a>\
+                        	<div ng-show="data.state==\'deleted\'">{literal}{{data.name}}{/literal}</span>'
+                    {{if $child.view_format=="modal" && $child.state}},
                     scope: {
                     	click: function(data) {
                     		$scope.update(data);
                     	}
-                    }
+                    }{{/if}}
                 }
-            ]{{if $lister=='page' || $lister=='modal' || $lister=='drawer'}},
-            actions: [
+            ],
+            actions: [{{if $child}}
                 {
                     label: 'Edit',
                     icon: 'edit',
@@ -58,12 +57,12 @@
                     show: function(data) {
                     	return data.state!='deleted';
                     }
-                },
+                },{{/if}}
                 {
                     delete: {
                         content: 'Are you sure you would like to delete the {{$object}}?',
                         ok: function(data) {
-                            return {{$object}}Service.delete(data.id)
+                            return {{$object}}Service.delete(data.id);
                         }
                     },
                     show: function(data) {
@@ -83,20 +82,23 @@
                     	return data.state=='deleted';
                     }
                 }
-            ]{{/if}}
-        };{{/if}}
-{{if !$edit && $lister}}
-		$scope.update = function({{$object}}) {
-        	$state.go('{{rtrim($state,'s')}}',{ {{$object}}: angular.copy({{$object}}), time: Date.now() }{{if $lister=='modal' || $lister=='drawer'}},{ notify: false }{{/if}});
+            ]
+        };
+{{if $child.view_format=="modal"}}		$scope.update = function({{$object}}) {
+        	$state.go('{{$child.state}}',{ {{$object}}: angular.copy({{$object}}), time: Date.now() },{ notify: false });
         }
-{{/if}}{{if $edit}}
-		$scope.save = function() {
-            {{$object}}Service
-            .save($scope.{{$object}})
+{{/if}}
+{{/if}}{{if $interface=="form"}}
+		$scope.save = function() { {{if in_array("draft",$options)}}
+			if($scope.{{$object}}.state=='draft') {
+				$scope.{{$object}}.state = 'active';
+			}
+{{/if}}			{{$object}}Service.save($scope.{{$object}})
             .then(function() {
             	fsAlert.success('Saved Changes');
                 {{if $view_format=='modal'}}fsModal.hide();{{/if}}
             });
-		}{{/if}}
-    });
+		}
+{{/if}}
+	});
 })();
