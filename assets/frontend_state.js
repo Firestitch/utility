@@ -1,5 +1,5 @@
-.state('{{$state}}', {
-		url: '{{$url}}',{{if $view_format=='page'}}
+.state('{{$state}}', { {{if $url}}
+		url: '{{$url}}',{{/if}}{{if $view_format=='page'}}
 		controller: '{{$controller}}Ctrl',
 		templateUrl: 'views/{{$view}}.html',{{/if}}
 		params: { {{if $interface=='form'}}
@@ -11,12 +11,13 @@
 			{{$object}}: function($stateParams, {{$object}}Service, $q) {
 							return $q(function(resolve) {
 								if($stateParams.id) {
-									return {{$object}}Service.get($stateParams.id).then(resolve);
+									return aclService.require({{$object}}Service.get($stateParams.id)).then(resolve);
 								}{{if in_array("draft",$options)}}
 								if(!$stateParams.{{$object}} || !$stateParams.{{$object}}.id) {
 									return {{$object}}Service.post({ state: 'draft' }).then(resolve);
 								}
-{{/if}}									return resolve($stateParams.{{$object}} || {});
+{{/if}}
+								return resolve($stateParams.{{$object}} || {});
 							}).then(function({{$object}}) {
 								if({{$object}}) {
 									$stateParams.id = {{$object}}.id;
@@ -36,12 +37,13 @@
 							{{$object}}: function($stateParams, {{$object}}Service, $q) {
 								return $q(function(resolve) {
 									if($stateParams.id) {
-										return {{$object}}Service.get($stateParams.id).then(resolve);
+										return aclService.require({{$object}}Service.get($stateParams.id)).then(resolve);
 									}{{if in_array("draft",$options)}}
 									if(!$stateParams.{{$object}} || !$stateParams.{{$object}}.id) {
 										return {{$object}}Service.post({ state: 'draft' }).then(resolve);
 									}
-{{/if}}									return resolve($stateParams.{{$object}} || {});
+{{/if}}
+									return resolve($stateParams.{{$object}} || {});
 								}).then(function({{$object}}) {
 									if({{$object}}) {
 										$stateParams.id = {{$object}}.id;
@@ -50,10 +52,10 @@
 								});
 							}
 						}
-					})
+					}){{if $parent && $parent.state}}
 			.finally(function() {
-				{{if $parent.state}}$state.go('{{$parent.state}}');{{/if}}
-			});
+				$state.go('{{$parent.state}}');
+			}){{/if}};
 		}{{/if}}
 	})
 

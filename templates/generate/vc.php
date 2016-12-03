@@ -5,7 +5,7 @@
 			<?
 				HTML_FORM_UTIL::create()
 						->custom("<h3>Primary Interface</h3>")
-						->input("form1[url]","URL","",true,["placeholder"=>"ie. /manage/users","class"=>"w250","data-form"=>"form1"])
+						->input("form1[url]","URL","",false,["placeholder"=>"ie. /manage/users","class"=>"w250","data-form"=>"form1"])
 						->input("form1[state]","State Name","",true,["placeholder"=>"ie. page.userprofile","class"=>"w250"])
 						->input("form1[controller]","Controller Name","",true,["placeholder"=>"ie. UserProfile","class"=>"w250","data-form"=>"form1"])
 						->input("form1[view]","Template  File Name","",true,["placeholder"=>"ie. userprofile","class"=>"w250","data-form"=>"form1"])
@@ -158,7 +158,9 @@
 	}
 
 	function url(value) {
-		return '/' + value.replace(/(^\/|\/$)*/,'');
+		if(value) {
+			return '/' + value.replace(/(^\/|\/$)*/,'');
+		}
 	}
 
 </script>

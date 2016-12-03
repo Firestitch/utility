@@ -27,9 +27,6 @@
 
 			try {
 
-				if(!$url1)
-					throw new Exception("Please supply a URL");
-
 				if(!$controller1)
 					throw new Exception("Please supply a controller name");
 

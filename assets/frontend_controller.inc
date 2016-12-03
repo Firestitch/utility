@@ -2,7 +2,7 @@
     'use strict';
 
     angular.module('app')
-    .controller('{$controller}Ctrl', function($scope,$state{{if $object}},{{$object}}Service{{/if}}{{if $interface=="form"}},fsAlert{{if $object}},{{$object}}{{/if}}{{/if}}{{if $view_format=="modal"}},fsModal{{/if}}) {
+    .controller('{$controller}Ctrl', function($scope, $state{{if $object}}, {{$object}}Service{{/if}}{{if $interface=="form"}}, fsAlert{{if $object}}, {{$object}}{{/if}}{{/if}}{{if $view_format=="modal"}}, fsModal{{/if}}) {
 
 {{if $interface=="form"}}		$scope.{{$object}} = {{$object}} || {};
 {{/if}}{{if $interface=="lister"}}		$scope.lister = {
@@ -93,7 +93,8 @@
 			if($scope.{{$object}}.state=='draft') {
 				$scope.{{$object}}.state = 'active';
 			}
-{{/if}}			{{$object}}Service.save($scope.{{$object}})
+{{/if}}
+			{{$object}}Service.save($scope.{{$object}})
             .then(function() {
             	fsAlert.success('Saved Changes');
                 {{if $view_format=='modal'}}fsModal.hide();{{/if}}
