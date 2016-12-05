@@ -15,7 +15,7 @@
 			$view_format1			= $this->post("form1","view_format");
 			$interface1				= $this->post("form1","interface");
 			$options1				= (array)$this->post("form1","options");
-			$child					= value($options1,"secondary") ? $this->post("form2") : [];
+			$child					= in_array("secondary",$options1) ? $this->post("form2") : [];
 
 			$url2 					= $this->post("form2","url");
 			$controller2			= $this->post("form2","controller");
@@ -23,7 +23,7 @@
 			$state2					= $this->post("form2","state");
 			$view_format2			= $this->post("form2","view_format");
 			$interface2				= $this->post("form2","interface");
-			$options				= (array)$this->post("form2","options");
+			$options2				= (array)$this->post("form2","options");
 
 			try {
 
@@ -50,7 +50,7 @@
 												[],
 												$options1);
 
-				if($interface1=="lister" && value($options1,"secondary")) {
+				if($interface1=="lister" && in_array("secondary",$options1)) {
 
 					if(!$controller2)
 						throw new Exception("Please supply a controller name");
@@ -69,7 +69,7 @@
 													$interface2,
 													$object1,
 													[],
-													$this->post("form1"),
+													(array)$this->post("form1"),
 													$options2);
 				}
 				$this->success();
