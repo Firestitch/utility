@@ -28,13 +28,13 @@
 			time: function($stateParams) { return $stateParams.time; }
 		}
 {{/if}}{{if $view_format=='modal'}}
-		onEnter: function(fsModal, $state, $stateParams, {{$object}}Service) {
+		onEnter: function(fsModal, $state, $stateParams, {{$object}}Service, $q) {
 			fsModal
 			.show(	'{{$controller}}Ctrl',
 					'views/{{$view}}.html',
 					{
 						resolve: {
-							{{$object}}: function($stateParams, {{$object}}Service, $q) {
+							{{$object}}: function() {
 								return $q(function(resolve) {
 									if($stateParams.id) {
 										return aclService.require({{$object}}Service.get($stateParams.id)).then(resolve);
