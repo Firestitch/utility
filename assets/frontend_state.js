@@ -8,7 +8,7 @@
 			time: { squash: true, value: null }
 		},{{if $interface=="form" && $view_format=='page'}}
 		resolve: {
-			{{$object}}: function($stateParams, {{$object}}Service, $q) {
+			{{$object}}: function($stateParams, {{$object}}Service, aclService, $q) {
 							return $q(function(resolve) {
 								if($stateParams.id) {
 									return aclService.require({{$object}}Service.get($stateParams.id)).then(resolve);
@@ -28,7 +28,7 @@
 			time: function($stateParams) { return $stateParams.time; }
 		}
 {{/if}}{{if $view_format=='modal'}}
-		onEnter: function(fsModal, $state, $stateParams, {{$object}}Service, $q) {
+		onEnter: function(fsModal, $state, $stateParams, {{$object}}Service, aclService, $q) {
 			fsModal
 			.show(	'{{$controller}}Ctrl',
 					'views/{{$view}}.html',
