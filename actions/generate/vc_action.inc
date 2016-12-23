@@ -123,8 +123,10 @@
 
 			$index_html = FILE_UTIL::get($index_file);
 
-			if(!$index_html)
+			if(!$index_html) {
+				p($index_html);
 				throw new Exception("Failed to locate index.html");
+			}
 
 			if(stripos($index_html,"<!-- endcontrollers -->")===false)
 				throw new Exception("Failed to locate <!-- endcontrollers --> index.html");

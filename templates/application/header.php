@@ -42,6 +42,7 @@
 		        	<ul class="dropdown-menu">
 						<li><a href="/generate/vc">View / Controller</a></li>
 						<li><a href="/generate/service">New Service</a></li>
+						<li><a href="/generate/controller">New Controller</a></li>
 						<li><a href="/generate/serviceexisting">Existing Service</a></li>
 						<li><a href="/generate/directive">New Directive</a></li>
 		        	</ul>
