@@ -107,24 +107,26 @@
 			if(!$app_js)
 				throw new Exception("Failed to locate app.js");
 
-			if(stripos($app_js,"/** endstates **/")===false)
-				throw new Exception("Failed to locate /** endstates **/ in app.js");
+			if($state) {
 
-			if(stripos($app_js,".state('".$state."'")===false) {
+				if(stripos($app_js,"/** endstates **/")===false)
+					throw new Exception("Failed to locate /** endstates **/ in app.js");
 
-				$state = $smart_cmodel->fetch_string(FILE_UTIL::get($state_file));
+				if(stripos($app_js,".state('".$state."'")===false) {
 
-				$state .= "\n\n\t/** endstates **/";
+					$state = $smart_cmodel->fetch_string(FILE_UTIL::get($state_file));
 
-				$app_js = str_replace("/** endstates **/",$state,$app_js);
+					$state .= "\n\n\t/** endstates **/";
 
-				FILE_UTIL::put($app_js_file,$app_js);
+					$app_js = str_replace("/** endstates **/",$state,$app_js);
+
+					FILE_UTIL::put($app_js_file,$app_js);
+				}
 			}
 
 			$index_html = FILE_UTIL::get($index_file);
 
 			if(!$index_html) {
-				p($index_html);
 				throw new Exception("Failed to locate index.html");
 			}
 
@@ -141,7 +143,8 @@
 
 			FILE_UTIL::put($app_dir."scripts/controllers/".strtolower($controller).".js",$smart_cmodel->fetch_string(FILE_UTIL::get($controller_template)));
 
-			FILE_UTIL::put($app_dir."views/".strtolower($view).".html",$smart_cmodel->fetch_string(FILE_UTIL::get($view_template)));
-
+			if($view) {
+				FILE_UTIL::put($app_dir."views/".strtolower($view).".html",$smart_cmodel->fetch_string(FILE_UTIL::get($view_template)));
+			}
 		}
 	}
