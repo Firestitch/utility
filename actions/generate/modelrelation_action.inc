@@ -123,11 +123,10 @@
 					if(preg_match("/^(.*?)(return\s+\\\$".$source_model."_cmodels;.*)$/ism",$hmodel_content,$matches)) {
 
 						$function = $map_child ? "map_child" : "map_children";
-						$multitple = $map_child ? "false" : "true";
-						$parent_object_function = "set_".$reference_model.($map_child ? "" : "s");
+						$parent_object_function = "set_".$reference_name.($map_child ? "" : "s");
 						$child_reference_column = $reference_model."s.".$reference_name_column;
 
-						$code = '$this->'.$function.'($'.$source_model.'_cmodels, $this->handler("'.$reference_name.'_handler"), '.$multitple.', "get_'.$source_model_column.'", "'.$parent_object_function.'", "'.$child_reference_column.'");';
+						$code = '$this->'.$function.'($'.$source_model.'_cmodels, $this->handler("'.$reference_name.'_handler"), "get_'.$source_model_column.'", "'.$parent_object_function.'", "'.$child_reference_column.'");';
 
 /*						if($map_children_many) {
 
