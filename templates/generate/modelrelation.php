@@ -1,15 +1,15 @@
 <h1>Model Relationships</h1>
 
-<div class="mt15">
+<div class="mt15 mb20">
 	<div class="fwb">Relationship</div>
-
-	<?=HTML_UTIL::radiobuttons("relationship",array("O"=>"one-to-one","M"=>"one-to-many","N"=>"many-to-many"))?>
+	<?=HTML_UTIL::radiobuttons("relationship",array("child"=>"Map Child","children"=>"Map Children"))?>
+	<div class="fwb mt20">Joiner</div>
+	<?=HTML_UTIL::checkbox("add-joiner",1,false,["id"=>"add-join"],"Add joiner table")?>
 </div>
-<div class="w200">
+<div>
 	<div class="model">
-		<h3>Source Model</h3>
+		<div class="lbl">Source Model</div>
 		<div class="dib">
-			<div class="lbl">Model</div>
 			<?=HTML_UTIL::dropdown("source_model",$model_list,$model,array(""),15)?>
 		</div>
 
@@ -20,9 +20,8 @@
 	</div>
 
 	<div class="model dn" id="joiner">
-		<h3>Joiner Model</h3>
+		<div class="lbl">Joiner Model</div>
 		<div class="">
-			<div class="lbl">Model</div>
 			<?=HTML_UTIL::dropdown("joiner",$joiner_list,$joiner,array(),15)?>
 		</div>
 
@@ -32,9 +31,8 @@
 	</div>
 
 	<div class="model">
-		<h3>Reference Model</h3>
+		<div class="lbl">Reference Model</div>
 		<div class="">
-			<div class="lbl">Model</div>
 			<?=HTML_UTIL::dropdown("reference_model",$model_list,$reference_model,array(),15)?>
 		</div>
 
@@ -43,8 +41,12 @@
 			<div id="reference_fields"></div>
 		</div>
 	</div>
+	<div class="model">
+		<div class="lbl">Generate</div>
+		<?=HTML_UTIL::button("generate","Generate",array("class"=>"btn-primary"))?>
+	</div>
 </div>
-<div class="cb pt30"><?=HTML_UTIL::get_button("generate","Generate",array("class"=>"btn-primary"))?></div>
+
 <script>
 
 	$(function() {
@@ -72,9 +74,9 @@
 		if($("select[name='reference_model'] option:selected").length)
 			$("select[name='reference_model']").trigger("click");
 
-		$("input[name='relationship']").click(function() {
+		$("#add-join").click(function() {
 
-			if($(this).val()=="N") {
+			if($(this).is(":checked")) {
 				$("#joiner").show();
 			} else
 				$("#joiner").hide();
@@ -90,7 +92,7 @@
 	margin-bottom: 5px;
 }
 .model {
-
-	margin-bottom: 50px;
+	float:  left;
+	margin-right: 50px;
 }
 </style>
