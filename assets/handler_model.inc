@@ -1,7 +1,7 @@
 <?
 	class {if $framework}B{/if}HMODEL_{$upper_model} extends HMODEL {
 
-		protected $_select_fields = array({$select_fields});
+		protected $_select_fields = [{$select_fields}];
 
 		public function __construct() {
 {if $extends}			return $this->register_dbq(DBQ_{$upper_model}::create()->inner("{$extend_tablename}","{$extend_primary_id}"));
@@ -12,17 +12,17 @@
 		public function gets() {
 			${$lower_models} = $this->get_dbq()->select($this->_select_fields);
 
-			${$lower_model}_cmodels = array();
+			$cmodels = [];
 			foreach(${$lower_models} as ${$lower_model}) {
-				${$lower_model}_cmodel = CMODEL_{$upper_model}::create()->populate(${$lower_model},true,false);
-				$this->apply_properties(${$lower_model}_cmodel,${$lower_model});
-				${$lower_model}_cmodels[] = ${$lower_model}_cmodel;
+				$cmodel = CMODEL_{$upper_model}::create()->populate(${$lower_model},true,false);
+				$this->apply_properties($cmodel,${$lower_model});
+				$cmodels[] = $cmodel;
 			}
 
-			if(!${$lower_model}_cmodels)
-				return array();
+			if(!$cmodels)
+				return [];
 
-			return ${$lower_model}_cmodels;
+			return $cmodels;
 		}
 
 {if $has_state}		public function where_state_active()			{ return $this->set_state(CMODEL_{$upper_model}::STATE_ACTIVE); }

@@ -120,13 +120,14 @@
 
 				if(stripos($hmodel_content,"load_".$reference_name."s")===false) {
 
-					if(preg_match("/^(.*?)(return\s+\\\$".$source_model."_cmodels;.*)$/ism",$hmodel_content,$matches)) {
+					if(preg_match("/^(.*?)(return\s+\\\$(:?".$source_model."_)?cmodels;.*)$/ism",$hmodel_content,$matches)) {
 
-						$function = $map_child ? "map_child" : "map_children";
+						$function 				= $map_child ? "map_child" : "map_children";
 						$parent_object_function = "set_".$reference_name.($map_child ? "" : "s");
 						$child_reference_column = $reference_model."s.".$reference_name_column;
+						$cmodels 				= stripos($hmodel_content,'return $cmodel')===false ? '$'.$source_model.'_cmodels' : '$cmodels';
 
-						$code = '$this->'.$function.'($'.$source_model.'_cmodels, $this->handler("'.$reference_name.'_handler"), "get_'.$source_model_column.'", "'.$parent_object_function.'", "'.$child_reference_column.'");';
+						$code = '$this->'.$function.'('.$cmodels.', $this->handler("'.$reference_name.'_handler"), "get_'.$source_model_column.'", "'.$parent_object_function.'", "'.$child_reference_column.'");'."\n\n\t\t";
 
 /*						if($map_children_many) {
 
