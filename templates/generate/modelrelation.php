@@ -1,10 +1,14 @@
 <h1>Model Relationships</h1>
 
-<div class="mt15 mb20">
-	<div class="fwb">Relationship</div>
-	<?=HTML_UTIL::radiobuttons("relationship",array("child"=>"Map Child","children"=>"Map Children"))?>
-	<div class="fwb mt20">Joiner</div>
-	<?=HTML_UTIL::checkbox("add-joiner",1,false,["id"=>"add-join"],"Add joiner table")?>
+<div class="mt15 mb20 cb">
+	<div class="fl mr50">
+		<div class="lbl">Relationship</div>
+		<?=HTML_UTIL::radiobuttons("relationship",array("child"=>"Map Child","children"=>"Map Children"))?>
+	</div>
+	<div class="fl mr50">
+		<div class="lbl">Joiner Tables</div>
+		<?=HTML_UTIL::button("add-joiner","Add Joiner Table",array("class"=>"btn-primary"))?>
+	</div>
 </div>
 <div>
 	<div class="model">
@@ -14,21 +18,11 @@
 		</div>
 
 		<div class="mt10">
-			<div class="lbl">Model Field</div>
 			<div id="source_fields"></div>
 		</div>
 	</div>
 
-	<div class="model dn" id="joiner">
-		<div class="lbl">Joiner Model</div>
-		<div class="">
-			<?=HTML_UTIL::dropdown("joiner",$joiner_list,$joiner,array(),15)?>
-		</div>
-
-		<div class="dib mt10">
-			<div id="joiner_fields"></div>
-		</div>
-	</div>
+	<div class="model" id="joiners"></div>
 
 	<div class="model">
 		<div class="lbl">Reference Model</div>
@@ -37,7 +31,6 @@
 		</div>
 
 		<div class=" mt10">
-			<div class="lbl">Model Field</div>
 			<div id="reference_fields"></div>
 		</div>
 	</div>
@@ -45,7 +38,10 @@
 		<div class="lbl">Generate</div>
 		<?=HTML_UTIL::button("generate","Generate",array("class"=>"btn-primary"))?>
 	</div>
+	<div class="cb"></div>
 </div>
+
+ <?=HTML_UTIL::hidden("joiner_tables",JSON_UTIL::encode($joiner_list))?>
 
 <script>
 
@@ -58,12 +54,25 @@
 		if($("select[name='source_model'] option:selected").length)
 			$("select[name='source_model']").trigger("click");
 
-		$("select[name='joiner']").bind("click keyup",function() {
-			$("#joiner_fields").load("/generate/joinerfields/",{ joiner: $(this).val() });
-		});
+		$("#add-joiner").on("click",function() {
+			var fields = $("<div>",{ "class": "joiner-fields" });
+			var index = $(".joiner").length;
+			var tables = JSON.parse($("#joiner_tables").val());
+			var select = $("<select>",{ name: 'joiners[' + index + '][table]', 'class': 'form-control' })
+							.attr("size",15)
+							.click(function() {
+								fields.load("/generate/joinerfields/",{ index: index, table: $(this).val() });
+							});
 
-		if($("select[name='joiner'] option:selected").length)
-			$("select[name='joiner']").trigger("click");
+			$.each(tables,function(index,value) {
+				select.append($("<option>",{ name: index }).text(value));
+			});
+
+			$("#joiners").append($("<div>",{ 'class': 'joiner' })
+									.append('<div class="lbl">Joiner Table</div>')
+									.append(select)
+									.append(fields));
+		});
 
 		$("select[name='reference_model']").bind("click keyup",function() {
 			$("#reference_fields").load("/generate/referencefields/",{ reference_model: $(this).val() },function() {
@@ -82,6 +91,22 @@
 				$("#joiner").hide();
 		});
 
+
+		$("#generate").click(function() {
+			$.post("/generate/domodelrelation",$("#form-relation").serializeArray(),function(response) {
+
+				FF.msg.clear();
+
+				if(response.has_success) {
+					FF.msg.success('Successfully generated');
+				} else
+					FF.msg.error(response.errors);
+
+				if(response.data.warnings.length)
+					FF.msg.warning(response.data.warnings,{ append: true });
+			});
+		});
+
 	});
 
 </script>
@@ -94,5 +119,13 @@
 .model {
 	float:  left;
 	margin-right: 50px;
+}
+.joiner {
+	display: inline-block;
+	margin-right: 50px;
+	vertical-align: top;
+}
+.joiner:last-child {
+	margin-right: 0px;
 }
 </style>
