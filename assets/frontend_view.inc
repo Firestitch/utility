@@ -11,7 +11,7 @@
             <div class="md-dialog-content">
                 <md-input-container class="md-block">
                     <label>Name</label>
-                    <input type="text" ng-model="{{$object}}.name" required>
+                    <input type="text" ng-model="{{$object}}.name" md-autofocus required>
                 </md-input-container>
             </div>
         </md-dialog-content>
@@ -23,7 +23,7 @@
 {{/if}}
 {{if $interface=="lister"}}
 	<md-dialog-content>
-		<fs-lister ls-options="lister"></fs-lister>
+		<fs-lister ls-options="lister"{{if in_array("order",$options)}} ls-sort{{/if}}></fs-lister>
   	</md-dialog-content>
     <md-dialog-actions>
         <md-button type="button" ng-click="hide()">Cancel</md-button>
@@ -32,16 +32,15 @@
 {{/if}}
 </md-dialog>
 {{/if}}
-
 {{if $view_format!='modal'}}
 {{if $interface=='lister'}}
-<fs-lister ls-options="lister"></fs-lister>
+<fs-lister ls-options="lister"{{if in_array("order",$options)}} ls-sort{{/if}}></fs-lister>
 {{/if}}
 {{if $interface=='form'}}
 <form fs-validate="save()">
     <md-input-container class="md-block">
         <label>Name</label>
-        <input type="text" ng-model="{{$object}}.name" required>
+        <input type="text" ng-model="{{$object}}.name" md-autofocus required>
     </md-input-container>
 
     <md-input-container class="md-block">

@@ -2,7 +2,7 @@
     'use strict';
 
     angular.module('app')
-    .controller('{$controller}Ctrl', function($scope, $state{{if $object}}, {{$object}}Service{{/if}}{{if $interface=="form"}}, fsAlert{{if $object}}, {{$object}}{{/if}}{{/if}}{{if $view_format=="modal"}}, fsModal{{/if}}) {
+    .controller('{$controller}Ctrl', function($scope, $state{{if $object}}, {{$object}}Service{{/if}}{{if $interface=="form" || in_array("order",$options)}}, fsAlert{{/if}}{{if in_array("order",$options)}}, fsArray{{/if}}{{if $interface=="form" && $object}}, {{$object}}{{/if}}{{if $view_format=="modal"}}, fsModal{{/if}}) {
 
 {{if $interface=="form"}}		$scope.{{$object}} = {{$object}} || {};
 {{/if}}{{if $interface=="lister"}}		$scope.lister = {
@@ -10,7 +10,7 @@
                 return {{$object}}Service
                 .gets(angular.merge(query,{}),{ key: null })
                 .then(function(result) {
-                    return { data: result.{{$object}}s, paging: result.paging };
+                    return { data: result.{{$plural_object}}, paging: result.paging };
                 });
             },{{if $child}}
             topActions: [
@@ -34,8 +34,19 @@
                     unchecked: 'active',
                     checked: 'deleted'
                 }
-            ],
-            columns: [
+            ],{if in_array("order",$options)}
+
+            paging: false,
+            sort: {
+                stop: function(item,list) {
+                	var data = { {{$object}}_ids: fsArray.list(list,'id') };
+                	{{$object}}Service.order(data)
+                	.then(function() {
+                		fsAlert.success('Ordering Saved');
+                	});
+                }
+            },
+{/if}            columns: [
                 {   title: 'Name',
                     value: '{{if $child.view_format=="modal"}}<a href ng-click="click(data)" ng-hide="data.state==\'deleted\'">{{else}}<a href="{{preg_replace("/:.*/","",$child.url)}}{literal}{{data.id}}{/literal}" ng-hide="data.state==\'deleted\'">{{/if}}{literal}{{data.name}}{/literal}</a>\
                         	<div ng-show="data.state==\'deleted\'">{literal}{{data.name}}{/literal}</span>'

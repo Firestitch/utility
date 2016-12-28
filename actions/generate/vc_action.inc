@@ -92,6 +92,7 @@
 			$smart_cmodel->assign("controller",$controller);
 			$smart_cmodel->assign("controller_singular",rtrim($controller,"s"));
 			$smart_cmodel->assign("object",$object);
+			$smart_cmodel->assign("plural_object",LANG_UTIL::plural($object));
 			$smart_cmodel->assign("url",$url);
 			$smart_cmodel->assign("view",$view);
 			$smart_cmodel->assign("state",$state);
@@ -101,6 +102,11 @@
 			$smart_cmodel->assign("parent",$parent);
 			$smart_cmodel->assign("child",$child);
 			$smart_cmodel->assign("path",str_replace("/","-",$url));
+
+			$controller_file = $app_dir."scripts/controllers/".strtolower($controller).".js";
+
+			if(is_file($controller_file) && !in_array("override",$options))
+				throw new Exception("The ".$controller." controller already exists");
 
 			$app_js = FILE_UTIL::get($app_js_file);
 
@@ -141,10 +147,9 @@
 				FILE_UTIL::put($index_file,$index_html);
 			}
 
-			FILE_UTIL::put($app_dir."scripts/controllers/".strtolower($controller).".js",$smart_cmodel->fetch_string(FILE_UTIL::get($controller_template)));
+			FILE_UTIL::put($controller_file,$smart_cmodel->fetch_string(FILE_UTIL::get($controller_template)));
 
-			if($view) {
+			if($view)
 				FILE_UTIL::put($app_dir."views/".strtolower($view).".html",$smart_cmodel->fetch_string(FILE_UTIL::get($view_template)));
-			}
 		}
 	}

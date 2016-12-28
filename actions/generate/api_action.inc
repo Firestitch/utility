@@ -10,6 +10,7 @@
 			$dir 			= APPLICATION::get_main_application_directory();
 			$model 			= $this->post("model");
 			$model_plural	= $this->post("model-plural");
+			$options		= (array)$this->post("options");
 
 			if(!$model)
 				throw new Exception("Invalid model");
@@ -18,7 +19,8 @@
 				throw new Exception("Plural model");
 
 			$messages = array();
-			CMODEL_API_GENERATOR::create($dir,$model_plural,$model,$model_plural)->generate($this->post("override"),$messages);
+			CMODEL_API_GENERATOR::create($dir,$model_plural,$model,$model_plural,"",$options)
+				->generate(in_array("override",$options),$messages);
 
 			$this->data("messages",$messages)->success();
 		}

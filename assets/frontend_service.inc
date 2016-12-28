@@ -10,8 +10,10 @@
             post: post,
             save: save,
             'delete': remove,
-            create: create
-        };
+            create: create{if in_array("order",$options)},
+            order: order{/if}
+
+		};
 
         return service;
 
@@ -29,24 +31,29 @@
         }
 
         function gets(data, options) {
-            return fsApi.get('{$service|plural|lower}', data, fsApi.options({ key: '{$plural_json_name}', apply: { key: '{$plural_json_name}', function: create, array: true }},options));
+            return fsApi.get('{$service|plural|lower}', data, fsApi.options({ key: '{$plural_name}', apply: { key: '{$plural_name}', function: create, array: true }},options));
         }
 
         function get(id, data, options) {
-            return fsApi.get('{$service|plural|lower}/' + id, data, fsApi.options({ key: '{$json_name}', apply: { key: '{$json_name}', function: create }},options));
+            return fsApi.get('{$service|plural|lower}/' + id, data, fsApi.options({ key: '{$name}', apply: { key: '{$name}', function: create }},options));
         }
 
         function put(data, options) {
-            return fsApi.put('{$service|plural|lower}/' + data.id, data, fsApi.options({ key: '{$json_name}' },options));
+            return fsApi.put('{$service|plural|lower}/' + data.id, data, fsApi.options({ key: '{$name}' },options));
         }
 
         function post(data, options) {
-            return fsApi.post('{$service|plural|lower}', data, fsApi.options({ key: '{$json_name}' },options));
+            return fsApi.post('{$service|plural|lower}', data, fsApi.options({ key: '{$name}' },options));
         }
 
         function remove(id, data) {
-            return fsApi.delete('{$service|plural|lower}/' + id, data, { key: '{$json_name}' });
+            return fsApi.delete('{$service|plural|lower}/' + id, data, { key: '{$name}' });
         }
+{if in_array("order",$options)}
+
+        function order(data) {
+            return fsApi.put('{$service|plural|lower}/order', data );
+        }{/if}
 
     });
 })();

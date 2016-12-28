@@ -22,4 +22,11 @@
 										"description"=>"Delete a {$model_proper}",
 										"method"=>"delete",
 										"response"=>["{$model}"]
+									]{if in_array("order",$options)},
+									[	"path"=>"{$model_plural_trim}/order",
+										"description"=>"Orders the {$model_proper}",
+										"method"=>"put",
+										"param"=>["{$model}_ids"],
+										"response"=>[]
 									]
+{/if}

@@ -1,21 +1,14 @@
 <h1>API Generation</h1>
 
-<?
-	$data[] = array("Model Name: ",HTML_UTIL::input("model",$model,array("placeholder"=>"","class"=>"w200")));
-	$data[] = array("Plural Model Name: ",HTML_UTIL::input("model-plural","",array("placeholder"=>"","class"=>"w200")));
+	<?
+		HTML_FORM_UTIL::create()
+				->input("model","Model Name","","",["placeholder"=>"","class"=>"w400"])
+				->input("model-plural","Plural Model Name","","",["placeholder"=>"","class"=>"w400"])
+				->checkboxes("options","Options",[ "order"=>"Add ordering method","override"=>"Override existing files" ])
+				->button("generate","Generate",["type"=>"button","id"=>"generate"])
+				->render();
+	?>
 
-	$data[] = array("",HTML_UTIL::button("generate","Generate",array("id"=>"generate"))." ".HTML_UTIL::checkbox("override","1","",array(),"Override"));
-
-	$data[] = array("",HTML_UTIL::get_div("",array("class"=>"pt20")));
-
-	HTML_TABLE_UTIL::create()
-		->set_data($data)
-		->set_column_attribute(0,"class","vat")
-		->set_padding(2)
-		->set_class("")
-		->render();
-
-?>
 <script>
 
 $(function() {
@@ -23,7 +16,8 @@ $(function() {
 	$("input[name='model']").keyup(function() {
 
 		if($(this).val())
-			$("input[name='model-plural']").val($(this).val().replace(/y$/i,'ie') + 's');
+			$("input[name='model-plural']").val($(this).val().plural());
+
 	}).trigger("keyup");
 
 	$("#generate").click(function() {

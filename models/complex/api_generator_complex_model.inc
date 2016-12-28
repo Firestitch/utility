@@ -4,11 +4,13 @@
 		protected $_dir					= "";
 		protected $_model				= "";
 		protected $_model_plural		= "";
+		protected $_options				= [];
 
-		function __construct($dir,$api,$model,$model_plural,$parent_model=null) {
+		function __construct($dir,$api,$model,$model_plural,$parent_model=null,$options=[]) {
 			parent::__construct($dir);
 
 			$this->_model 			= $model;
+			$this->_options 		= $options;
 			$this->_api 			= $api;
 			$this->_parent_model 	= $parent_model;
 			$this->_model_plural	= $model_plural;
@@ -76,14 +78,18 @@
 				throw new Exception("Class ".$cmodel_class." does not exist");
 
 			$cmodel = $cmodel_class::create();
-
+			$order_by = "";
 			$keywords = $accessible_fields = $fields = [];
 			foreach($cmodel->get_dbos() as $dbo) {
 				$fields += $dbo->get_columns();
 
-				foreach($dbo->get_columns() as $name=>$column)
+				foreach($dbo->get_columns() as $name=>$column) {
 					if(preg_match("/(name|description)/",$name))
 						$keywords[] = ["name"=>$name,"tablename"=>$dbo->get_tablename()];
+
+					if(preg_match("/(name|order)/",$name))
+						$order_by = $name;
+				}
 			}
 
 			$accessible_fields = array_values(array_filter(array_keys($fields), function($v) {
@@ -91,6 +97,8 @@
 			}));
 
 			return $this
+						->assign("options",$this->_options)
+						->assign("order_by",$order_by)
 						->assign("model_upper",strtoupper($this->_model))
 						->assign("model_plural_trim",str_replace("_","",$this->_model_plural))
 						->assign("model_plural_upper",strtoupper($this->_model_plural))

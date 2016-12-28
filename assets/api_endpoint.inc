@@ -38,7 +38,7 @@
 				$this->acl()->apply(${$model}_hmodel);
 
 				if(!${$model_id})
-					$this->handler(${$model}_hmodel);
+					$this->handler(${$model}_hmodel{if $order_by},"{$order_by}"{/if});
 
 				${$model_plural} = [];
 				foreach(${$model}_hmodel->gets() as ${$model}_cmodel)
@@ -87,3 +87,21 @@
 				$this->data("{$model}",${$model}_cmodel->arry());
 			}
 		}
+{if in_array("order",$options)}
+
+		public function order() {
+
+			if($this->is_put()) {
+
+				${$model}_cmodels = $this->acl()->reads(HMODEL_{$model_upper}::create(false)
+															->set_{$model_id}s($this->post("{$model_id}s"))
+															->order("FIELD({$model_id},".implode(",",$this->post("{$model_id}s")).")"));
+
+				foreach(${$model}_cmodels as $index=>${$model}_cmodel) {
+					${$model}_cmodel
+						->set_order($index)
+						->save();
+				}
+			}
+		}
+{/if}

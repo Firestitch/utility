@@ -8,16 +8,17 @@
 		function process() {
 
 			$service				= $this->post("service");
-			$json_name				= $this->post("json-name");
+			$name					= $this->post("name");
+			$plural_name			= $this->post("plural_name");
 			$service_template		= DIR_INSTANCE."utility/assets/frontend_service.inc";
 			$index_file				= DIR_INSTANCE."frontend/app/index.html";
 			$app_dir				= DIR_INSTANCE."frontend/app/";
 
-			$this->_smarty = new CMODEL_SMARTY();
-			$this->_smarty->assign("service",$service);
-			$this->_smarty->assign("json_name",$json_name);
-			$this->_smarty->assign("plural_json_name",LANG_UTIL::plural($json_name));
-
+			$this->_smarty = CMODEL_SMARTY::create()
+								->assign("service",$service)
+								->assign("name",$name)
+								->assign("plural_name",$plural_name)
+								->assign("options",(array)$this->post("options"));
 			try {
 
 

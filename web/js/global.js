@@ -23,20 +23,20 @@
 
 
 $(document).ready(function() {
-	
+
 	$("form").submit(function() {
-		$(this).append($("<input>", { 'type': 'hidden', name: "application", value: $("#application").val() }));			
+		$(this).append($("<input>", { 'type': 'hidden', name: "application", value: $("#application").val() }));
 	});
 
 	var update_check = FF.cookie.get("update-check");
-	
+
 	expires = new Date();
 	expires.setMinutes(expires.getMinutes() + 60);
-	
+
 	FF.cookie.set("update-check","1",{ expires: expires });
 
 	$.post("/utility/doupdate",function(response) {
-		if(response.has_success && response.data.update)	
+		if(response.has_success && response.data.update)
 			$("#utility-alert").text("IMPORTANT!! There is a newer version of the Utility. Please update your code before continuing to use the Utility.").show();
 
 	});
@@ -60,7 +60,7 @@ $(document).ready(function() {
 			try {
 
 				var response = $.parseJSON(xhr.responseText);
-				
+
 				FF.msg.error(response.errors);
 
 			} catch(e) {
@@ -68,7 +68,7 @@ $(document).ready(function() {
 			}
 	    }
 	});
-		
+
 });
 
 
@@ -77,18 +77,18 @@ function get_singular(s) {
 
 	if(s.match(/sses$/))
 		return s.replace(/sses$/,'ss');
-		
+
 	if(s.match(/y$/))
 		return s.replace(/ies$/,'y');
-		
+
 	if(s.match(/ies$/))
-		return s.replace(/ies$/,'y');			
-		
+		return s.replace(/ies$/,'y');
+
 	if(s.match(/s$/))
 		return s.replace(/s$/,'');
-		
+
 	return s;
-} 
+}
 
 var active_table = active_model = "";
 function update_links(table, model) {
@@ -96,5 +96,120 @@ function update_links(table, model) {
 		active_model = model;
 
 	if(table)
-		active_table = table;	
+		active_table = table;
+}
+
+
+String.prototype.capitalize = function(){
+   return this.replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase(); } );
+};
+
+String.prototype.plural = function(revert){
+
+    var plural = {
+        '(quiz)$'               : "$1zes",
+        '^(ox)$'                : "$1en",
+        '([m|l])ouse$'          : "$1ice",
+        '(matr|vert|ind)ix|ex$' : "$1ices",
+        '(x|ch|ss|sh)$'         : "$1es",
+        '([^aeiouy]|qu)y$'      : "$1ies",
+        '(hive)$'               : "$1s",
+        '(?:([^f])fe|([lr])f)$' : "$1$2ves",
+        '(shea|lea|loa|thie)f$' : "$1ves",
+        'sis$'                  : "ses",
+        '([ti])um$'             : "$1a",
+        '(tomat|potat|ech|her|vet)o$': "$1oes",
+        '(bu)s$'                : "$1ses",
+        '(alias)$'              : "$1es",
+        '(octop)us$'            : "$1i",
+        '(ax|test)is$'          : "$1es",
+        '(us)$'                 : "$1es",
+        '([^s]+)$'              : "$1s"
+    };
+
+    var singular = {
+        '(quiz)zes$'             : "$1",
+        '(matr)ices$'            : "$1ix",
+        '(vert|ind)ices$'        : "$1ex",
+        '^(ox)en$'               : "$1",
+        '(alias)es$'             : "$1",
+        '(octop|vir)i$'          : "$1us",
+        '(cris|ax|test)es$'      : "$1is",
+        '(shoe)s$'               : "$1",
+        '(o)es$'                 : "$1",
+        '(bus)es$'               : "$1",
+        '([m|l])ice$'            : "$1ouse",
+        '(x|ch|ss|sh)es$'        : "$1",
+        '(m)ovies$'              : "$1ovie",
+        '(s)eries$'              : "$1eries",
+        '([^aeiouy]|qu)ies$'     : "$1y",
+        '([lr])ves$'             : "$1f",
+        '(tive)s$'               : "$1",
+        '(hive)s$'               : "$1",
+        '(li|wi|kni)ves$'        : "$1fe",
+        '(shea|loa|lea|thie)ves$': "$1f",
+        '(^analy)ses$'           : "$1sis",
+        '((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)ses$': "$1$2sis",
+        '([ti])a$'               : "$1um",
+        '(n)ews$'                : "$1ews",
+        '(h|bl)ouses$'           : "$1ouse",
+        '(corpse)s$'             : "$1",
+        '(us)es$'                : "$1",
+        's$'                     : ""
+    };
+
+    var irregular = {
+        'move'   : 'moves',
+        'foot'   : 'feet',
+        'goose'  : 'geese',
+        'sex'    : 'sexes',
+        'child'  : 'children',
+        'man'    : 'men',
+        'tooth'  : 'teeth',
+        'person' : 'people'
+    };
+
+    var uncountable = [
+        'sheep',
+        'fish',
+        'deer',
+        'moose',
+        'series',
+        'species',
+        'money',
+        'rice',
+        'information',
+        'equipment'
+    ];
+
+    // save some time in the case that singular and plural are the same
+    if(uncountable.indexOf(this.toLowerCase()) >= 0)
+      return this;
+
+    // check for irregular forms
+    for(word in irregular){
+
+      if(revert){
+              var pattern = new RegExp(irregular[word]+'$', 'i');
+              var replace = word;
+      } else{ var pattern = new RegExp(word+'$', 'i');
+              var replace = irregular[word];
+      }
+      if(pattern.test(this))
+        return this.replace(pattern, replace);
+    }
+
+    if(revert) var array = singular;
+         else  var array = plural;
+
+    // check for matches using regular expressions
+    for(reg in array){
+
+      var pattern = new RegExp(reg, 'i');
+
+      if(pattern.test(this))
+        return this.replace(pattern, array[reg]);
+    }
+
+    return this;
 }
