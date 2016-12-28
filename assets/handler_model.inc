@@ -34,6 +34,10 @@
 {/foreach}
 
 		public static function create($defaults=true) {
-			return $defaults ? parent::create(){if $has_state}->where("{$tablename}.state","<>",CMODEL_{$upper_model}::STATE_DELETED){/if} : parent::create();
+			$hmodel = parent::create();
+{if $has_state}			if($defaults)
+				$hmodel->where("{$tablename}.state","<>",CMODEL_{$upper_model}::STATE_DELETED);
+{/if}
+			return $hmodel;
 		}
 	}
