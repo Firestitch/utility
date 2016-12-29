@@ -19,7 +19,7 @@
 			$model_suffix 				= $map_child ? "" : "s";
 			$application				= $this->request("application");
 			$dir						= $application ? DIR_INSTANCE.$application."/" : APPLICATION::get_main_application_directory();
-			$reference_name 			= preg_replace("/_id$/","",$joiners ? $reference_model : $source_model_column);
+			$reference_name 			= preg_replace("/_id$/","",$source_model==$reference_model ? $source_model_column : $reference_model);
 			$plural_reference_name		= LANG_UTIL::get_plural_string($reference_name);
 			$cmodel_model_file 			= $dir."models/complex/".$source_model."_complex_model.inc";
 			$hmodel_model_file 			= $dir."models/handler/".$source_model."_handler_model.inc";
