@@ -1,21 +1,21 @@
 <?
 	class CMODEL_DB_GENERATOR extends MODEL {
-		
+
 		protected $_app_dir = null;
-		
+
 		function __construct($app_dir=null) {
 			$this->_app_dir  = $app_dir ? $app_dir : APPLICATION::get_main_application_directory();
 			$this->_db_utility = DB::get_instance()->get_db_utility();
 		}
-		
+
 		function create_dbo($tablename,$classname,$override=false,$framework=false) {
-		
+
 			$dbo_file = MODEL_DB::get_dbo_file($classname,$this->_app_dir);
 
 			FILE_UTIL::mkdir($this->_app_dir."db/dbo/");
 
 			$has_success = false;
-			
+
 			if(!is_file($dbo_file) || $override) {
 
 				$result = $this->_db_utility->get_table_fields($tablename);
@@ -57,19 +57,19 @@
 
 				$str .=	"		}\n".
 						"	}";
-				
+
 				$has_success = $this->write_file($dbo_file,$str);
-				
-			} else 
+
+			} else
 				$this->add_warning_message("The DBO class `DBO_".$classname."` already exists");
-				
+
 			return $has_success;
 		}
-		
+
 		function create_dbq($tablename,$classname,$override=false,$framework=false) {
-			
+
 			FILE_UTIL::mkdir($this->_app_dir."db/dbq/");
-			
+
 			$dbq_file = MODEL_DB::get_dbq_file($classname,$this->_app_dir);
 
 			$has_success = false;
@@ -85,30 +85,23 @@
 						"	class ".$class." extends DBQ {\n\n";
 
 				$fields = $this->_db_utility->get_table_fields($tablename);
-				
+
 				$primary_keys = array();
-				
+
 				foreach($fields as $field) {
-					
+
 					$name 			= value($field,"Field");
 					$name_upper 	= strtoupper($name);
-					
+
 					if($name=="state")
 						continue;
-					
+
 					if(get_value($field,"Key")=="PRI")
 						$primary_keys[] = '"'.$name.'"';
-					
-					if(get_value($field,"Type")=="char(1)")	{
-						
-						$str .= "\n		const ".$name_upper."_DEFAULT	= \"1\";\n";
-						
-						$str .= "\n		static function get_".$name."_list()	{ return array(self::".$name_upper."_DEFAULT=>\"Default\"); }\n\n";				
-					}					
 				}
-				
+
 				$primary_key = count($primary_keys)==1 ? implode(",",$primary_keys) :  "array(".implode(",",$primary_keys).")";
-				
+
 				$str .= "		public function __construct() {\n".
 						"			parent::__construct(\"".$tablename."\", ".$primary_key.");\n".
 						"		}\n".
@@ -116,30 +109,30 @@
 
 				$has_success = $this->write_file($dbq_file,$str);
 
-			} else 
+			} else
 				$this->add_warning_message("The DBQ class `DBQ_".$classname."` already exists");
-			
+
 			return $has_success;
 		}
-		
+
 		function get_key_count($tablename) {
 			$fields = $this->_db_utility->get_table_fields($tablename);
-			
+
 			$count = 0;
 			foreach($fields as $field)
 				if(get_value($field,"Key")=="PRI")
 					$count++;
 			return $count;
 		}
-		
+
 		function write_file($file,$string) {
-			
+
 			$error_message = "";
 			$has_success = FILE_UTIL::put_file_contents($file,$string,$error_message);
-			
+
 			if(!$has_success)
 				throw new Exception($error_message);
-			
+
 			return $has_success;
-		}	
+		}
 	}
