@@ -52,10 +52,7 @@
 								});
 							}
 						}
-					}){{if $parent && $parent.state}}
-			.finally(function() {
-				$state.go('{{$parent.state}}');
-			}){{/if}};
+					});
 		}{{/if}}
 	})
 
