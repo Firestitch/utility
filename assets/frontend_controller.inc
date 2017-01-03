@@ -2,10 +2,11 @@
     'use strict';
 
     angular.module('app')
-    .controller('{$controller}Ctrl', function($scope, $state{{if $object}}, {{$object}}Service{{/if}}{{if $interface=="form" || in_array("order",$options)}}, fsAlert{{/if}}{{if in_array("order",$options)}}, fsArray{{/if}}{{if $interface=="form" && $object}}, {{$object}}{{/if}}{{if $view_format=="modal"}}, fsModal{{/if}}) {
+    .controller('{$controller}Ctrl', function($scope, $state{{if $object}}, {{$object}}Service{{/if}}{{if $interface=="form" || in_array("order",$options)}}, fsAlert{{/if}}{{if in_array("order",$options)}}, fsArray{{/if}}{{if $interface=="form" && $object}}, {{$object}}{{/if}}{{if $view_format=="modal"}}, fsModal{{if $parent && $parent.state}}, fsLister{{/if}}{{/if}}) {
 
 {{if $interface=="form"}}		$scope.{{$object}} = {{$object}} || {};
 {{/if}}{{if $interface=="lister"}}		$scope.lister = {
+			id: '{{$state}}',
 			data: function(query) {
                 return {{$object}}Service
                 .gets(angular.merge(query,{}),{ key: null })
@@ -108,7 +109,8 @@
 			{{$object}}Service.save($scope.{{$object}})
             .then(function() {
             	fsAlert.success('Saved Changes');
-                {{if $view_format=='modal'}}fsModal.hide();{{/if}}
+                {{if $view_format=='modal'}}{{if $parent && $parent.state}}fsLister.reload('{{$parent.state}}');
+                {{/if}}fsModal.hide();{{/if}}
             });
 		}
 {{/if}}

@@ -1,4 +1,4 @@
-{{if $view_format=='modal'}}<md-dialog aria-label="{{$path}}" id="md-dialog-{{$path}}">
+{{if $view_format=='modal'}}<md-dialog aria-label="{{$state}}" id="md-dialog-{{str_replace(".","-",$state)}}">
     <md-toolbar>
         <div class="md-toolbar-tools">{{if $interface=="form"}}
             <h2>{literal}{{{/literal}{{$object}}.state=='active' ? 'Edit {{$object|capitalize}}' : 'Add {{$object|capitalize}}'}}</h2>{{else}}
