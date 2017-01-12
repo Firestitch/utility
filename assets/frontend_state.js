@@ -6,7 +6,10 @@
 			id: { squash: true, value: null },
 			{{$object}}: { squash: true, value: null },{{/if}}
 			time: { squash: true, value: null }
-		},{{if $interface=="form" && $view_format=='page'}}
+		},
+		data: {
+			permissions: []
+		}{{if $interface=="form" && $view_format=='page'}},
 		resolve: {
 			{{$object}}: function($stateParams, {{$object}}Service, aclService, $q) {
 							return $q(function(resolve) {
@@ -26,8 +29,7 @@
 							});
 			},
 			time: function($stateParams) { return $stateParams.time; }
-		}
-{{/if}}{{if $view_format=='modal'}}
+		}{{/if}}{{if $view_format=='modal'}},
 		onEnter: function(fsModal, $state, $stateParams, {{$object}}Service, aclService, $q) {
 			fsModal
 			.show(	'{{$controller}}Ctrl',
@@ -53,6 +55,33 @@
 							}
 						}
 					});
+		}{{/if}}{{if $view_format=='drawer'}},
+		onEnter: function(fsDrawer, $state, $stateParams, {{$object}}Service, aclService, $q, fsLister) {
+			fsDrawer
+			.create({	controller: '{{$controller}}Ctrl',
+						templateUrl: 'views/{{$view}}.html',
+						resolve: {
+							{{$object}}: function() {
+								return $q(function(resolve) {
+									if($stateParams.id) {
+										return aclService.require({{$object}}Service.get($stateParams.id)).then(resolve);
+									}{{if in_array("draft",$options)}}
+									if(!$stateParams.{{$object}} || !$stateParams.{{$object}}.id) {
+										return {{$object}}Service.post({ state: 'draft' }).then(resolve);
+									}
+{{/if}}
+									return resolve($stateParams.{{$object}} || {});
+								}).then(function({{$object}}) {
+									if({{$object}}) {
+										$stateParams.id = {{$object}}.id;
+									}
+									return {{$object}} || {};
+								});
+							}
+						}{{if $parent.interface=="lister"}},
+						close: function() {
+							fsLister.reload('{{$parent.state}}');
+						}{{/if}}
+					});
 		}{{/if}}
 	})
-

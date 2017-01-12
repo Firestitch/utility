@@ -49,9 +49,9 @@
             },
 {/if}            columns: [
                 {   title: 'Name',
-                    value: '{{if $child}}{{if $child.view_format=="modal"}}<a href ng-click="click(data)" ng-hide="data.state==\'deleted\'">{{else}}<a href="{{preg_replace("/:.*/","",$child.url)}}{literal}{{data.id}}{/literal}" ng-hide="data.state==\'deleted\'">{{/if}}{literal}{{data.name}}{/literal}</a>{{else}}<div ng-show="data.state!=\'deleted\'">{literal}{{data.name}}{/literal}</div>{{/if}}\
+                    value: '{{if $child}}{{if $child.view_format=="modal" || $child.view_format=="drawer"}}<a href ng-click="click(data)" ng-hide="data.state==\'deleted\'">{{else}}<a href="{{preg_replace("/:.*/","",$child.url)}}{literal}{{data.id}}{/literal}" ng-hide="data.state==\'deleted\'">{{/if}}{literal}{{data.name}}{/literal}</a>{{else}}<div ng-show="data.state!=\'deleted\'">{literal}{{data.name}}{/literal}</div>{{/if}}\
                         	<div ng-show="data.state==\'deleted\'">{literal}{{data.name}}{/literal}</div>'
-                    {{if $child && $child.view_format=="modal" && $child.state}},
+                    {{if $child && ($child.view_format=="modal" || $child.view_format=="drawer") && $child.state}},
                     scope: {
                     	click: function(data) {
                     		$scope.update(data);
@@ -96,7 +96,7 @@
                 }
             ]
         };
-{{if $child && $child.view_format=="modal"}}		$scope.update = function({{$object}}) {
+{{if $child && ($child.view_format=="modal" || $child.view_format=="drawer")}}		$scope.update = function({{$object}}) {
         	$state.go('{{$child.state}}',{ {{$object}}: angular.copy({{$object}}), time: Date.now() },{ notify: false });
         }
 {{/if}}
