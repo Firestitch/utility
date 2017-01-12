@@ -5,9 +5,18 @@
 		<div class="lbl">Relationship</div>
 		<?=HTML_UTIL::radiobuttons("relationship",array("child"=>"Map Child","children"=>"Map Children"))?>
 	</div>
+	<div class="fl mr50 dns" id="object_names">
+		<div class="lbl">Object Name</div>
+		<?=HTML_UTIL::radiobuttons("object_name",array("source"=>HTML_UTIL::span("N/A",["id"=>"source_object_name"]),"reference"=>HTML_UTIL::span("N/A",["id"=>"reference_object_name"])))?>
+	</div>
 	<div class="fl mr50">
 		<div class="lbl">Joiner Tables</div>
-		<?=HTML_UTIL::button("add-joiner","Add Joiner Table",array("class"=>"btn-primary"))?>
+		<?=HTML_UTIL::button("add-joiner","Add Joiner Table",array("class"=>"btn"))?>
+	</div>
+
+	<div class="fl mr50">
+		<div class="lbl">Generate</div>
+		<?=HTML_UTIL::button("generate","Generate",array("class"=>"btn-primary"))?>
 	</div>
 </div>
 <div>
@@ -33,10 +42,6 @@
 		<div class=" mt10">
 			<div id="reference_fields"></div>
 		</div>
-	</div>
-	<div class="model">
-		<div class="lbl">Generate</div>
-		<?=HTML_UTIL::button("generate","Generate",array("class"=>"btn-primary"))?>
 	</div>
 	<div class="cb"></div>
 </div>
@@ -74,7 +79,12 @@
 									.append(fields));
 		});
 
+		$("#source_fields").on("click keyup","select[name='source_model_column']",function() {
+			$("#source_object_name").text($(this).val().replace(/_id$/,''));
+		});
+
 		$("select[name='reference_model']").bind("click keyup",function() {
+			$("#reference_object_name").text($(this).val());
 			$("#reference_fields").load("/generate/referencefields/",{ reference_model: $(this).val() },function() {
 				$("#reference_model_column").find("option[value='" + $("#source_model_column").val() + "']").attr("selected","selected");
 			});
