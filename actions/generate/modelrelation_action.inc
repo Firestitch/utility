@@ -19,12 +19,16 @@
 			$model_suffix 				= $map_child ? "" : "s";
 			$application				= $this->request("application");
 			$dir						= $application ? DIR_INSTANCE.$application."/" : APPLICATION::get_main_application_directory();
-			$reference_name 			= preg_replace("/_id$/","",$this->post("object_name")=="source" ? $source_model_column : $reference_model);
-			$plural_reference_name		= LANG_UTIL::get_plural_string($reference_name);
 			$cmodel_model_file 			= $dir."models/complex/".$source_model."_complex_model.inc";
 			$hmodel_model_file 			= $dir."models/handler/".$source_model."_handler_model.inc";
 			$warnings 					= [];
+			$reference_name 			= $this->post("object_name_custom");;
 
+			if($this->post("object_name")=="source" || $this->post("object_name")=="reference") {
+				$reference_name = preg_replace("/_id$/","", $this->post("object_name")=="source" ? $source_model_column : $reference_model);
+			}
+
+			$plural_reference_name			= LANG_UTIL::get_plural_string($reference_name);
 			$reference_name_set_function	= "set_".($map_child ? $reference_name : $plural_reference_name);
 			$reference_name_get_function 	= "get_".($map_child ? $reference_name : $plural_reference_name);
 

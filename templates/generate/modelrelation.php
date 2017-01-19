@@ -7,7 +7,9 @@
 	</div>
 	<div class="fl mr50 dns" id="object_names">
 		<div class="lbl">Object Name</div>
-		<?=HTML_UTIL::radiobuttons("object_name",array("source"=>HTML_UTIL::span("N/A",["id"=>"source_object_name"]),"reference"=>HTML_UTIL::span("N/A",["id"=>"reference_object_name"])))?>
+		<?=HTML_UTIL::radiobuttons("object_name",array("source"=>HTML_UTIL::span("N/A",["id"=>"source_object_name"]),
+														"reference"=>HTML_UTIL::span("N/A",["id"=>"reference_object_name"]),
+														"custom"=>HTML_UTIL::span(HTML_UTIL::input("object_name_custom","",["class"=>"object-name-custom","placeholder"=>"Custom"]))))?>
 	</div>
 	<div class="fl mr50">
 		<div class="lbl">Joiner Tables</div>
@@ -137,5 +139,10 @@
 }
 .joiner:last-child {
 	margin-right: 0px;
+}
+
+.object-name-custom {
+    display: inline-block;
+    width: 200px;
 }
 </style>
