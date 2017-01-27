@@ -22,7 +22,7 @@
 		$("input[name='service'").on("keyup input",function(e) {
 
 			$("#service-classname").text($(this).val() + "Service");
-			$("#service-filename").text("/scripts/services/" + $(this).val().toLowerCase() + ".js");
+			$("#service-filename").text("/scripts/services/" + $(this).val().replace('_','').toLowerCase() + ".js");
 
 			var name = $(this).val().match(/[A-Z]*[^A-Z]+/g).join('_').toLowerCase();
 			$("input[name='name']").val(name);

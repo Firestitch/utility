@@ -7,7 +7,7 @@
 
 		function process() {
 
-			$service				= $this->post("service");
+			$service				= str_replace("_","",$this->post("service"));
 			$name					= $this->post("name");
 			$plural_name			= $this->post("plural_name");
 			$service_template		= DIR_INSTANCE."utility/assets/frontend_service.inc";
