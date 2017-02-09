@@ -106,9 +106,9 @@
 				$scope.{{$object}}.state = 'active';
 			}
 {{/if}}
-			{{$object}}Service.save($scope.{{$object}})
+			return {{$object}}Service.save($scope.{{$object}})
             .then(function() {
-            	fsAlert.success('Saved Changes');
+            	fsAlert.success();
                 {{if $view_format=='modal'}}{{if $parent && $parent.state}}fsLister.reload('{{$parent.state}}');
                 {{/if}}fsModal.hide();{{/if}}
             });
