@@ -5,7 +5,7 @@
 		const STATE_ACTIVE	= "active";
 		const STATE_DELETED	= "deleted";
 
-		public static function get_states()	{ return array(self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"); }
+		public static function get_states()	{ return [self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"]; }
 {/if}
 
 		public function __construct() {
@@ -20,7 +20,7 @@
 {if $has_state}		public function delete()			{ return $this->set_state(self::STATE_DELETED)->save(); }
 		public function is_state_delete()	{ return $this->get_state()==self::STATE_DELETED; }
 		public function is_state_active()	{ return $this->get_state()==self::STATE_ACTIVE; }
-{/if}
+{/if}		public function get_manage_url()	{ return "/manage/{$lower_model|replace:'_':''}/{$id}:".$this->get_{$primary_key}()."/"; }
 
 		public function save() {
 {if $has_multiple_keys}
@@ -80,12 +80,12 @@
 			];
 		}
 
-		public function arry($arry=array()) {
+		public function arry($arry=[]) {
 
 			$arry = CMODEL_OBJECTER::create($this,
-											array(	{foreach $columns as $name=>$column}{if $column->is_primary()}"id"=>"get_{$name}",
+											[	{foreach $columns as $name=>$column}{if $column->is_primary()}"id"=>"get_{$name}",
 {else}"get_{$name}{if $column->is_data_type_datetime()}|iso8601{/if}",
-{/if}													{/foreach}))->arry();
+{/if}													{/foreach}])->arry();
 {if $extended}			$arry += parent::arry();
 			{/if}
 

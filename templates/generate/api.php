@@ -2,10 +2,10 @@
 
 	<?
 		HTML_FORM_UTIL::create()
-				->input("model","Model Name","","",["placeholder"=>"","class"=>"w400"])
-				->input("model-plural","Plural Model Name","","",["placeholder"=>"","class"=>"w400"])
+				->input("model","Model Name","","",["placeholder"=>"ie. credit_card","class"=>"w400"])
+				->input("model-plural","Plural Model Name","","",["placeholder"=>"credit_cards","class"=>"w400"])
 				->checkboxes("options","Options",[ "order"=>"Add ordering method","override"=>"Override existing files" ])
-				->button("generate","Generate",["type"=>"button","id"=>"generate"])
+				->button("generate","Generate",["type"=>"button","id"=>"generate","class"=>"btn-primary"])
 				->render();
 	?>
 

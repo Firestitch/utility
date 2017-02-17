@@ -43,10 +43,14 @@
 						->text("Controller Class",HTML_UTIL::div("",["id"=>"form1-controller-classname"]))
 						->text("Controller Filename",HTML_UTIL::div("",["id"=>"form1-controller-filename"]))
 						->text("View Filename",HTML_UTIL::div("",["id"=>"form1-view-filename"]))
+						->text("Parameters",HTML_UTIL::div("None",["id"=>"form1-parms"]))
+						->hidden("form1[params]","")
 						->custom("<h3>Secondary Summary</h3>",["class"=>"secondary-summary"])
 						->text("Controller Class",HTML_UTIL::div("",["id"=>"form2-controller-classname","class"=>"secondary-summary"]))
 						->text("Controller Filename",HTML_UTIL::div("",["id"=>"form2-controller-filename","class"=>"secondary-summary"]))
 						->text("View Filename",HTML_UTIL::div("",["id"=>"form2-view-filename","class"=>"secondary-summary"]))
+						->text("Parameters",HTML_UTIL::div("None",["id"=>"form2-parms","class"=>"secondary-summary"]))
+						->hidden("form2[params]","")
 						->render();
 			?>
 		</div>
@@ -64,8 +68,19 @@
 		$("input[name='form1[url]']").on("keyup input",function(e) {
 			$(this).val(url($(this).val()));
 
-			var parts = $(this).val().split("/");
+	  		var valuesRegex = new RegExp(':([^:\/]+)', 'g'),
+	      		matches,
+	      		parms = [];
+
+		  	while (matches = valuesRegex.exec($(this).val())) {
+			    parms.push(matches[1]);
+			}
+
+			var parts = $(this).val().replace(/:[^\/]*/g,'').split("/");
 			var form = $(this).data("form");
+
+			$("#form1-parms").text(parms.join(', '));
+			$("input[name='form1[params]']").val(parms.join(','));
 
 			var names = $.merge([], parts);
 
@@ -135,6 +150,20 @@
 	});
 
 	$("input[name='form2[url]']").on("keyup input",function(e) {
+
+  		var valuesRegex = new RegExp(':([^:\/]+)', 'g'),
+      		matches,
+      		parms = [];
+
+	  	while (matches = valuesRegex.exec($(this).val())) {
+		    parms.push(matches[1]);
+		}
+
+		var parts = $(this).val().replace(/:[^\/]*/g,'').split("/");
+
+		$("#form2-parms").text(parms.join(', '));
+		$("input[name='form2[params]']").val(parms.join(','));
+
 		$(this).val(url($(this).val()));
 	});
 

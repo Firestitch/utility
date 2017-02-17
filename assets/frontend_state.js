@@ -5,13 +5,14 @@
 		params: { {{if $interface=='form'}}
 			id: { squash: true, value: null },
 			{{$object}}: { squash: true, value: null },{{/if}}
-			time: { squash: true, value: null }
-		},
+			time: { squash: true, value: null }{{if $params}},{{foreach from=$params item=$param name=params}}
+			{{$param}}: { squash: true, value: null }{{if !$smarty.foreach.params.last}},{{/if}}
+{{/foreach}}{{/if}}		},
 		data: {
 			permissions: []
 		}{{if $interface=="form" && $view_format=='page'}},
 		resolve: {
-			{{$object}}: function($stateParams, {{$object}}Service, aclService, $q) {
+			{{if $object}}{{$object}}: function($stateParams, {{$object}}Service, aclService, $q) {
 							return $q(function(resolve) {
 								if($stateParams.id) {
 									return aclService.require({{$object}}Service.get($stateParams.id)).then(resolve);
@@ -27,15 +28,15 @@
 								}
 								return {{$object}} || {};
 							});
-			},
+			},{{/if}}
 			time: function($stateParams) { return $stateParams.time; }
 		}{{/if}}{{if $view_format=='modal'}},
-		onEnter: function(fsModal, $state, $stateParams, {{$object}}Service, aclService, $q) {
+		onEnter: function(fsModal, $state, $stateParams{{if $object}}, {{$object}}Service{{/if}}, aclService, $q) {
 			fsModal
 			.show(	'{{$controller}}Ctrl',
 					'views/{{$view}}.html',
 					{
-						resolve: {
+						{{if $object}}resolve: {
 							{{$object}}: function() {
 								return $q(function(resolve) {
 									if($stateParams.id) {
@@ -44,6 +45,8 @@
 									if(!$stateParams.{{$object}} || !$stateParams.{{$object}}.id) {
 										return {{$object}}Service.post({ state: 'draft' }).then(resolve);
 									}
+						}
+						}
 {{/if}}
 									return resolve($stateParams.{{$object}} || {});
 								}).then(function({{$object}}) {
@@ -53,15 +56,15 @@
 									return {{$object}} || {};
 								});
 							}
-						}
+						}{{/if}}
 					});
 		}{{/if}}{{if $view_format=='drawer'}},
-		onEnter: function(fsDrawer, $state, $stateParams, {{$object}}Service, aclService, $q, fsLister) {
+		onEnter: function(fsDrawer, $state, $stateParams{{if $object}}, {{$object}}Service{{/if}}, aclService, $q, fsLister) {
 			fsDrawer
 			.create({	controller: '{{$controller}}Ctrl',
 						templateUrl: 'views/{{$view}}.html',
 						resolve: {
-							{{$object}}: function() {
+							{{if $object}}{{$object}}: function() {
 								return $q(function(resolve) {
 									if($stateParams.id) {
 										return aclService.require({{$object}}Service.get($stateParams.id)).then(resolve);
@@ -77,7 +80,7 @@
 									}
 									return {{$object}} || {};
 								});
-							}
+							}{{/if}}
 						}{{if $parent.interface=="lister"}},
 						close: function() {
 							fsLister.reload('{{$parent.state}}');

@@ -3,12 +3,12 @@
 
 	<?
 		HTML_FORM_UTIL::create()
-				->input("form[service]","Name","","",["placeholder"=>"ie. user","class"=>"w400"])
-				->input("form[model]","Model","","",["placeholder"=>"","class"=>"w400"])
-				->text("Plural Model",HTML_UTIL::input("form[model-plural]","",array("placeholder"=>"","class"=>"w200")))
+				->input("form[service]","Name","","",["placeholder"=>"ie. account","class"=>"w400"])
+				->input("form[model]","Model","","",["placeholder"=>"ie. credit_card","class"=>"w400"])
+				->text("Plural Model",HTML_UTIL::input("form[model-plural]","",array("placeholder"=>"ie. credit_cards","class"=>"w200")))
 				->text("Service Class",HTML_UTIL::div("",["id"=>"service-classname"]))
 				->text("Service Filename",HTML_UTIL::div("",["id"=>"service-filename"]))
-				->button("generate","Generate",["type"=>"button"])
+				->button("generate","Generate",["type"=>"button","class"=>"btn-primary"])
 				->render();
 	?>
 

@@ -1,24 +1,24 @@
 <?
 	class {if $is_framework}BASE_{/if}VIEW_{$upper_controller}_{$upper_task_plural} extends VIEW {
-	
+
 		function __construct() {
 			$this->set_route("{$lower_controller}","{$lower_task_plural}");
 			$this->set_form("/{$lower_controller}/{$lower_task_plural}/");
 
-			$this->set_roles([{$security_roles}]);
+			$this->set_permissions([{{$permissions}}]);
 {if $page_title}			$this->set_title("{$page_title}");
 {/if}
 			{if !$is_format_post}$this->set_view("{$lower_models}",APPLICATION::get_view_instance("{$lower_controller}","{$lower_task}list"));
 {/if}
 		}
-		
+
 		function init() {
 {if $is_format_post}
 			$page_index	= is_numeric($this->request("page_index")) ? $this->request("page_index") : 0;
 			$page_limit	= is_numeric($this->request("page_limit")) ? $this->request("page_limit") : 15;
 {if $is_search_form}			$search		= is_array($this->request("search")) ? $this->request("search") : array();
 {if $has_state}			$state 		= value($search,"state") ? get_value($search,"state") : DBQ_{$upper_model}::STATE_ACTIVE;
-{/if}{/if}						
+{/if}{/if}
 			${$lower_model}_hmodel = new HMODEL_{$upper_model}();
 {if $has_state}{if $is_search_form}			${$lower_model}_hmodel->set_state($state);
 
@@ -41,13 +41,12 @@
 			$this->get_view("paging")->populate($page_index,$page_limit,$record_count);
 
 			$this->set_var("{$lower_models}",${$lower_model}_cmodels);
-{if $is_search_form}			$this->set_var("search",$search);{/if}		
+{if $is_search_form}			$this->set_var("search",$search);{/if}
 {/if}
-{if !$is_format_post}			$this->set_var("search",array());	
+{if !$is_format_post}			$this->set_var("search",array());
 {/if}
-		}	
+		}
 	}
-	
-	
-				
-				
+
+
+

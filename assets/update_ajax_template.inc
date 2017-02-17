@@ -20,17 +20,15 @@
 	<ul>
 		<li><a href="#overview"><span>Overview</span></a></li>
 	</ul>
-	
+
 	<div id="overview">
 
-		<form action="javascript:;" method="post" id="{$hyphen_model}-form">	
+		<form action="javascript:;" method="post" id="{$hyphen_model}-form">
 			<?
 				FORM_UTIL::create()
-{if $dependent_objects}/*	
-{foreach $dependent_objects as $object=>$field}					->dropdown("form[{$object}_id]","{$object|pretty}",${$object}_list,${$lower_model}->get_{$object}_id())
-{/foreach}*/{/if}
+{if $dependent_objects}{/if}
 {foreach $columns as $k=>$v}{if $k=="state"}					->dropdown("form[{$k}]","{$v->label}",{if $cmodel_state}CMODEL_{$upper_model}::get_states(){else}DBQ_{$upper_model}::get_state_list(){/if},${$lower_model}->get_{$k}())
-{else}{if $v->get_data_type()=="char"}					//->dropdown("form[{$k}]","{$v->label}",CMODEL_{$upper_model}::get_{$k}s(),${$lower_model}->get_{$k}())
+{else}{if $v->get_data_type()=="date" || $v->get_data_type()=="datetime"}					->date("form[{$k}]","{$v->label}",${$lower_model}->get_{$k}())
 {else}					->input("form[{$k}]","{$v->label}",${$lower_model}->get_{$k}())
 {/if}{/if}{/foreach}					->text("", HTML_UTIL::button("{$hyphen_model}-save","Save",array("id"=>"{$hyphen_model}-save","class"=>"btn btn-primary")))
 					->render();
@@ -47,14 +45,14 @@
 
 <script>
 	$(function() {
-		
+
 		$("#{$lower_model}-tabs").tabs({ activate: function(e,ui) {
 									FF.cookie.set("{$lower_task}-tabs",ui.newTab.index());
 								}}).show().tabs("option","active",((idx=FF.request.get("tab")) ? idx : parseInt(FF.cookie.get("{$lower_task}-tabs"))));
 
 		$("#{$hyphen_model}-save").go("/{$lower_controller}/do{$lower_task}",{ data: "#{$hyphen_model}-form", message: "Successfully saved the {$pretty_model}" });
-		
-	});	
+
+	});
 </script>
 
 <? } ?>

@@ -1,10 +1,18 @@
 {{if $view_format=='modal'}}<md-dialog aria-label="{{$state}}" id="md-dialog-{{str_replace(".","-",$state)}}">
     <md-toolbar>
         <div class="md-toolbar-tools">{{if $interface=="form"}}
-            <h2>{literal}{{{/literal}{{$object}}.state=='active' ? 'Edit {{$object|capitalize}}' : 'Add {{$object|capitalize}}'}}</h2>{{else}}
-			<h2>Title</h2>{{/if}}
+            {literal}{{{/literal}{{$object}}.state=='active' ? 'Edit {{$object|capitalize}}' : 'Add {{$object|capitalize}}'}}{{else}}
+			Title{{/if}}
         </div>
     </md-toolbar>
+{{if !$interface}}
+	<md-dialog-content>
+		<div class="md-dialog-content"></div>
+  	</md-dialog-content>
+    <md-dialog-actions>
+        <md-button type="button" ng-click="hide()">Cancel</md-button>
+    </md-dialog-actions>
+{{/if}}
 {{if $interface=="form"}}
     <form fs-validate="save()">
         <md-dialog-content>
@@ -23,7 +31,9 @@
 {{/if}}
 {{if $interface=="lister"}}
 	<md-dialog-content>
-		<fs-lister ls-options="lister"{{if in_array("order",$options)}} ls-sort{{/if}}></fs-lister>
+		<div class="md-dialog-content">
+			<fs-lister ls-options="lister"{{if in_array("order",$options)}} ls-sort{{/if}}></fs-lister>
+		</div>
   	</md-dialog-content>
     <md-dialog-actions>
         <md-button type="button" ng-click="hide()">Cancel</md-button>

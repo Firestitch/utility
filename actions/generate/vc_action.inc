@@ -14,6 +14,7 @@
 			$object1				= $this->post("form1","object");
 			$view_format1			= $this->post("form1","view_format");
 			$interface1				= $this->post("form1","interface");
+			$params1				= $this->post("form1","params") ? explode(",",$this->post("form1","params")) : [];
 			$options1				= (array)$this->post("form1","options");
 			$child					= in_array("secondary",$options1) ? $this->post("form2") : [];
 
@@ -23,6 +24,7 @@
 			$state2					= $this->post("form2","state");
 			$view_format2			= $this->post("form2","view_format");
 			$interface2				= $this->post("form2","interface");
+			$params2				= $this->post("form2","params") ? explode(",",$this->post("form2","params")) : [];
 			$options2				= (array)$this->post("form2","options");
 
 			try {
@@ -36,11 +38,12 @@
 				if(!$state1)
 					throw new Exception("Please supply an state name");
 
-				if(!$object1)
+				if(!$object1 && $interface1)
 					throw new Exception("Please supply an object name");
 
 				$this->create_view_controller(	$url1,
 												$state1,
+												$params1,
 												$controller1,
 												$view1,
 												$view_format1,
@@ -63,6 +66,7 @@
 
 					$this->create_view_controller(	$url2,
 													$state2,
+													$params2,
 													$controller2,
 													$view2,
 													$view_format2,
@@ -79,7 +83,7 @@
 			}
 		}
 
-		function create_view_controller($url,$state,$controller,$view,$view_format,$interface,$object,$child=[],$parent=[],$options=[]) {
+		function create_view_controller($url,$state,$params,$controller,$view,$view_format,$interface,$object,$child=[],$parent=[],$options=[]) {
 
 			$controller_template	= DIR_INSTANCE."utility/assets/frontend_controller.inc";
 			$view_template			= DIR_INSTANCE."utility/assets/frontend_view.inc";
@@ -101,6 +105,7 @@
 			$smart_cmodel->assign("options",$options);
 			$smart_cmodel->assign("parent",$parent);
 			$smart_cmodel->assign("child",$child);
+			$smart_cmodel->assign("params",$params);
 			$smart_cmodel->assign("path",str_replace("/","-",$url));
 
 			$controller_file = $app_dir."scripts/controllers/".strtolower($controller).".js";
