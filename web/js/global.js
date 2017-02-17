@@ -35,13 +35,11 @@ $(document).ready(function() {
 
 	FF.cookie.set("update-check","1",{ expires: expires });
 
-	$.post("/utility/doupdate",function(response) {
+/*	$.post("/utility/doupdate",function(response) {
 		if(response.has_success && response.data.update)
 			$("#utility-alert").text("IMPORTANT!! There is a newer version of the Utility. Please update your code before continuing to use the Utility.").show();
-
 	});
-
-
+*/
 	$(".update-link").click(function() {
 		var url = $(this).data("url");
 
@@ -53,22 +51,6 @@ $(document).ready(function() {
 
 		$(this).attr("href",url);
 	});
-
-	$.ajaxSetup({
-	    error : function(xhr, textStatus, errorThrown) {
-
-			try {
-
-				var response = $.parseJSON(xhr.responseText);
-
-				FF.msg.error(response.errors);
-
-			} catch(e) {
-				FF.msg.error(xhr.responseText);
-			}
-	    }
-	});
-
 });
 
 
