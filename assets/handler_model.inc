@@ -4,8 +4,8 @@
 		protected $_select_fields = [{$select_fields}];
 
 		public function __construct() {
-{if $extends}			return $this->register_dbq(DBQ_{$upper_model}::create()->inner("{$extend_tablename}","{$extend_primary_id}"));
-{else}			return $this->register_dbq(DBQ_{$upper_model}::create());
+{if $extends}			parent::__construct(DBQ_{$upper_model}::create()->inner("{$extend_tablename}","{$extend_primary_id}"));
+{else}			parent::__construct(DBQ_{$upper_model}::create());
 {/if}
 		}
 
