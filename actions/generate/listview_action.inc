@@ -1,15 +1,15 @@
-<?php
-	
+<?
+
 	class ACTION_GENERATE_LISTVIEW extends ACTION_JSON {
-		
+
 		function __construct() {
 			parent::__construct(SECURITY_MANAGER::ROLE_PUBLIC_USER);
 		}
-		
+
 		function process() {
-		
+
 			$task 				= strtolower($this->post("task"));
-			$controller			= strtolower($this->post("controller"));			
+			$controller			= strtolower($this->post("controller"));
 			$context			= strtolower($this->post("context"));
 			$model 				= strtolower($this->post("model"));
 			$model_plural 		= strtolower($this->post("model_plural"));
@@ -30,11 +30,11 @@
 			$view_method = get_value($view_settings,"method");
 
 			$messages = array();
-			if($this->is_form_valid($task,$controller,$context,$model,$dir)) {				
-				
+			if($this->is_form_valid($task,$controller,$context,$model,$dir)) {
+
 				$list_format = value($format,"list");
 				$view_format = value($format,"view");
-				
+
 				if($view_format!=VIEW_GENERATE_LISTVIEW::FORMAT_SKIP) {
 
 					$va_generator_cmodel = new CMODEL_VA_GENERATOR_VIEW_UPDATE($controller,$task,$model_plural,$view_format,$security_roles,$dir,$relation_field);
@@ -58,9 +58,9 @@
 				}
 
 				if($list_body!=VIEW_GENERATE_LISTVIEW::FORMAT_SKIP) {
-				
+
 					$search_form = array_key_exists("search_form",$list_options);
-					
+
 					$va_generator_cmodel = new CMODEL_VA_GENERATOR_VIEW_LIST($controller,$task,$model_plural,$list_format,$security_roles,$dir,$search_form,$view_format,$relation_field);
 					$va_generator_cmodel->set_view_format($view_format);
 					$va_generator_cmodel->set_view_method($view_method);
@@ -80,7 +80,7 @@
 						}
 
 					} else {
-						$this->error("The ".$va_generator_cmodel->get_view_file()." view already exists");					
+						$this->error("The ".$va_generator_cmodel->get_view_file()." view already exists");
 						$this->error("The ".$va_generator_cmodel->get_view_template_file()." template already exists");
 					}
 
@@ -103,15 +103,15 @@
 							}
 
 						} else {
-							$this->error("The ".$va_generator_cmodel->get_view_file()." view already exists");					
+							$this->error("The ".$va_generator_cmodel->get_view_file()." view already exists");
 							$this->error("The ".$va_generator_cmodel->get_view_template_file()." template already exists");
 						}
-						
+
 						if($list_format!=VIEW_GENERATE_LISTVIEW::FORMAT_SKIP) {
-							
+
 							$va_generator_cmodel = new CMODEL_VA_GENERATOR_ACTION_ORDER($controller,$task,$list_format,$security_roles,$dir,$relation_field);
 							$va_generator_cmodel->set_model($model);
-							
+
 							if($va_generator_cmodel->has_priority_column()) {
 
 								if($override || !$va_generator_cmodel->has_action_file()) {
@@ -131,7 +131,7 @@
 				}
 
 				if($view_format!=VIEW_GENERATE_LISTVIEW::FORMAT_SKIP) {
-			
+
 					$va_generator_cmodel = new CMODEL_VA_GENERATOR_ACTION_UPDATE($controller,$task,$view_format,$security_roles,$dir,$relation_field);
 					$va_generator_cmodel->set_method($view_method);
 					if($override || !$va_generator_cmodel->has_action_file()) {
@@ -148,7 +148,7 @@
 					} else
 						$this->error("The ".$va_generator_cmodel->get_action_file()." action already exists");
 				}
-				
+
 				if($list_format!=VIEW_GENERATE_LISTVIEW::FORMAT_SKIP) {
 					$va_generator_cmodel = new CMODEL_VA_GENERATOR_ACTION_REMOVE($controller,$task,$list_format,$security_roles,$dir);
 
@@ -163,14 +163,14 @@
 
 			$this
 				->data("messages",$messages)
-				->success(!$this->has_errors());			
-		}	
-		
+				->success(!$this->has_errors());
+		}
+
 		function is_form_valid($task,$controller,$context,$model,$dir) {
-				
+
 			if(!$model) {
 				$this->error("Please enter a model basename");
-			
+
 			} else {
 
 				if(!is_file(MODEL_DB::get_dbo_file($model,$dir)))
@@ -185,15 +185,14 @@
 				if(!is_file(MODEL_MODEL::get_handler_model_file($model,$dir)))
 					$this->error("The hanlder model `".$model."` does not exist");
 			}
-			
+
 			if(is_empty($task))
 				$this->error("Invalid task");
-				
+
 			if(is_empty($controller))
-				$this->error("Invalid controller");			
-			
-			
+				$this->error("Invalid controller");
+
+
 			return !$this->has_errors();
 		}
 	}
-	
