@@ -96,11 +96,15 @@
 			    return !preg_match("/(".$this->_model."_id$|guid|create_date|configs|_time|_url|_id$)/",$v);
 			}));
 
+			$method = value($this->_options,"method",str_replace("_","",$this->_model_plural));
+			$parent_method = $this->_parent_model ? $this->_api."/" : "";
+
 			return $this
 						->assign("options",$this->_options)
 						->assign("order_by",$order_by)
+						->assign("parent_method",$parent_method)
 						->assign("model_upper",strtoupper($this->_model))
-						->assign("model_plural_trim",str_replace("_","",$this->_model_plural))
+						->assign("method",$method)
 						->assign("model_plural_upper",strtoupper($this->_model_plural))
 						->assign("model_plural_upper_trim",strtoupper(str_replace("_","",$this->_model_plural)))
 						->assign("model_plural_proper",ucwords($this->_model_plural))

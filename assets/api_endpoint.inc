@@ -1,4 +1,4 @@
-		public function {$model_plural_trim}({if $parent_model}${$parent_model}_id=null,{/if}${$model_id}=null,$action=null) {
+		public function {$method}({if $parent_model}${$parent_model}_id=null,{/if}${$model_id}=null,$action=null) {
 
 			if($this->is_get()) {
 

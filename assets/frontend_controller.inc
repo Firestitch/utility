@@ -9,7 +9,7 @@
 			id: '{{$state}}',
 			data: function(query) {
                 return {{$object}}Service
-                .gets(angular.merge(query,{}),{ key: null })
+                .gets(angular.extend(query,{}),{ key: null })
                 .then(function(result) {
                     return { data: result.{{$plural_object}}, paging: result.paging };
                 });
@@ -96,8 +96,8 @@
                 }
             ]
         };
-{{if $child && ($child.view_format=="modal" || $child.view_format=="drawer")}}		$scope.update = function({{$object}}) {
-        	$state.go('{{$child.state}}',{ {{$object}}: angular.copy({{$object}}), time: Date.now() },{ notify: false });
+{{if $child && ($child.view_format=="modal" || $child.view_format=="drawer" || $child.view_format=="page")}}		$scope.update = function({{$object}}) {
+        	$state.go('{{$child.state}}',{ id: {{$object}}.id, {{$object}}: angular.copy({{$object}}), time: Date.now() },{ notify: false });
         }
 {{/if}}
 {{/if}}{{if $interface=="form"}}

@@ -9,6 +9,7 @@
 
 			$dir 			= APPLICATION::get_main_application_directory();
 			$model 			= $this->post("model");
+			$method 		= $this->post("method");
 			$model_plural	= $this->post("model-plural");
 
 			if(!$model)
@@ -18,7 +19,12 @@
 				throw new Exception("Plural model");
 
 			$messages = [];
-			CMODEL_API_GENERATOR::create($dir,$this->post("api"),$model,$model_plural,rtrim($this->post("api"),"s"))->append($messages);
+			CMODEL_API_GENERATOR::create(	$dir,
+											$this->post("api"),
+											$model,
+											$model_plural,
+											rtrim($this->post("api"),"s"),
+											["method"=>$method])->append($messages);
 
 			$this->data("messages",$messages)->success();
 		}
