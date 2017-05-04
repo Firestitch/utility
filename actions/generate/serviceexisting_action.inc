@@ -13,10 +13,12 @@
 			$service_template		= DIR_INSTANCE."utility/assets/frontend_service_existing.inc";
 			$index_file				= DIR_INSTANCE."frontend/app/index.html";
 			$app_dir				= DIR_INSTANCE."frontend/app/";
+			$method 				= str_replace($service."_","",$plural_model);
 
 			$this->_smarty = new CMODEL_SMARTY();
 			$this->_smarty->assign("service",$service);
 			$this->_smarty->assign("model",$model);
+			$this->_smarty->assign("method",$method);
 			$this->_smarty->assign("plural_model",$plural_model);
 			$this->_smarty->assign("api_singular",rtrim($service,"s"));
 
@@ -29,13 +31,13 @@
 
 				$code = FILE_UTIL::get($file);
 
-				$function = str_replace("_","",$plural_model);
 
-				$service = [	"\t\t\t".$function."Get:".$function."Get",
-								"\t\t\t".$function."Gets:".$function."Gets",
-								"\t\t\t".$function."Post:".$function."Post",
-								"\t\t\t".$function."Put:".$function."Put",
-								"\t\t\t".$function."Delete:".$function."Remove"
+
+				$service = [	"\t\t\t".$method."Get:".$method."Get",
+								"\t\t\t".$method."Gets:".$method."Gets",
+								"\t\t\t".$method."Post:".$method."Post",
+								"\t\t\t".$method."Put:".$method."Put",
+								"\t\t\t".$method."Delete:".$method."Remove"
 							];
 
 				$code = preg_replace("/(var\s+service\s+=\s+{[^;]+?)\s*,?\s*}\s*;/si","$1,\n".implode(",\n",$service)."\n\t\t};",$code);
