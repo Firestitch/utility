@@ -2,12 +2,15 @@
 <form id="form-service">
 
 	<?
-		HTML_FORM_UTIL::create()
-				->input("form[service]","Name","","",["placeholder"=>"ie. account","class"=>"w400"])
-				->input("form[model]","Model","","",["placeholder"=>"ie. credit_card","class"=>"w400"])
-				->text("Plural Model",HTML_UTIL::input("form[model-plural]","",array("placeholder"=>"ie. credit_cards","class"=>"w200")))
-				->text("Service Class",HTML_UTIL::div("",["id"=>"service-classname"]))
-				->text("Service Filename",HTML_UTIL::div("",["id"=>"service-filename"]))
+		FORM_UTIL::create()
+				->dropdown("form[service]","Name",$services,"",["placeholder"=>"ie. account","class"=>"w400"])
+				->input("form[model]","Model","",["placeholder"=>"ie. account_user","class"=>"w400"],["info"=>"The full name of the related child object ie: account-><b>account_user</b>"])
+				->text("Plural Model",HTML_UTIL::input("form[model-plural]","",array("placeholder"=>"ie. account_users","class"=>"w400")))
+				->input("form[namespace]","Namespace","",["placeholder"=>"ie. user","class"=>"w400"],["info"=>"The simplified name used for the service functions and APIs.<br>ie: accountService.usersPost() that points to POST /accounts/account_id/users/user_id"])
+				->checkboxes("form[methods]","Methods",[	"get"=>"GET",
+															"post"=>"POST",
+															"put"=>"PUT",
+															"delete"=>"DELETE"],[])
 				->button("generate","Generate",["type"=>"button","class"=>"btn-primary"])
 				->render();
 	?>
@@ -16,20 +19,11 @@
 
 <script>
 
-
-	$(function() {
-
-		$("input[name='form[service]'").on("keyup input",function(e) {
-
-			$("#service-classname").text($(this).val() + "Service");
-			$("#service-filename").text("/scripts/services/" + $(this).val().toLowerCase() + ".js");
-		});
-	});
-
 	$("input[name='form[model]']").keyup(function() {
-
-		if($(this).val())
+		if($(this).val()) {
 			$("input[name='form[model-plural]']").val($(this).val().replace(/y$/i,'ie') + 's');
+			$("input[name='form[namespace]']").val($("input[name='form[model-plural]']").val().replace($("select[name='form[service]']").val() + '_',''));
+		}
 	}).trigger("keyup");
 
 	$("#generate").click(function() {

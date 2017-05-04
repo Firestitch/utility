@@ -11,6 +11,7 @@
 			$model 			= $this->post("model");
 			$method 		= $this->post("method");
 			$model_plural	= $this->post("model-plural");
+			$methods		= (array)$this->post("methods");
 
 			if(!$model)
 				throw new Exception("Invalid model");
@@ -23,6 +24,7 @@
 											$this->post("api"),
 											$model,
 											$model_plural,
+											$methods,
 											rtrim($this->post("api"),"s"),
 											["method"=>$method])->append($messages);
 

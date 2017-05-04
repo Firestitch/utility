@@ -21,7 +21,7 @@
 		    	</li>
 
 				<li class="dropdown">
-		    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Views <b class="caret"></b></a>
+		    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Backend <b class="caret"></b></a>
 		        	<ul class="dropdown-menu">
 						<li><a href="/generate/mvc/">View / Action</a></li>
 						<li><a href="/generate/listview">List / View</a></li>
@@ -41,9 +41,28 @@
 		    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Frontend <b class="caret"></b></a>
 		        	<ul class="dropdown-menu">
 						<li><a href="/generate/vc">View / Controller</a></li>
+
+		        	</ul>
+		    	</li>
+
+		    	<li class="dropdown">
+		    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Service <b class="caret"></b></a>
+		        	<ul class="dropdown-menu">
 						<li><a href="/generate/service">New Service</a></li>
-						<li><a href="/generate/controller">New Controller</a></li>
 						<li><a href="/generate/serviceexisting">Existing Service</a></li>
+		        	</ul>
+		    	</li>
+
+		    	<li class="dropdown">
+		    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Controller <b class="caret"></b></a>
+		        	<ul class="dropdown-menu">
+						<li><a href="/generate/controller">New Controller</a></li>
+		        	</ul>
+		    	</li>
+
+		    	<li class="dropdown">
+		    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Directive <b class="caret"></b></a>
+		        	<ul class="dropdown-menu">
 						<li><a href="/generate/directive">New Directive</a></li>
 		        	</ul>
 		    	</li>

@@ -19,7 +19,7 @@
 				throw new Exception("Plural model");
 
 			$messages = array();
-			CMODEL_API_GENERATOR::create($dir,$model_plural,$model,$model_plural,"",$options)
+			CMODEL_API_GENERATOR::create($dir,$model_plural,$model,$model_plural,["get","post","put","delete"],"",$options)
 				->generate(in_array("override",$options),$messages);
 
 			$this->data("messages",$messages)->success();

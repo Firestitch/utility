@@ -6,7 +6,7 @@
 		protected $_model_plural		= "";
 		protected $_options				= [];
 
-		function __construct($dir,$api,$model,$model_plural,$parent_model=null,$options=[]) {
+		function __construct($dir,$api,$model,$model_plural,$methods=[],$parent_model=null,$options=[]) {
 			parent::__construct($dir);
 
 			$this->_model 			= $model;
@@ -14,6 +14,7 @@
 			$this->_api 			= $api;
 			$this->_parent_model 	= $parent_model;
 			$this->_model_plural	= $model_plural;
+			$this->_methods			= $methods;
 			$this->_dir 			= $this->get_instance_dir()."views/api/";
 		}
 
@@ -30,13 +31,11 @@
 
 			$code = FILE_UTIL::get($this->get_file());
 
-			$regex = "/public\s+function\s+wsdl\(\)\s+{[^}]+}/is";
+			$regex = "/(public\s+function\s+wsdl\(\).*)/is";
 			if(!preg_match($regex,$code,$matches))
 				throw new Exception("Failed to locate the wsdl() function");
 
-			$wsdl = preg_replace("/\],?[^\]]*(\][^\]]*\][^\]]*)$/","],\n".$this->get_wsdl_endpoint()."\n$1",$matches[0]);
-
-			$code = preg_replace($regex,ltrim($this->get_endpoint())."\n\n\t\t".$wsdl,$code);
+			$code = str_replace($matches[0],ltrim($this->get_endpoint())."\n\n\t\t".$matches[0],$code);
 
 			FILE_UTIL::put($file,$code);
 
@@ -111,6 +110,7 @@
 						->assign("model_proper",ucwords($this->_model))
 						->assign("model_name",ucwords(str_replace("_"," ",$this->_model)))
 						->assign("model",$this->_model)
+						->assign("methods",$this->_methods)
 						->assign("keywords",$keywords)
 						->assign("api",$this->_api)
 						->assign("api_singular",rtrim($this->_api,"s"))

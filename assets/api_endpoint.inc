@@ -1,5 +1,9 @@
 		public function {$method}({if $parent_model}${$parent_model}_id=null,{/if}${$model_id}=null,$action=null) {
+{if $parent_model}
 
+			${$parent_model}_cmodel = HMODEL_{$parent_model|upper}::create()
+											->require(${$parent_model}_id);
+{/if}{if in_array("get",$methods)}
 			if($this->is_get()) {
 
 				${$model}_hmodel = HMODEL_{$model_upper}::create(false){if $parent_model}
@@ -51,7 +55,7 @@
 
 
 
-			} elseif($this->is_post() || $this->is_put()) {
+			}{/if}{if in_array("post",$methods) || in_array("put",$methods)} elseif($this->is_post() || $this->is_put()) {
 
 				${$model}_cmodel = CMODEL_{$model_upper}::create();
 
@@ -74,7 +78,7 @@
 
 				$this->data("{$model}",${$model}_cmodel->arry());
 
-			} elseif($this->is_delete()) {
+			}{/if}{if in_array("delete",$methods)} elseif($this->is_delete()) {
 
 				${$model}_cmodel = $this->acl()->write(HMODEL_{$model_upper}::create(false){if $parent_model}
 
@@ -86,6 +90,7 @@
 
 				$this->data("{$model}",${$model}_cmodel->arry());
 			}
+{/if}
 		}
 {if in_array("order",$options)}
 
