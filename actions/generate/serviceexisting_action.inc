@@ -46,7 +46,7 @@
 					$service[] = "\t\t\t".$namespace."Put: ".$namespace."Put";
 
 				if(in_array("delete",$methods))
-					$service[] = "\t\t\t".$namespace."Delete: ".$namespace."Remove";
+					$service[] = "\t\t\t".$namespace."Delete: ".$namespace."Delete";
 
 				$code = preg_replace("/(var\s+service\s+=\s+{[^;]+?)\s*,?\s*}\s*;/si","$1,\n".implode(",\n",$service)."\n\t\t};",$code);
 

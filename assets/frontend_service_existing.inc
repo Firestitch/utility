@@ -17,7 +17,7 @@
         }
 
 {/if}{if in_array("delete",$methods)}
-        function {$namespace}Remove({$api_singular}_id, id, data) {
+        function {$namespace}Delete({$api_singular}_id, id, data) {
             return fsApi.delete('{$service}s/' + {$api_singular}_id + '/{$namespace}/' + id, data, { key: '{$model}' });
         }
 

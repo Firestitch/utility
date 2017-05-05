@@ -9,7 +9,7 @@
             put: put,
             post: post,
             save: save,
-            'delete': remove,
+           	delete: remove,
             create: create{if in_array("order",$options)},
             order: order{/if}
 
