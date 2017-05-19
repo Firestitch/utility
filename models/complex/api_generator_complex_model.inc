@@ -15,6 +15,7 @@
 			$this->_parent_model 	= $parent_model;
 			$this->_model_plural	= $model_plural;
 			$this->_methods			= $methods;
+			$this->_method 			= value($this->_options,"method",str_replace("_","",$this->_model_plural));
 			$this->_dir 			= $this->get_instance_dir()."views/api/";
 		}
 
@@ -35,7 +36,15 @@
 			if(!preg_match($regex,$code,$matches))
 				throw new Exception("Failed to locate the wsdl() function");
 
-			$code = str_replace($matches[0],ltrim($this->get_endpoint())."\n\n\t\t".$matches[0],$code);
+			$endpoint = ltrim($this->get_endpoint())."\n\n";
+
+			$endpoint .= "		function wsdl_".$this->_method."() {\n".
+						"			return 	[\n".
+						"						".preg_replace("/[\t]{9}/","\t\t\t\t\t\t",trim($this->get_wsdl_endpoint()))."\n".
+						"					];\n".
+						"		}\n\n\t\t";
+
+			$code = str_replace($matches[0],$endpoint.$matches[0],$code);
 
 			FILE_UTIL::put($file,$code);
 
@@ -95,7 +104,6 @@
 			    return !preg_match("/(".$this->_model."_id$|guid|create_date|configs|_time|_url|_id$)/",$v);
 			}));
 
-			$method = value($this->_options,"method",str_replace("_","",$this->_model_plural));
 			$parent_method = $this->_parent_model ? $this->_api."/" : "";
 
 			return $this
@@ -103,7 +111,7 @@
 						->assign("order_by",$order_by)
 						->assign("parent_method",$parent_method)
 						->assign("model_upper",strtoupper($this->_model))
-						->assign("method",$method)
+						->assign("method",$this->_method)
 						->assign("model_plural_upper",strtoupper($this->_model_plural))
 						->assign("model_plural_upper_trim",strtoupper(str_replace("_","",$this->_model_plural)))
 						->assign("model_plural_proper",ucwords($this->_model_plural))

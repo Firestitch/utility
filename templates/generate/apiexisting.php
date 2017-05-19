@@ -22,7 +22,10 @@ $(function() {
 	$("input[name='model']").keyup(function() {
 		if($(this).val()) {
 			$("input[name='model-plural']").val($(this).val().replace(/y$/i,'ie') + 's');
-			$("input[name='method']").val($("input[name='model-plural']").val().replace(get_singular($(".api-name").val()) + '_',''));
+			var method = $("input[name='model-plural']").val()
+					.replace(get_singular($(".api-name").val()) + '_','')
+					.replace('_','');
+			$("input[name='method']").val(method);
 		}
 	}).trigger("keyup");
 
