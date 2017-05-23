@@ -13,10 +13,11 @@
 			$apis = [];
 			foreach($views as $view) {
 				$name = preg_replace("/_view\.inc/","",$view);
-				$apis[$name] = $name;
+				$apis[$name] = "/".$name;
 			}
 
 			$this->set_var("model",$this->get("model"));
+			$this->set_var("models",CMODEL_MODEL_GENERATOR::get_cmodels());
 			$this->set_var("apis",$apis);
 		}
 	}

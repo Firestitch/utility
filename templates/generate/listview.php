@@ -3,7 +3,7 @@
 <?
 	$data[] = array('<h3>Model Settings</h3>',"");
 
-	$data[] = array("Basename: ",HTML_UTIL::input("model",$model,array("placeholder"=>"user")));
+	$data[] = array("Model: ",HTML_UTIL::dropdown("model",$models,$model,array("placeholder"=>"user")));
 	//$data[] = array(" ","<i>Model Basename is the corresponding database table name and cannot be plural</i>");
 
 	$data[] = array("Relation Field Name: ",HTML_UTIL::input("relation_field",$relation_field,array("placeholder"=>"user_id")));
@@ -59,12 +59,12 @@ $(function() {
 		$("#plural-controller").text($(this).val());
 	});
 
-	$("input[name='model']").keyup(function() {
+	$("select[name='model']").change(function() {
 		$("input[name='task']").val($(this).val().toLowerCase().replace(/[_\s]/g,""));
 
 		if($(this).val())
 			$("input[name='model_plural']").val($("input[name='task']").val() + "s");
-	}).trigger("keyup");
+	});
 
 	$("#generate").click(function() {
 		$.post("/generate/dolistview",$("#form-list-view").serializeArray(),function(response) {

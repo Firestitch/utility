@@ -3,8 +3,8 @@
 
 	<?
 		FORM_UTIL::create()
-				->dropdown("form[service]","Name",$services,"",["placeholder"=>"ie. account","class"=>"w400"])
-				->input("form[model]","Model","",["placeholder"=>"ie. account_user","class"=>"w400"],["info"=>"The full name of the related child object ie: account-><b>account_user</b>"])
+				->dropdown("form[service]","Service",$services,"",["placeholder"=>"ie. account","class"=>"w400"])
+				->dropdown("form[model]","Model",$models,"",["placeholder"=>"ie. account_user","class"=>"w400"])
 				->text("Plural Model",HTML_UTIL::input("form[model-plural]","",array("placeholder"=>"ie. account_users","class"=>"w400")))
 				->input("form[namespace]","Namespace","",["placeholder"=>"ie. user","class"=>"w400"],["info"=>"The simplified name used for the service functions and APIs.<br>ie: accountService.usersPost() that points to POST /accounts/account_id/users/user_id"])
 				->checkboxes("form[methods]","Methods",[	"get"=>"GET",
@@ -19,12 +19,12 @@
 
 <script>
 
-	$("input[name='form[model]']").keyup(function() {
+	$("select[name='form[model]']").change(function() {
 		if($(this).val()) {
 			$("input[name='form[model-plural]']").val($(this).val().replace(/y$/i,'ie') + 's');
 			$("input[name='form[namespace]']").val($("input[name='form[model-plural]']").val().replace($("select[name='form[service]']").val() + '_',''));
 		}
-	}).trigger("keyup");
+	});
 
 	$("#generate").click(function() {
 		$.post("/generate/doserviceexisting",$("#form-service").serializeArray(),function(response) {

@@ -199,4 +199,17 @@
 
 			return $has_success;
 		}
+
+		static function get_cmodels() {
+			$files = FILE_UTIL::get_directory_listing(APPLICATION::get_main_application_directory()."models/complex/");
+
+			$cmodels = [""=>""];
+			foreach($files as $file) {
+				if(preg_match("/(.*)_complex_model\.inc/",$file,$matches)) {
+					$cmodels[$matches[1]] = "CMODEL_".strtoupper($matches[1]);
+				}
+			}
+
+			return $cmodels;
+		}
 	}

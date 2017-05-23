@@ -54,6 +54,7 @@
 			$frameworks = array("bootstrap2"=>"Bootstrap 2.x",
 								"bootstrap3"=>"Bootstrap 3.x");
 
+			$this->set_var("models",CMODEL_MODEL_GENERATOR::get_cmodels());
 			$this->set_var("frameworks",$frameworks);
 			$this->set_var("selected_frameworks",$this->_selected_frameworks);
 			$this->set_var("list_table_classes",$this->_list_table_classes);

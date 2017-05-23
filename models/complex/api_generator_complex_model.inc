@@ -36,8 +36,9 @@
 			if(!preg_match($regex,$code,$matches))
 				throw new Exception("Failed to locate the wsdl() function");
 
-			$endpoint = ltrim($this->get_endpoint())."\n\n";
+			$this->assign("parent_method", $this->_api."/".$this->_parent_model."_id/");
 
+			$endpoint = ltrim($this->get_endpoint())."\n\n";
 			$endpoint .= "		function wsdl_".$this->_method."() {\n".
 						"			return 	[\n".
 						"						".preg_replace("/[\t]{9}/","\t\t\t\t\t\t",trim($this->get_wsdl_endpoint()))."\n".
@@ -59,6 +60,7 @@
 				throw new Exception("The file ".$file." already exists");
 
 			$this
+				->assign("parent_method",$this->_parent_model ? $this->_api."/" : "")
 				->assign("endpoint",$this->get_endpoint())
 				->assign("wsdl_endpoint",$this->get_wsdl_endpoint());
 
@@ -104,12 +106,9 @@
 			    return !preg_match("/(".$this->_model."_id$|guid|create_date|configs|_time|_url|_id$)/",$v);
 			}));
 
-			$parent_method = $this->_parent_model ? $this->_api."/" : "";
-
 			return $this
 						->assign("options",$this->_options)
 						->assign("order_by",$order_by)
-						->assign("parent_method",$parent_method)
 						->assign("model_upper",strtoupper($this->_model))
 						->assign("method",$this->_method)
 						->assign("model_plural_upper",strtoupper($this->_model_plural))

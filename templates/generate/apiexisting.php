@@ -4,7 +4,7 @@
 
 	FORM_UTIL::create()
 		->dropdown("api","API",$apis,"",["class"=>"w400 api-name"])
-		->input("model","Model","",["placeholder"=>"ie. account_user","class"=>"w400"],["info"=>"The full name of the related child object ie: account-><b>account_user</b>"])
+		->dropdown("model","Model",$models,"")
 		->input("model-plural","Plural Model","")
 		->input("method","Namespace","",["placeholder"=>"ie. users","class"=>"w400"],["info"=>"Namespace used for the API path ie: /accounts/account_id/<b>users</b>"])
 		->checkboxes("methods","Methods",[	"get"=>"GET",
@@ -19,7 +19,7 @@
 
 $(function() {
 
-	$("input[name='model']").keyup(function() {
+	$("select[name='model']").change(function() {
 		if($(this).val()) {
 			$("input[name='model-plural']").val($(this).val().replace(/y$/i,'ie') + 's');
 			var method = $("input[name='model-plural']").val()
@@ -27,7 +27,7 @@ $(function() {
 					.replace('_','');
 			$("input[name='method']").val(method);
 		}
-	}).trigger("keyup");
+	});
 
 	$("#generate").click(function() {
 		$.post("/generate/doapiexisting",$("#form-api").serializeArray(),function(response) {
