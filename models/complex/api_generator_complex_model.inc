@@ -38,18 +38,21 @@
 
 			$this->assign("parent_method", $this->_api."/".$this->_parent_model."_id/");
 
-			$endpoint = ltrim($this->get_endpoint())."\n\n";
-			$endpoint .= "		function wsdl_".$this->_method."() {\n".
-						"			return 	[\n".
-						"						".preg_replace("/[\t]{9}/","\t\t\t\t\t\t",trim($this->get_wsdl_endpoint()))."\n".
-						"					];\n".
-						"		}\n\n\t\t";
+			$endpoint = ltrim($this->get_endpoint())."\n\n".$this->get_wsdl_function();
 
 			$code = str_replace($matches[0],$endpoint.$matches[0],$code);
 
 			FILE_UTIL::put($file,$code);
 
 			$messages = array("Successfully updated the file ".HTML_UTIL::get_link("file:".FILE_UTIL::sanitize_file($file),FILE_UTIL::sanitize_file($file)));
+		}
+
+		function get_wsdl_function() {
+			return 	"		function wsdl_".$this->_method."() {\n".
+					"			return 	[\n".
+					"						".preg_replace("/[\t]{9}/","\t\t\t\t\t\t",trim($this->get_wsdl_endpoint()))."\n".
+					"					];\n".
+					"		}\n\n\t\t";
 		}
 
 		function generate($override,&$messages=array()) {
@@ -62,7 +65,7 @@
 			$this
 				->assign("parent_method",$this->_parent_model ? $this->_api."/" : "")
 				->assign("endpoint",$this->get_endpoint())
-				->assign("wsdl_endpoint",$this->get_wsdl_endpoint());
+				->assign("wsdl_function",$this->get_wsdl_function());
 
 			if(!$this->write_template(MODEL_PATH::get_assets_directory()."api.inc",$file))
 				throw new Exception("Failed to generate ".$file);
@@ -103,7 +106,7 @@
 			}
 
 			$accessible_fields = array_values(array_filter(array_keys($fields), function($v) {
-			    return !preg_match("/(".$this->_model."_id$|guid|create_date|configs|_time|_url|_id$)/",$v);
+			    return !preg_match("/(".$this->_model."_id$|guid|create_date|configs|_time|meta$)/",$v);
 			}));
 
 			return $this
@@ -111,6 +114,7 @@
 						->assign("order_by",$order_by)
 						->assign("model_upper",strtoupper($this->_model))
 						->assign("method",$this->_method)
+						->assign("loads",(array)value($this->_options,"loads"))
 						->assign("model_plural_upper",strtoupper($this->_model_plural))
 						->assign("model_plural_upper_trim",strtoupper(str_replace("_","",$this->_model_plural)))
 						->assign("model_plural_proper",ucwords($this->_model_plural))

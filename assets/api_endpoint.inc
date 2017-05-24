@@ -38,7 +38,10 @@
 				if(!is_null($value=$this->get("{$name}")))
 					${$model}_hmodel->where("{$dbo->get_tablename()}.{$name}","=",$value);
 {/if}{/if}{/foreach}{/foreach}
+{foreach $loads as $load}				if(!is_null($this->get("{$load}")))
+					${$model}_hmodel->load_{$load}();
 
+{/foreach}
 				$this->acl()->apply(${$model}_hmodel);
 
 				if(!${$model_id})

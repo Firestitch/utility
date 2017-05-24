@@ -3,12 +3,9 @@
 
 {{$endpoint}}
 
+{{$wsdl_function}}
+
 		public function wsdl() {
-			return ["model"=>"{$model}",
-					"name"=>"{$model_name}",
-					"endpoints"=>[
-{{$wsdl_endpoint}}
-								]
-					];
+			return [ "model"=>"{$model}", "name"=>"{$model_name}" ];
 		}
 	}

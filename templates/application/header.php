@@ -9,16 +9,17 @@
 		<div class="collapse navbar-collapse">
 	    	<ul class="nav navbar-nav">
 
-				<li><a href="javascript:;" class="update-link" data-url="/generate/db">DBO/DBQ</a></li>
+	    		<li><a href="javascript:;" class="update-link" data-url="/generate/db">DB &amp; Models</a></li>
 
 				<li class="dropdown">
-		    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Models <b class="caret"></b></a>
+		    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Models<b class="caret"></b></a>
 		        	<ul class="dropdown-menu">
-						<li><a href="javascript:;" class="update-link" data-url="/generate/model">Creation</a></li>
-						<li><a href="javascript:;" class="update-link" data-url="/generate/cmodel">C-Model Addons</a></li>
 						<li><a href="/generate/modelrelation">Relationship</a></li>
+						<li><a href="javascript:;" class="update-link" data-url="/generate/cmodel">C-Model Addons</a></li>
 		        	</ul>
 		    	</li>
+
+				<li><a href="/generate/api">API</a></li>
 
 				<li class="dropdown">
 		    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Backend <b class="caret"></b></a>
@@ -27,15 +28,6 @@
 						<li><a href="/generate/listview">List / View</a></li>
 		        	</ul>
 		    	</li>
-
-				<li class="dropdown">
-		    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">API <b class="caret"></b></a>
-		        	<ul class="dropdown-menu">
-						<li><a href="/generate/api/">New API</a></li>
-						<li><a href="/generate/apiexisting">Existing API</a></li>
-		        	</ul>
-		    	</li>
-
 
 				<li class="dropdown">
 		    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Frontend <b class="caret"></b></a>

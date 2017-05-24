@@ -1,18 +1,26 @@
 									[	"path"=>["{$parent_method}{$method}","{$parent_method}{$method}/{$model_id}"],
 										"method"=>"get",
 										"parms"=>[
-											"order"=>[{foreach $accessible_fields as $index=>$name}{if $name=="name"}"name"=>"By name"{/if}{/foreach}]
+{foreach $loads as $name}											"load_{$name}",
+{/foreach}{foreach from=$accessible_fields item=name name=accessible_fields}											"{$name}"{if !$smarty.foreach.accessible_fields.last},
+{/if}{/foreach}
 										],
 										"response"=>["{$model_plural}","{$model}"]
 									],
 									[	"path"=>"{$parent_method}{$method}/{$model_id}",
 										"method"=>"put",
-										"parms"=>[{foreach $accessible_fields as $index=>$name}{if $name=="state"}"state"=>CMODEL_{$model_upper}::get_states(){else}"{$name}"{/if}{if $index<(count($accessible_fields)-1)},{/if}{/foreach}],
+										"parms"=>[
+											{foreach from=$accessible_fields item=name name=accessible_fields}{if $name=="state"}"state"=>CMODEL_{$model_upper}::get_states(){else}"{$name}"{/if}{if !$smarty.foreach.accessible_fields.last},
+											{/if}{/foreach}
+										],
 										"response"=>["{$model}"]
 									],
 									[	"path"=>"{$parent_method}{$method}",
 										"method"=>"post",
-										"parms"=>[{foreach $accessible_fields as $index=>$name}{if $name=="state"}"state"=>CMODEL_{$model_upper}::get_states(){else}"{$name}"{/if}{if $index<(count($accessible_fields)-1)},{/if}{/foreach}],
+										"parms"=>[
+											{foreach from=$accessible_fields item=name name=accessible_fields}{if $name=="state"}"state"=>CMODEL_{$model_upper}::get_states(){else}"{$name}"{/if}{if !$smarty.foreach.accessible_fields.last},
+											{/if}{/foreach}
+										],
 										"response"=>["{$model}"]
 									],
 									[	"path"=>"{$parent_method}{$method}/{$model_id}",
