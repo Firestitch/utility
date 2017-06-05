@@ -3,35 +3,20 @@
 		controller: '{{$controller}}Ctrl',
 		templateUrl: 'views/{{$view}}.html',{{/if}}
 		params: { {{if $interface=='form'}}
-			id: null,
 			{{$object}}: null,{{/if}}
 			time: null{{if $params}},{{foreach from=$params item=$param name=params}}
-			{{$param}}: null{{if !$smarty.foreach.params.last}},{{/if}}
-{{/foreach}}{{/if}}
+			{{$param}}: null{{if !$smarty.foreach.params.last}},{{/if}}{{/foreach}}{{/if}}
 		},
 		data: {
 			permissions: []
 		},
 		resolve: {literal}{{/literal}{{if $object && $interface=="form"}}
-			{{$object}}: function($stateParams, {{$object}}Service, aclService, $q) {
-				return $q(function(resolve) {
-					if($stateParams.id) {
-						return aclService.require({{$object}}Service.get($stateParams.id)).then(resolve);
-					}{{if in_array("draft",$options)}}
-					if(!$stateParams.{{$object}} || !$stateParams.{{$object}}.id) {
-						return {{$object}}Service.post({ state: 'draft' }).then(resolve);
-					}
-{{/if}}					return resolve($stateParams.{{$object}} || {});
-				}).then(function({{$object}}) {
-					if({{$object}}) {
-						$stateParams.id = {{$object}}.id;
-					}
-					return {{$object}} || {};
-				});
+			{{$object}}: function(appService, $stateParams, {{$object}}Service) {
+				return appService.stateModel({{$object}}Service,$stateParams.{{$object}},'id'{{if in_array("draft",$options)}}{ draft: true }{{/if}});
 			},{{/if}}
 			time: function($stateParams) { return $stateParams.time; }
 		}{{if $view_format=='modal'}},
-		onEnter: function(fsModal{{if $object}}, {{$object}}{{/if}}) {
+		onEnter: function($stateParams,fsModal{{if $object}},{{$object}},fsLister{{/if}}) {
 			fsModal
 			.show(	'{{$controller}}Ctrl',
 					'views/{{$view}}.html'{{if $object}},
@@ -39,7 +24,14 @@
 						resolve: {
 							{{$object}}: function() { return {{$object}}; }
 						}
-					{literal}}{/literal}{{/if}});
+					{literal}}{/literal}{{/if}}){{if $object}}
+			.then(function() {
+				if($stateParams.{{$object}} && $stateParams.{{$object}}.new) {
+					fsLister.reload('{{$parent.state}}');
+				} else {
+					angular.extend($stateParams.{{$object}},{{$object}});
+				}
+			}){{/if}};
 		}{{/if}}{{if $view_format=='drawer'}},
 		onEnter: function(fsDrawer{{if $object}}, {{$object}}{{/if}}) {
 			fsDrawer
