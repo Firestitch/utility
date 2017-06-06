@@ -10,7 +10,7 @@
 		<div class="md-dialog-content"></div>
   	</md-dialog-content>
     <md-dialog-actions>
-        <md-button type="button" ng-click="hide()">Cancel</md-button>
+        <md-button type="button" ng-click="cancel()">Cancel</md-button>
     </md-dialog-actions>
 {{/if}}{{if $interface=="form"}}
     <form fs-validate="save()">
@@ -23,7 +23,7 @@
 	        </div>
         </md-dialog-content>
         <md-dialog-actions>
-            <md-button type="button" ng-click="hide()">Cancel</md-button>
+            <md-button type="button" ng-click="cancel()">Cancel</md-button>
             <md-button type="submit" class="md-accent">Save</md-button>
         </md-dialog-actions>
     </form>
@@ -34,7 +34,7 @@
 		</div>
   	</md-dialog-content>
     <md-dialog-actions>
-        <md-button type="button" ng-click="hide()">Cancel</md-button>
+        <md-button type="button" ng-click="cancel()">Cancel</md-button>
         <md-button type="submit" class="md-accent">Save</md-button>
     </md-dialog-actions>
 {{/if}}

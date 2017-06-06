@@ -2,7 +2,7 @@
     'use strict';
 
     angular.module('app')
-    .controller('{$controller}Ctrl', function($scope, $state{{if $object}}, {{$object}}Service{{/if}}{{if $interface=="form" || in_array("order",$options)}}, fsAlert{{/if}}{{if in_array("order",$options)}}, fsArray{{/if}}{{if $interface=="form" && $object}}, {{$object}}{{/if}}{{if $view_format=="modal"}}, fsModal{{/if}}) {
+    .controller('{$controller}Ctrl', function($scope, $state{{if $object}}, {{$object}}Service{{/if}}{{if $interface=="form" || $interface=="lister"}}, fsAlert{{/if}}{{if in_array("order",$options)}}, fsArray{{/if}}{{if $interface=="form" && $object}}, {{$object}}{{/if}}{{if $view_format=="modal"}}, fsModal{{/if}}) {
 
 {{if $interface=="form"}}		$scope.{{$object}} = {{$object}} || {};
 {{/if}}{{if $interface=="lister"}}		$scope.lister = {
@@ -87,7 +87,8 @@
                     click: function(data) {
                     	{{$object}}Service.put({ id: data.id, state: 'active' })
                     	.then(function() {
-                    		$scope.{{$object}}.instance.reload();
+                    		fsAlert.success();
+                    		$scope.lister.instance.reload();
                     	});
                     },
                     show: function(data) {
@@ -98,7 +99,7 @@
         };
 {{if $child && ($child.view_format=="modal" || $child.view_format=="drawer" || $child.view_format=="page")}}		$scope.update = function({{$object}}) {
         	$state.go('{{$child.state}}',{ 	id: {{$object}}.id,
-        									{{$object}}: angular.copy({{$object}}),
+        									{{$object}}: {{$object}},
         									time: Date.now() },{ notify: false });
         }
 {{/if}}

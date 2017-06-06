@@ -1,4 +1,4 @@
-.state('{{$state}}', { {{if $url}}
+.state('{{$state}}', { {{if $url && $view_format!='modal'}}
 		url: '{{$url}}',{{/if}}{{if $view_format=='page'}}
 		controller: '{{$controller}}Ctrl',
 		templateUrl: 'views/{{$view}}.html',{{/if}}
@@ -12,7 +12,7 @@
 		},
 		resolve: {literal}{{/literal}{{if $object && $interface=="form"}}
 			{{$object}}: function(appService, $stateParams, {{$object}}Service) {
-				return appService.stateModel({{$object}}Service,$stateParams.{{$object}},'id'{{if in_array("draft",$options)}}{ draft: true }{{/if}});
+				return appService.stateModel({{$object}}Service,$stateParams,'{{$object}}','id'{{if in_array("draft",$options)}},{ draft: true }{{/if}});
 			},{{/if}}
 			time: function($stateParams) { return $stateParams.time; }
 		}{{if $view_format=='modal'}},
