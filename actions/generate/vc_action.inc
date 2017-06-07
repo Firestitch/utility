@@ -14,6 +14,7 @@
 			$object1				= $this->post("form1","object");
 			$view_format1			= $this->post("form1","view_format");
 			$interface1				= $this->post("form1","interface");
+			$override1				= $this->post("form1","override");
 			$params1				= $this->post("form1","params") ? explode(",",$this->post("form1","params")) : [];
 			$options1				= (array)$this->post("form1","options");
 			$child					= in_array("secondary",$options1) ? $this->post("form2") : [];
@@ -24,6 +25,7 @@
 			$state2					= $this->post("form2","state");
 			$view_format2			= $this->post("form2","view_format");
 			$interface2				= $this->post("form2","interface");
+			$override2				= $this->post("form2","override");
 			$params2				= $this->post("form2","params") ? explode(",",$this->post("form2","params")) : [];
 			$options2				= (array)$this->post("form2","options");
 
@@ -51,7 +53,8 @@
 												$object1,
 												$child,
 												[],
-												$options1);
+												$options1,
+												$override1);
 
 				if($interface1=="lister" && in_array("secondary",$options1)) {
 
@@ -74,7 +77,8 @@
 													$object1,
 													[],
 													(array)$this->post("form1"),
-													$options2);
+													$options2,
+													$override2);
 				}
 				$this->success();
 
@@ -83,7 +87,7 @@
 			}
 		}
 
-		function create_view_controller($url,$state,$params,$controller,$view,$view_format,$interface,$object,$child=[],$parent=[],$options=[]) {
+		function create_view_controller($url,$state,$params,$controller,$view,$view_format,$interface,$object,$child=[],$parent=[],$options=[],$override=false) {
 
 			$controller_template	= DIR_INSTANCE."utility/assets/frontend_controller.inc";
 			$view_template			= DIR_INSTANCE."utility/assets/frontend_view.inc";
@@ -92,25 +96,50 @@
 			$state_file				= DIR_INSTANCE."utility/assets/frontend_state.js";
 			$app_dir				= DIR_INSTANCE."frontend/app/";
 
-			$smart_cmodel = new CMODEL_SMARTY();
-			$smart_cmodel->assign("controller",$controller);
-			$smart_cmodel->assign("controller_singular",rtrim($controller,"s"));
-			$smart_cmodel->assign("object",$object);
-			$smart_cmodel->assign("plural_object",LANG_UTIL::plural($object));
-			$smart_cmodel->assign("url",$url);
-			$smart_cmodel->assign("view",$view);
-			$smart_cmodel->assign("state",$state);
-			$smart_cmodel->assign("interface",$interface);
-			$smart_cmodel->assign("view_format",$view_format);
-			$smart_cmodel->assign("options",$options);
-			$smart_cmodel->assign("parent",$parent);
-			$smart_cmodel->assign("child",$child);
-			$smart_cmodel->assign("params",$params);
-			$smart_cmodel->assign("path",str_replace("/","-",$url));
+			$state_model_options = [];
+			if(in_array("draft",$options))
+				$state_model_options["draft"] = true;
+
+			if(preg_match("/\/[^\/]+\/:([a-z0-9_]+)/",$url,$matches)) {
+
+				$id_name = $matches[1];
+				if($id_name && $id_name!=="id")
+					$state_model_options["id_name"] = $id_name;
+			}
+
+			if($state_model_options) {
+				foreach($state_model_options as $name=>&$state_model_option) {
+					if(is_bool($state_model_option))
+						$state_model_option = $state_model_option ? 'true' : 'false';
+					else
+						$state_model_option = "'".$state_model_option."'";
+
+					$state_model_option = $name.": ".$state_model_option;
+				}
+
+				$state_model_options = "{ ".implode(", ",$state_model_options)." }";
+			}
+
+			$smart_cmodel = CMODEL_SMARTY::create()
+								->assign("controller",$controller)
+								->assign("state_model_options",$state_model_options)
+								->assign("controller_singular",rtrim($controller,"s"))
+								->assign("object",$object)
+								->assign("plural_object",LANG_UTIL::plural($object))
+								->assign("url",$url)
+								->assign("view",$view)
+								->assign("state",$state)
+								->assign("interface",$interface)
+								->assign("view_format",$view_format)
+								->assign("options",$options)
+								->assign("parent",$parent)
+								->assign("child",$child)
+								->assign("params",$params)
+								->assign("path",str_replace("/","-",$url));
 
 			$controller_file = $app_dir."scripts/controllers/".strtolower($controller).".js";
 
-			if(is_file($controller_file) && !in_array("override",$options))
+			if(is_file($controller_file) && !$override)
 				throw new Exception("The ".$controller." controller already exists");
 
 			$app_js = FILE_UTIL::get($app_js_file);

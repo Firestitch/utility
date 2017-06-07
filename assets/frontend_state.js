@@ -12,9 +12,8 @@
 		},
 		resolve: {literal}{{/literal}{{if $object && $interface=="form"}}
 			{{$object}}: function(appService, $stateParams, {{$object}}Service) {
-				return appService.stateModel({{$object}}Service,$stateParams,'{{$object}}','id'{{if in_array("draft",$options)}},{ draft: true }{{/if}});
-			},{{/if}}
-			time: function($stateParams) { return $stateParams.time; }
+				return appService.stateModel({{$object}}Service,$stateParams,'{{$object}}'{{if $state_model_options}},{{$state_model_options}}{{/if}});
+			}{{/if}}
 		}{{if $view_format=='modal'}},
 		onEnter: function($stateParams,fsModal{{if $object}},{{$object}},fsLister{{/if}}) {
 			fsModal

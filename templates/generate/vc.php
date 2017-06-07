@@ -13,9 +13,9 @@
 						->dropdown("form1[interface]","Include Interface",[""=>"None","lister"=>"Lister","form"=>"Form"],"")
 						->input("form1[object]","Object Name","",true,["placeholder"=>"ie. user","class"=>"w250 lister1-option form1-option"])
 						->checkboxes("form1[options]","Lister Options",["secondary"=>"Create Secondary Interface",
-																		"order"=>"Add ordering interface",
-																		"override"=>"Override existing files"],["secondary"],false,["placeholder"=>"ie. user","class"=>"lister1-option"])
+																		"order"=>"Add ordering interface"],["secondary"],false,["placeholder"=>"ie. user","class"=>"lister1-option"])
 						->checkboxes("form1[options]","Form Options",["draft"=>"Apply draft pattern"],"",false,["placeholder"=>"ie. user","class"=>"form1-option"])
+						->checkbox("form1[override]","Override existing files")
 						->render();
 			?>
 		</div>
@@ -30,8 +30,8 @@
 						->input("form2[view]","Template  File Name","",true,["placeholder"=>"ie. userprofile","class"=>"w250","data-form"=>"form2"])
 						->dropdown("form2[view_format]","Display On",["page"=>"Full Page","modal"=>"Modal","drawer"=>"Drawer"],"")
 						->dropdown("form2[interface]","Include Interface",["form"=>"Form"],"")
-						->checkboxes("form2[options]","Form Options",[	"draft"=>"Apply draft pattern",
-																		"override"=>"Override existing files"],"",false,["placeholder"=>"ie. user","class"=>"form2-option"])
+						->checkboxes("form2[options]","Form Options",["draft"=>"Apply draft pattern"],"",false,["placeholder"=>"ie. user","class"=>"form2-option"])
+						->checkbox("form2[override]","Override existing files")
 						->render();
 			?>
 		</div>
