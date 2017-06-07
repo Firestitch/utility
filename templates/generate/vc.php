@@ -65,33 +65,46 @@
 
 	$(function() {
 
-		$("input[name='form1[url]']").on("keyup input",function(e) {
-			$(this).val(url($(this).val()));
+		$("input[name='form1[url]'],input[name='form2[url]']").on("keyup input",function(input) {
 
-	  		var valuesRegex = new RegExp(':([^:\/]+)', 'g'),
-	      		matches,
-	      		parms = [];
+		    var start = this.selectionStart,
+		        end = this.selectionEnd;
 
-		  	while (matches = valuesRegex.exec($(this).val())) {
-			    parms.push(matches[1]);
+			if(this.value) {
+				if(!this.value.match(/^\//)) {
+					end++;
+					start++;
+				}
+
+				this.value = ('/' + this.value.replace(/^\//,'').replace(/[^a-z0-9:\/\?_]/,'')).replace(/\/{2,}/,'/');
 			}
 
-			var parts = $(this).val().replace(/:[^\/]*/g,'').split("/");
-			var form = $(this).data("form");
+			this.setSelectionRange(start, end);
+		});
 
-			$("#form1-parms").text(parms.join(', '));
-			$("input[name='form1[params]']").val(parms.join(','));
+		$("input[name='form1[url]']").on("keyup input",function(e) {
 
-			var names = $.merge([], parts);
+			var parsed = parseUrl($(this).val());
 
-			$.each(names,function(key,value) {
-				names[key] = value.capitalize();
-			});
+			$("#form1-parms").text(parsed.parms.join(', '));
+			$("input[name='form1[params]']").val(parsed.parms.join(','));
+			$("input[name='form1[controller]'").val(parsed.names.join(''));
+			$("input[name='form1[view]']").val(parsed.parts.join(''));
+			$("input[name='form1[state]']").val(parsed.parts.join(''));
+			$("select[name='form1[view_format]']").trigger('change');
+		});
 
-			$("input[name='" + form + "[controller]'").val(names.join('')).trigger("keyup");
-			$("input[name='" + form + "[view]']").val(parts.join('')).trigger("keyup");
-			$("input[name='" + form + "[state]']").val(parts.join('')).trigger("keyup");
-			$("input[name='" + form + "[object]']").trigger("keyup");
+
+		$("input[name='form2[url]']").on("keyup input",function(e) {
+
+	  		var parsed = parseUrl($(this).val());
+
+			$("#form2-parms").text(parsed.parms.join(', '));
+			$("input[name='form2[params]']").val(parsed.parms.join(','));
+			$("input[name='form2[controller]'").val(parsed.names.join(''));
+			$("input[name='form2[view]']").val(parsed.parts.join(''));
+			$("input[name='form2[state]']").val(parsed.parts.join(''));
+			$("select[name='form2[view_format]']").trigger('change');
 		});
 
 		$("select[name='form1[interface]']").on('change',function() {
@@ -122,73 +135,66 @@
 			$("#" + $(this).data("form") + "-controller-filename").text("/scripts/controllers/" + $(this).val().toLowerCase() + ".js");
 
 			$("input[name='" + $(this).data("form") + "[view]']").trigger("keyup");
-
-			if($(this).data("form")=="form1") {
-				$("input[name='form2[controller]']").val(singular($(this).val())).trigger("keyup");
-			}
 		});
 
 		$("input[name='form1[view]'],input[name='form2[view]']").on("keyup",function(e) {
 			$("#" + $(this).data("form") + "-view-filename").text("/views/" + $(this).val() + ".html");
-
-			if($(this).data("form")=="form1") {
-				$("input[name='form2[view]']").val(singular($(this).val())).trigger("keyup");
-			}
 		});
 
-		$("input[name='form1[state]']").on("keyup",function(e) {
-			$("input[name='form2[state]']").val(singular($(this).val()));
+		$("select[name='form1[view_format]'],select[name='form2[view_format]']").on("change",function(e) {
+			var form = parseFormName($(this).attr("name"));
+			var state = $("input[name='" + form + "[state]']").val();
+			$("input[name='" + form + "[state]']").val($(this).val() + "." + state.replace(/^(\page\.|modal\.|drawer\.)/,''));
 		});
 
 		$("input[name='form1[object]']").on("keyup",function(e) {
-			$("input[name='form2[url]']").val($("input[name='form1[url]']").val() + "/:id").trigger("keyup");
+			$("input[name='form2[url]']").val($(this).val() + "/:id").trigger("keyup");
 		});
-	});
 
-	$("input[name='form1[options][]']").on('change',function() {
-		$("select[name='form1[interface]']").trigger("change");
-	});
-
-	$("input[name='form2[url]']").on("keyup input",function(e) {
-
-  		var valuesRegex = new RegExp(':([^:\/]+)', 'g'),
-      		matches,
-      		parms = [];
-
-	  	while (matches = valuesRegex.exec($(this).val())) {
-		    parms.push(matches[1]);
-		}
-
-		var parts = $(this).val().replace(/:[^\/]*/g,'').split("/");
-
-		$("#form2-parms").text(parms.join(', '));
-		$("input[name='form2[params]']").val(parms.join(','));
-
-		$(this).val(url($(this).val()));
-	});
-
-
-	$("#generate").click(function() {
-		$.post("/generate/dovc",$("#form-vc").serializeArray(),function(response) {
-
-			if(response.has_success) {
-				FF.msg.success('Successfully generated');
-			} else
-				FF.msg.error(response.errors);
-
-			if(response.data.warnings.length)
-				FF.msg.warning(response.data.warnings,{ append: true });
+		$("input[name='form1[options][]']").on('change',function() {
+			$("select[name='form1[interface]']").trigger("change");
 		});
+
+		$("#generate").click(function() {
+			$.post("/generate/dovc",$("#form-vc").serializeArray(),function(response) {
+
+				if(response.has_success) {
+					FF.msg.success('Successfully generated');
+				} else
+					FF.msg.error(response.errors);
+
+				if(response.data.warnings.length)
+					FF.msg.warning(response.data.warnings,{ append: true });
+			});
+		});
+
 	});
 
 	function singular(value) {
 		return value.replace(/ies$/,'y').replace(/s$/,'');
 	}
 
-	function url(value) {
-		if(value) {
-			return '/' + value.replace(/(^\/|\/$)*/,'');
+	function parseUrl(url) {
+  		var valuesRegex = new RegExp(':([^:\/]+)', 'g'),
+      		matches,
+      		parms = [];
+
+	  	while (matches = valuesRegex.exec(url)) {
+		    parms.push(matches[1]);
 		}
+
+		var parts = url.replace(/:[^\/]*/g,'').split("/");
+		var names = $.merge([], parts);
+
+		$.each(names,function(key,value) {
+			names[key] = value.capitalize();
+		});
+
+		return { parms: parms, names: names, parts: parts };
+	}
+
+	function parseFormName(name) {
+		return name.match(/(form\d)/)[1];
 	}
 
 </script>

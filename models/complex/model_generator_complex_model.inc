@@ -206,7 +206,7 @@
 			$cmodels = [""=>""];
 			foreach($files as $file) {
 				if(preg_match("/(.*)_complex_model\.inc/",$file,$matches)) {
-					$cmodels[$matches[1]] = "CMODEL_".strtoupper($matches[1]);
+					$cmodels[$matches[1]] = $matches[1];
 				}
 			}
 
