@@ -73,7 +73,8 @@
 {if $name=="create_date"}						"default"=>"datetime",
 {/if}
 {if $column->is_data_type_datetime() || $column->is_data_type_date()}						"sanitize"=>"time",
-{/if}						"validations"=>[ "required"=>false ]
+{/if}						"validations"=>[	{if $name=="state"}"required"=>true,
+											"key_exists"=>self::get_states(){else}"required"=>false{/if} ]
 					]{if !$smarty.foreach.columns.last},{/if}
 {/if}{/foreach}
 
