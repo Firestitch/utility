@@ -24,7 +24,7 @@
 
 				if(!is_null($value=$this->get("state")))
 					${$model}_hmodel->set_states(explode(",",$value));
-				else
+				elseif(!${$model_id})
 					${$model}_hmodel->set_state(CMODEL_{$model_upper}::STATE_ACTIVE);
 {elseif preg_match("/(name|description)/",$name)}{continue}{elseif $column->is_data_type("date") || $column->is_data_type("datetime")}
 
