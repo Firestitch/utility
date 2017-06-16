@@ -12,8 +12,8 @@
         }
 
 {/if}{if in_array("post",$methods)}
-        function {$namespace}Post({$api_singular}_id, id, data, options) {
-            return fsApi.post('{$service}s/' + {$api_singular}_id + '/{$namespace}/' + id, data, fsApi.options({ key: '{$model}' },options));
+        function {$namespace}Post({$api_singular}_id, data, options) {
+            return fsApi.post('{$service}s/' + {$api_singular}_id + '/{$namespace}', data, fsApi.options({ key: '{$model}' },options));
         }
 
 {/if}{if in_array("delete",$methods)}

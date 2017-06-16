@@ -100,7 +100,7 @@
 {{if $child && ($child.view_format=="modal" || $child.view_format=="drawer" || $child.view_format=="page")}}		$scope.update = function({{$object}}) {
         	$state.go('{{$child.state}}',{ 	id: {{$object}}.id,
         									{{$object}}: {{$object}},
-        									time: Date.now(){{if $child && ($child.view_format=="modal" || $child.view_format=="drawer")}},{ notify: false }{{/if}} });
+        									time: Date.now() }{{if $child && ($child.view_format=="modal" || $child.view_format=="drawer")}},{ notify: false }{{/if}});
         }
 {{/if}}
 {{/if}}{{if $interface=="form"}}

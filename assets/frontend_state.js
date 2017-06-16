@@ -26,7 +26,7 @@
 					{literal}}{/literal}{{/if}}){{if $object}}
 			.then(function() {
 				if($stateParams.{{$object}} && $stateParams.{{$object}}.new) {
-					fsLister.reload('{{$parent.state}}');
+					{{if $parent}}fsLister.reload('{{$parent.state}}');{{/if}}
 				} else {
 					angular.extend($stateParams.{{$object}},{{$object}});
 				}
