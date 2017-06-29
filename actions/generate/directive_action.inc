@@ -24,7 +24,7 @@
 					throw new Exception("Failed to locate index.html");
 
 				if(stripos($index_html,"<!-- enddirectives -->")===false)
-					throw new Exception("Failed to locate <!-- enddirectives --> index.html");
+					throw new Exception("Failed to locate <&#33;-- enddirectives --> index.html");
 
 				$js_include = '<script src="scripts/directives/'.strtolower($directive).'.js"></script>';
 

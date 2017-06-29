@@ -171,7 +171,7 @@
 			}
 
 			if(stripos($index_html,"<!-- endcontrollers -->")===false)
-				throw new Exception("Failed to locate <!-- endcontrollers --> index.html");
+				throw new Exception("Failed to locate <&#33;-- endcontrollers --> index.html");
 
 			$js_include = '<script src="scripts/controllers/'.strtolower($controller).'.js"></script>';
 
