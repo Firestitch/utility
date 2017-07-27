@@ -21,11 +21,11 @@
 			var name = "";
 
 			if($(this).val())
-				name = $(this).val() + "Ctrl";
+				name = $(this).val();
 			name = name.charAt(0).toUpperCase() + name.slice(1);
 
 			$("#controller").val(name);
-			$("#controller-classname").text(name);
+			$("#controller-classname").text(name + "Ctrl");
 			$("#controller-filename").text("/scripts/controllers/" + $(this).val().toLowerCase() + ".js");
 		});
 	});
@@ -39,7 +39,7 @@
 			} else
 				FF.msg.error(response.errors);
 
-			if(response.data.warnings.length)
+			if(response.data.warnings && response.data.warnings.length)
 				FF.msg.warning(response.data.warnings,{ append: true });
 		});
 	});

@@ -17,7 +17,6 @@
 
 			try {
 
-
 				$index_html = FILE_UTIL::get($index_file);
 
 				if(!$index_html)
@@ -29,7 +28,7 @@
 				$js_include = '<script src="scripts/directives/'.strtolower($directive).'.js"></script>';
 
 				if(stripos($index_html,$js_include)===false) {
-					$index_html = str_replace("<!-- enddirectives -->",$js_include."\n\t<!-- enddirectives -->",$index_html);
+					$index_html = str_replace("<!-- enddirectives -->",$js_include."\n\t\t<!-- enddirectives -->",$index_html);
 					FILE_UTIL::put($index_file,$index_html);
 				}
 

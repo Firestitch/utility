@@ -31,7 +31,7 @@
 			} else
 				FF.msg.error(response.errors);
 
-			if(response.data.warnings.length)
+			if(response.data.warnings && response.data.warnings.length)
 				FF.msg.warning(response.data.warnings,{ append: true });
 		});
 	});
