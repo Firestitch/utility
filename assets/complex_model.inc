@@ -62,9 +62,11 @@
 		}
 
 		public function describe() {
-			return [{foreach from=$columns key=name item=column name=columns}{if !$column->is_primary()}
+			return [{foreach from=$columns key=name item=column name=columns}
 
-					"{$name}" => [
+					"{$name}"=> [
+{if $column->is_primary() || $column->is_data_type_datetime() || $column->is_data_type_date()}						"arry"=>[{if $column->is_primary()}"name"=>"id"{/if}{if $column->is_data_type_datetime() || $column->is_data_type_date()}"format"=>"iso8601"{/if}],
+{/if}
 {if $name=="state"}						"default"=>self::STATE_ACTIVE,
 {/if}
 {if $name=="guid"}						"default"=>"guid",
@@ -72,10 +74,10 @@
 {if $name=="create_date"}						"default"=>"datetime",
 {/if}
 {if $column->is_data_type_datetime() || $column->is_data_type_date()}						"sanitize"=>"time",
-{/if}						"validations"=>[	{if $name=="state"}"required"=>true,
-											"key_exists"=>self::get_states(){else}"required"=>false{/if} ]
+{/if}						"validations"=>[{if $name=="state"}"required"=>true,
+											"key_exists"=>self::get_states(){/if}]
 					]{if !$smarty.foreach.columns.last},{/if}
-{/if}{/foreach}
+{/foreach}
 
 			];
 		}
