@@ -70,10 +70,6 @@
 				$extend_id = current(array_keys($extend_dbo->get_primary_keys()));
 			}
 
-			$has_guid 			= array_key_exists("guid",$columns);
-			$has_state 			= array_key_exists("state",$columns);
-			$has_create_date	= array_key_exists("create_date",$columns);
-
 			$dbq_class 	= "DBQ_".$this->_upper_model;
 			$dbq 		= $dbq_class::create();
 
@@ -105,11 +101,12 @@
 			$this->_smarty->assign("keys",array_keys($dbo->get_primary_keys()));
 			$this->_smarty->assign("primary_key",value(array_keys($dbo->get_primary_keys()),0));
 			$this->_smarty->assign("framework",$this->_framework);
-			$this->_smarty->assign("has_guid",$has_guid);
-			$this->_smarty->assign("has_state",$has_state);
-			$this->_smarty->assign("id",MODEL_GENERATE::get_abr($this->_lower_model)."id");
-			$this->_smarty->assign("has_create_date",$has_create_date);
+			$this->_smarty->assign("has_guid",array_key_exists("guid",$columns));
+			$this->_smarty->assign("has_state",array_key_exists("state",$columns));
+			$this->_smarty->assign("has_create_date",array_key_exists("create_date",$columns));
+			$this->_smarty->assign("has_object_id",array_key_exists("object_id",$columns));
 			$this->_smarty->assign("consts",$consts);
+			$this->_smarty->assign("id",MODEL_GENERATE::get_abr($this->_lower_model)."id");
 			$this->_smarty->allow_php_tag();
 
 			return $this->generate_model("complex");

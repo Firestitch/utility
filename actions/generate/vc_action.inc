@@ -120,15 +120,23 @@
 				$state_model_options = "{ ".implode(", ",$state_model_options)." }";
 			}
 
+			$tabs = [];
+			if(value($options,"tabs")) {
+				foreach(explode(",",value($options,"tabs")) as $tab) {
+					$tabs[preg_replace("/[^0-9a-z]/","",strtolower($tab))] = trim($tab);
+				}
+			}
+
 			$smart_cmodel = CMODEL_SMARTY::create()
 								->assign("controller",$controller)
 								->assign("state_model_options",$state_model_options)
 								->assign("controller_singular",rtrim($controller,"s"))
-								->assign("object",$object)
+								->assign("object",$interface ? $object : "")
 								->assign("plural_object",LANG_UTIL::plural($object))
 								->assign("url",$url)
 								->assign("view",$view)
 								->assign("state",$state)
+								->assign("tabs",$tabs)
 								->assign("interface",$interface)
 								->assign("view_format",$view_format)
 								->assign("options",$options)

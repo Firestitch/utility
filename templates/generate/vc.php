@@ -10,8 +10,9 @@
 						->input("form1[controller]","Controller Name","",true,["placeholder"=>"ie. UserProfile","class"=>"w250","data-form"=>"form1"])
 						->input("form1[view]","Template  File Name","",true,["placeholder"=>"ie. userprofile","class"=>"w250","data-form"=>"form1"])
 						->dropdown("form1[view_format]","Display On",["page"=>"Full Page","modal"=>"Modal","drawer"=>"Drawer"],"")
+						->input("form1[options][tabs]","Tabs","",true,["placeholder"=>"ie. tab1,tab2","class"=>"w250"])
+						->input("form1[object]","Object Name","",false,["placeholder"=>"ie. user","class"=>"w250 lister1-option form1-option"])
 						->dropdown("form1[interface]","Include Interface",[""=>"None","lister"=>"Lister","form"=>"Form"],"")
-						->input("form1[object]","Object Name","",true,["placeholder"=>"ie. user","class"=>"w250 lister1-option form1-option"])
 						->checkboxes("form1[options]","Lister Options",["secondary"=>"Create Secondary Interface",
 																		"order"=>"Add ordering interface"],["secondary"],false,["placeholder"=>"ie. user","class"=>"lister1-option"])
 						->checkboxes("form1[options]","Form Options",["draft"=>"Apply draft pattern"],"",false,["placeholder"=>"ie. user","class"=>"form1-option"])
@@ -29,6 +30,7 @@
 						->input("form2[controller]","Controller Name","",true,["placeholder"=>"ie. UserProfile","class"=>"w250","data-form"=>"form2"])
 						->input("form2[view]","Template  File Name","",true,["placeholder"=>"ie. userprofile","class"=>"w250","data-form"=>"form2"])
 						->dropdown("form2[view_format]","Display On",["page"=>"Full Page","modal"=>"Modal","drawer"=>"Drawer"],"")
+						->input("form2[options][tabs]","Tabs","",true,["placeholder"=>"ie. tab1,tab2","class"=>"w250"])
 						->dropdown("form2[interface]","Include Interface",["form"=>"Form"],"")
 						->checkboxes("form2[options]","Form Options",["draft"=>"Apply draft pattern"],"",false,["placeholder"=>"ie. user","class"=>"form2-option"])
 						->checkbox("form2[override]","Override existing files")

@@ -7,7 +7,20 @@
     </md-toolbar>
 {{if !$interface}}
 	<md-dialog-content>
-		<div class="md-dialog-content"></div>
+		<div class="md-dialog-content">
+			{{if $tabs}}<fs-tabnav fs-selected="tab">
+{foreach from=$tabs item=name key=key}				<fs-tabnav-item fs-name="{{$key}}">{{$name}}</fs-tabnav-item>
+{/foreach}				<fs-tabnav-content>
+{foreach from=$tabs item=name key=key}					<fs-tabnav-pane fs-name="{{$key}}">
+{{if $object}}						<md-input-container class="md-block">
+							<label>Name</label>
+							<input type="text" ng-model="{{$object}}.name" md-autofocus required>
+						</md-input-container>{{/if}}
+					</fs-tabnav-pane>
+{/foreach}
+				</fs-tabnav-content>
+			</fs-tabnav>{{/if}}
+		</div>
   	</md-dialog-content>
     <md-dialog-actions>
         <md-button type="button" ng-click="cancel()">Cancel</md-button>
@@ -16,10 +29,24 @@
     <form fs-validate="save()">
         <md-dialog-content>
         	<div class="md-dialog-content">
+        		{{if $tabs}}<fs-tabnav fs-selected="tab">
+{foreach from=$tabs item=name key=key}	    			<fs-tabnav-item fs-name="{{$key}}">{{$name}}</fs-tabnav-item>
+{/foreach}        	<fs-tabnav-content>
+{foreach from=$tabs item=name key=key}        			<fs-tabnav-pane fs-name="{{$key}}">
+{{if $object}}        				<md-input-container class="md-block">
+				            	<label>Name</label>
+				                <input type="text" ng-model="{{$object}}.name" md-autofocus required>
+				           	</md-input-container>{{/if}}
+						</fs-tabnav-pane>
+						{/foreach}
+					</fs-tabnav-content>
+				</fs-tabnav>
+        		{{else}}
 	            <md-input-container class="md-block">
 	            	<label>Name</label>
 	                <input type="text" ng-model="{{$object}}.name" md-autofocus required>
 	           	</md-input-container>
+	           	{{/if}}
 	        </div>
         </md-dialog-content>
         <md-dialog-actions>
@@ -30,7 +57,19 @@
 {{/if}}{{if $interface=="lister"}}
 	<md-dialog-content>
 		<div class="md-dialog-content">
-			<fs-lister ls-options="lister"{{if in_array("order",$options)}} ls-sort{{/if}}></fs-lister>
+			{{if $tabs}}<fs-tabnav fs-selected="tab">
+{foreach from=$tabs item=name key=key}    			<fs-tabnav-item fs-name="{{$key}}">{{$name}}</fs-tabnav-item>
+{/foreach}				<fs-tabnav-content>
+{foreach from=$tabs item=name key=key}					<fs-tabnav-pane fs-name="{{$key}}">
+{{if $object}}			            <md-input-container class="md-block">
+			            	<label>Name</label>
+			                <input type="text" ng-model="{{$object}}.name" md-autofocus required>
+			           	</md-input-container>{{/if}}
+					</fs-tabnav-pane>
+					{/foreach}
+				</fs-tabnav-content>
+			</fs-tabnav>
+{{/if}}		<fs-lister ls-options="lister"{{if in_array("order",$options)}} ls-sort{{/if}}></fs-lister>
 		</div>
   	</md-dialog-content>
     <md-dialog-actions>
@@ -39,22 +78,27 @@
     </md-dialog-actions>
 {{/if}}
 </md-dialog>
-{{/if}}{{if $view_format!='modal'}}
-{{if $interface=='lister'}}
-<fs-lister ls-options="lister"{{if in_array("order",$options)}} ls-sort{{/if}}></fs-lister>
-{{/if}}{{if $interface=='form'}}
+{{/if}}{{if $view_format!='modal'}}{{if $interface=='form'}}
 <form fs-validate="save()">
-    <md-input-container class="md-block">
-        <label>Name</label>
-        <input type="text" ng-model="{{$object}}.name" md-autofocus required>
-    </md-input-container>
-
-    <md-input-container class="md-block">
-        <label>Select</label>
-        <md-select ng-model="{{$object}}.select">
-            <md-option ng-value="item.id" ng-repeat="item in values">{literal}{{item.name}}{/literal}</md-option>
-        </md-select>
-    </md-input-container>
-
+{/if}{{if $tabs}}<fs-tabnav fs-selected="tab">
+{foreach from=$tabs item=name key=key}	<fs-tabnav-item fs-name="{{$key}}">{{$name}}</fs-tabnav-item>
+{/foreach}	<fs-tabnav-content>
+{foreach from=$tabs item=name key=key}		<fs-tabnav-pane fs-name="{{$key}}">
+{{if $object}}			<md-input-container class="md-block">
+				<label>Name</label>
+				<input type="text" ng-model="{{$object}}.name" md-autofocus required>
+			</md-input-container>
+			<md-input-container class="md-block">
+				<label>Select</label>
+			    <md-select ng-model="{{$object}}.select">
+			    	<md-option ng-value="item.id" ng-repeat="item in values">{literal}{{item.name}}{/literal}</md-option>
+			    </md-select>
+			</md-input-container>{{/if}}
+{{if $interface=='lister'}}			<fs-lister ls-options="lister"{{if in_array("order",$options)}} ls-sort{{/if}}></fs-lister>
+{{/if}}		</fs-tabnav-pane>{/foreach}
+{{if $interface=='form'}}
     <md-button type="submit" class="md-accent">Save</md-button>
-</form>{{/if}}{{/if}}
+</form>
+{{/if}}{{if $tabs}}	</fs-tabnav-content>
+</fs-tabnav>{{/if}}
+{{/if}}{{/if}}

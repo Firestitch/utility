@@ -25,7 +25,6 @@
 			->set_class("")
 			->set_padding(3)
 			->render();
-
 	?>
 </form>
 

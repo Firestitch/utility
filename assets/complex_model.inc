@@ -42,10 +42,20 @@
 			} else {
 {if $extended}
 				$this->dbo("{$lower_model}")
-					->set_{$extend_id}(parent::get_{$extend_id}())
-					->insert();
+					->set_{$extend_id}(parent::get_{$extend_id}()){if $has_object_id}
+					->set_object_id(CMODEL_OBJECT::create()
+										->set_object_type(CMODEL_OBJECT::OBJECT_TYPE)
+										->save()
+										->get_object_id())
+							{/if}->insert();
 
-{else}				$this->dbo("{$lower_model}")->insert();
+{else}				$this->dbo("{$lower_model}"){if $has_object_id}
+
+					->set_object_id(CMODEL_OBJECT::create()
+										->set_object_type(CMODEL_OBJECT::OBJECT_TYPE)
+										->save()
+										->get_object_id())
+					{/if}->insert();
 {/if}
 			}
 {if $extended}
@@ -57,6 +67,17 @@
 				DB::complete_transaction();
 				throw $e;
 			}
+{/if}{if $has_object_id}
+
+			$this->get_object()
+				->set_name($this->get_name())
+				->set_primary_keyword($this->get_name())
+				->set_secondary_keyword($this->get_name())
+				->set_active($this->is_state_active())
+				->set_primary_id($this->get_{$primary_key}())
+				//->set_image_url()
+				->save();
+
 {/if}
 			return $this;
 		}
@@ -75,7 +96,9 @@
 {/if}
 {if $column->is_data_type_datetime() || $column->is_data_type_date()}						"sanitize"=>"time",
 {/if}						"validations"=>[{if $name=="state"}"required"=>true,
-											"key_exists"=>self::get_states(){/if}]
+										"key_exists"=>self::get_states(){/if}]{if preg_match("/_id$/",$name) || $name=="guid"},
+						"diff"=>false{/if}
+
 					]{if !$smarty.foreach.columns.last},{/if}
 {/foreach}
 

@@ -10,7 +10,7 @@
 		data: {
 			permissions: []
 		},
-		resolve: {literal}{{/literal}{{if $object && $interface=="form"}}
+		resolve: {literal}{{/literal}{{if $object && ($interface=="form")}}
 			{{$object}}: function(appService, $stateParams, {{$object}}Service) {
 				return appService.stateModel({{$object}}Service,$stateParams,'{{$object}}'{{if $state_model_options}},{{$state_model_options}}{{/if}});
 			}{{/if}}
@@ -36,10 +36,9 @@
 			fsDrawer
 			.create({	controller: '{{$controller}}Ctrl',
 						templateUrl: 'views/{{$view}}.html'{{if $object}},
-						{
-							resolve: {
-								{{$object}}: function() { return {{$object}}; }
-							}
-						{literal}}{/literal}{{/if}});
+						resolve: {
+							{{$object}}: function() { return {{$object}}; }
+						}{{/if}}
+					{literal}}{/literal});
 		}{{/if}}
 	})

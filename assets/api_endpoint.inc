@@ -75,9 +75,11 @@
 														->set_{$model_id}(${$model_id}));
 
 				${$model}_cmodel
+					->start_audit()
 					->fill($this->posts(),["{'", "'|implode:$accessible_fields}"])
 					->validate()
-					->save();
+					->save()
+					->end_audit($this->get_api_token());
 
 				$this->data("{$model}",${$model}_cmodel->arry());
 
@@ -89,7 +91,9 @@
 
 														->set_{$model_id}(${$model_id}));
 
-				${$model}_cmodel->delete();
+				${$model}_cmodel
+					->delete()
+					->audit_delete($this->get_api_token());
 
 				$this->data("{$model}",${$model}_cmodel->arry());
 			}
