@@ -25,11 +25,12 @@
 						}
 					{literal}}{/literal}{{/if}}){{if $object}}
 			.then(function() {
-				if({{$object}} && {{$object}}.new) {
-					{{if $parent}}fsLister.reload('{{$parent.state}}');{{/if}}
+{{if $parent}}				if({{$object}} && fsLister.filter('{{$parent.state}}',{ id: {{$object}}.id }).length) {
+					fsLister.extend('{{$parent.state}}',{{$object}},{ id: {{$object}}.id });
 				} else {
-					angular.extend($stateParams.{{$object}},{{$object}});
-				}
+					fsLister.reload('{{$parent.state}}');
+				}{{else}}angular.extend($stateParams.{{$object}},{{$object}});
+{{/if}}}
 			}){{/if}};
 		}{{/if}}{{if $view_format=='drawer'}},
 		onEnter: function(fsDrawer{{if $object}}, {{$object}}{{/if}}) {
