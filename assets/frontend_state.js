@@ -15,7 +15,7 @@
 				return appService.stateModel({{$object}}Service,$stateParams,'{{$object}}'{{if $state_model_options}},{{$state_model_options}}{{/if}});
 			}{{/if}}
 		}{{if $view_format=='modal'}},
-		onEnter: function($stateParams,fsModal{{if $object}},{{$object}},fsLister{{/if}}) {
+		onEnter: function($stateParams, fsModal{{if $object}}, {{$object}}, fsLister{{/if}}) {
 			fsModal
 			.show(	'{{$controller}}Ctrl',
 					'views/{{$view}}.html'{{if $object}},
@@ -29,9 +29,8 @@
 					fsLister.extend('{{$parent.state}}',{{$object}},{ id: {{$object}}.id });
 				} else {
 					fsLister.reload('{{$parent.state}}');
-				}{{else}}angular.extend($stateParams.{{$object}},{{$object}});
-{{/if}}}
-			}){{/if}};
+				}{{else}}				angular.extend($stateParams.{{$object}},{{$object}});
+{{/if}}			}){{/if}};
 		}{{/if}}{{if $view_format=='drawer'}},
 		onEnter: function(fsDrawer{{if $object}}, {{$object}}{{/if}}) {
 			fsDrawer
