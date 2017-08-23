@@ -105,15 +105,10 @@
 			];
 		}
 
-		public function arry($arry=[]) {
+		public function arry($options=[]) {
 
-			$arry = CMODEL_OBJECTER::create($this,
-											[	{foreach $columns as $name=>$column}{if $column->is_primary()}"id"=>"get_{$name}",
-{else}"get_{$name}{if $column->is_data_type_datetime()}|iso8601{/if}",
-{/if}													{/foreach}])->arry();
-{if $extended}			$arry += parent::arry();
-			{/if}
-
+			$arry = parent::arry($options);
+											
 			return $arry;
 		}
 	}

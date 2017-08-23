@@ -91,8 +91,7 @@
 
 					$cmodel_content = value($matches,1).$code.value($matches,2);
 				}
-			} else
-				$warnings[] = "The arry() function is already generated";
+			}
 
 
 			if(stripos($cmodel_content,"n ".$reference_name_set_function."(")===false) {
