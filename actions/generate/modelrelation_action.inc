@@ -12,7 +12,6 @@
 			$source_model_column 		= $this->request("source_model_column");
 			$reference_model_column	 	= $this->request("reference_model_column");
 			$reference_model	 		= $this->request("reference_model");
-			$relationship 				= $this->request("relationship");
 			$joiners 					= (array)$this->request("joiners");
 			$map_child 					= $this->request("relationship")=="child";
 			$map_children 				= $this->request("relationship")=="children";
@@ -45,7 +44,7 @@
 
 			$reference_name_get = 	"\n\t\tpublic function ".$reference_name_get_function."(\$hmodel=".($map_child ? "true" : "null").") {\n".
 									"\t\t\tif(\$hmodel && !\$this->has_data(\"".$reference_key."\") && \$this->get_".$source_model_column."()) {\n".
-									"\t\t\t\t\$hmodel = is_a(\$hmodel,\"HMODEL\") ? \$hmodel : HMODEL_".strtoupper($reference_model)."::create(".($map_child ? "false" : "").");\n".
+									"\t\t\t\t\$hmodel = is_a(\$hmodel,\"HMODEL\") ? \$hmodel : HMODEL_".strtoupper($reference_model)."::create(".($map_child ? "false" : "true").");\n".
 									"\t\t\t\t\$this->data(\"".$reference_key."\",\$hmodel";
 									foreach(array_reverse($joiners) as $joiner) {
 										$reference_name_get .= "->join(\"".$last_table."\",\"".$joiner["table"]."\",\"".$last_column."\",\"".$joiner["reference_column"]."\")\n\t\t\t\t\t\t\t\t\t\t\t\t";

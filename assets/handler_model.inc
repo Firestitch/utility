@@ -33,7 +33,7 @@
 		public function set_{$name}s($values)			{ return $this->where("{$field}","IN",$values); }
 {/foreach}
 
-		public static function create($defaults=true) {
+		public static function create($defaults=false) {
 			$hmodel = parent::create();
 {if $has_state}			if($defaults)
 				$hmodel->where("{$tablename}.state","<>",CMODEL_{$upper_model}::STATE_DELETED);
