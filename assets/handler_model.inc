@@ -40,4 +40,8 @@
 {/if}
 			return $hmodel;
 		}
+
+		public function acl() {
+			return [];
+		}
 	}
