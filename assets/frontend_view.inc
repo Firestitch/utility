@@ -80,25 +80,20 @@
 </md-dialog>
 {{/if}}{{if $view_format!='modal'}}{{if $interface=='form'}}
 <form fs-validate="save()">
-{/if}{{if $tabs}}<fs-tabnav fs-selected="tab">
+{{/if}}{{if $tabs}}<fs-tabnav fs-selected="tab">
 {foreach from=$tabs item=name key=key}	<fs-tabnav-item fs-name="{{$key}}">{{$name}}</fs-tabnav-item>
 {/foreach}	<fs-tabnav-content>
-{foreach from=$tabs item=name key=key}		<fs-tabnav-pane fs-name="{{$key}}">
+{foreach from=$tabs item=name key=key}		<fs-tabnav-pane fs-name="{{$key}}">{/foreach}{{/if}}{{if $interface=='lister'}}
+		<fs-lister ls-options="lister"{{if in_array("order",$options)}} ls-sort{{/if}}></fs-lister>
+{{else}}
 {{if $object}}			<md-input-container class="md-block">
 				<label>Name</label>
 				<input type="text" ng-model="{{$object}}.name" md-autofocus required>
-			</md-input-container>
-			<md-input-container class="md-block">
-				<label>Select</label>
-			    <md-select ng-model="{{$object}}.select">
-			    	<md-option ng-value="item.id" ng-repeat="item in values">{literal}{{item.name}}{/literal}</md-option>
-			    </md-select>
 			</md-input-container>{{/if}}
-{{if $interface=='lister'}}			<fs-lister ls-options="lister"{{if in_array("order",$options)}} ls-sort{{/if}}></fs-lister>
-{{/if}}		</fs-tabnav-pane>{/foreach}
-{{if $interface=='form'}}
-    <md-button type="submit" class="md-accent">Save</md-button>
-</form>
 {{/if}}{{if $tabs}}	</fs-tabnav-content>
 </fs-tabnav>{{/if}}
-{{/if}}{{/if}}
+{{if $interface=='form'}}
+    <md-button type="submit" class="md-accent">{literal}{{{/literal} {{$object}}.id ? 'Save' : 'Add' {literal}}}{{/literal}</md-button>
+</form>
+{{/if}}
+{{/if}}
