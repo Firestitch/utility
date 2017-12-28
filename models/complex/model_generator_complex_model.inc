@@ -186,15 +186,11 @@
 
 		function write_file($file,$string) {
 
-			$error_message = "";
-			$has_success = FILE_UTIL::put_file_contents($file,$string,$error_message);
+			FILE_UTIL::put($file,$string);
 
-			if($error_message==null)
-				$this->add_notify_message('Successfully added the file <a href="'.$file.'">'.$file.'</a>');
-			else
-				throw new Exception($error_message." ".$file);
+			$this->add_notify_message('Successfully added the file <a href="'.$file.'">'.$file.'</a>');
 
-			return $has_success;
+			return true;
 		}
 
 		static function get_cmodels() {
