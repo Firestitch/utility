@@ -44,7 +44,7 @@
 				$this->dbo("{$lower_model}")
 					->set_{$extend_id}(parent::get_{$extend_id}()){if $has_object_id}
 					->set_object_id(CMODEL_OBJECT::create()
-										->set_object_type(CMODEL_OBJECT::OBJECT_TYPE)
+										->set_class(CMODEL_OBJECT::CLASS_)
 										->save()
 										->get_object_id())
 							{/if}->insert();
@@ -52,7 +52,7 @@
 {else}				$this->dbo("{$lower_model}"){if $has_object_id}
 
 					->set_object_id(CMODEL_OBJECT::create()
-										->set_object_type(CMODEL_OBJECT::OBJECT_TYPE)
+										->set_class(CMODEL_OBJECT::CLASS_)
 										->save()
 										->get_object_id())
 					{/if}->insert();
@@ -108,7 +108,7 @@
 		public function arry($options=[]) {
 
 			$arry = parent::arry($options);
-											
+
 			return $arry;
 		}
 	}

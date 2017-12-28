@@ -191,7 +191,8 @@
 
 			FILE_UTIL::put($controller_file,$smart_cmodel->fetch_string(FILE_UTIL::get($controller_template)));
 
-			if($view)
+			if($view) {
 				FILE_UTIL::put($app_dir."views/".strtolower($view).".html",$smart_cmodel->fetch_string(FILE_UTIL::get($view_template)));
+			}
 		}
 	}
