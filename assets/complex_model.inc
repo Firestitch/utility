@@ -19,7 +19,7 @@
 {if $has_state}		public function delete()			{ return $this->set_state(self::STATE_DELETED)->save(); }
 		public function is_state_delete()	{ return $this->get_state()==self::STATE_DELETED; }
 		public function is_state_active()	{ return $this->get_state()==self::STATE_ACTIVE; }
-{/if}		public function get_manage_url()	{ return "/manage/{$lower_model|replace:'_':''}/{$id}:".$this->get_{$primary_key}()."/"; }
+{/if}		public function get_manage_url()	{ return "/backend/{$lower_model|replace:'_':''}/{$id}:".$this->get_{$primary_key}()."/"; }
 
 		public function save() {
 {if $has_multiple_keys}
