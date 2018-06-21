@@ -20,7 +20,7 @@
 
 			$model_list = CMODEL_INSTANCE::get_cmodels($app_dir);
 
-			$joiner_list = DB::get_instance()->get_db_utility()->get_table_names();
+			$joiner_list = DB::get_instance()->get_utility()->get_table_names();
 
 			$this->set_var("joiner",$this->_joiner);
 			$this->set_var("reference_model",$this->_reference_model);

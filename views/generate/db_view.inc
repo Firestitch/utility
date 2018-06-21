@@ -22,11 +22,11 @@
 
 			$dbq_filenames = FILE_UTIL::get_directory_listing($dbq_dir);
 
-			$db_utility = DB::get_instance()->get_db_utility();
+			$db_utility = DB::get_instance()->get_utility();
 			$tablename_list = $db_utility->get_table_names();
 
 			$sql = "SELECT `table_name` FROM `information_schema`.`columns` WHERE `table_schema` = '".DB::get_instance()->get_db_name()."' AND `column_name` = 'state'";
-			$state_column_tables = ARRAY_UTIL::get_list_from_array(DB::get_instance()->_select($sql),"table_name");
+			$state_column_tables = ARRAY_UTIL::get_list_from_array(DB::get_instance()->select($sql),"table_name");
 
 			$this->set_var("tablename_list",$tablename_list);
 			$this->set_var("classname",$this->_classname);

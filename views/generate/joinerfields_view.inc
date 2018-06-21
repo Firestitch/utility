@@ -18,7 +18,7 @@
 			$registry	= REGISTRY::get_instance();
 			$app_dir	= APPLICATION::get_main_application_directory();
 
-			$joiner_columns = DB::get_instance()->get_db_utility()->get_table_field_names($this->post("table"));
+			$joiner_columns = DB::get_instance()->get_utility()->get_table_field_names($this->post("table"));
 
 			$this->_joiner_columns = array_combine($joiner_columns,$joiner_columns);
 

@@ -5,7 +5,7 @@
 
 		function __construct($app_dir=null) {
 			$this->_app_dir  = $app_dir ? $app_dir : APPLICATION::get_main_application_directory();
-			$this->_db_utility = DB::get_instance()->get_db_utility();
+			$this->_db_utility = DB::get_instance()->get_utility();
 		}
 
 		function create_dbo($tablename,$classname,$override=false,$framework=false) {
