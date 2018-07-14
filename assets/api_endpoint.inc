@@ -52,9 +52,9 @@
 					${$model_plural}[] = ${$model}_cmodel->arry();
 
 				if(${$model_id})
-					$this->data("{$model}",value(${$model_plural},0));
+					$this->data("{$model}",array_shift(${$model_plural}));
 				else
-					$this->data("{$model_plural}",${$model_plural});
+					$this->data("{$model_plural}",array_values(${$model_plural}));
 
 
 
