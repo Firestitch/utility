@@ -1,4 +1,4 @@
-		public function {$method}({if $parent_model}${$parent_model}_id=null,{/if}${$model_id}=null,$action=null) {
+		public function {$method}({if $parent_model}${$parent_model}_id=null,{/if}${$model_id}=null) {
 {if $parent_model}
 
 			${$parent_model}_cmodel = HMODEL_{$parent_model|upper}::create()
@@ -104,17 +104,11 @@
 
 			if($this->is_put()) {
 
-				if($ids=$this->post("{$model_id}s")) {
-					${$model}_cmodels = $this->acl()->reads(HMODEL_{$model_upper}::create(false)
-																->set_{$model_id}s($this->post("{$model_id}s"))
-																->order("FIELD({$model_id},".implode(",",$ids).")"));
-
-					foreach(${$model}_cmodels as $index=>${$model}_cmodel) {
-						${$model}_cmodel
-							->set_order($index)
-							->save();
-					}
-				}
+				$hmodel = $this->acl()->apply(HMODEL_{$model_upper}::create(false));
+				$ids = is_array($this->post("{$model_id}s")) ? $this->post("{$model_id}s") : explode(",",$this->post("{$model_id}s"));
+				
+				CMODEL_ORDERING::create($hmodel,"{$model_id}")
+					->reorder($ids,$this->post("page") * $this->post("limit"));
 			}
 		}
 {/if}

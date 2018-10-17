@@ -5,6 +5,12 @@
 
 {{$wsdl_function}}
 
+		public function routes() {
+			return [
+				// ["path"=>"","function"=>"","pattern"=>""]
+			];
+		}
+
 		public function wsdl() {
 			return [ "model"=>"{$model}", "name"=>"{$model_name}" ];
 		}

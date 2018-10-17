@@ -7,14 +7,15 @@
 
 		function process() {
 
-			$tablename 		= strtolower($this->post("tablename"));
-			$name 			= strtoupper($this->post("name"));
-			$location		= $this->post("location");
-			$override 		= $this->post("override");
-			$objects 		= (array)$this->post("objects");
-			$dir			= DIR_INSTANCE.$location.DIRECTORY_SEPARATOR;
-			$framework		= $location=="framework";
-			$app_dir		= APPLICATION::get_main_application_directory();
+			$tablename 			= strtolower($this->post("tablename"));
+			$name 				= strtoupper($this->post("name"));
+			$location			= $this->post("location");
+			$primary_object_id	= $this->post("override");
+			$override 			= $this->post("override");
+			$objects 			= (array)$this->post("objects");
+			$dir				= DIR_INSTANCE.$location.DIRECTORY_SEPARATOR;
+			$framework			= $location=="framework";
+			$app_dir			= APPLICATION::get_main_application_directory();
 
 			$messages = $warnings = [];
 			if($this->is_form_valid($tablename,$name)) {
@@ -47,7 +48,7 @@
 				$warnings = array_merge($warnings,$db_generator_cmodel->get_warning_messages());
 
 
-				$model_generator_complex_cmoddel = new CMODEL_MODEL_GENERATOR($name,$app_dir,$framework,false);
+				$model_generator_complex_cmoddel = new CMODEL_MODEL_GENERATOR($name,$app_dir,$framework,false,["primary_object_id"=>$primary_object_id]);
 
 				if(in_array("cmodel",$objects)) {
 

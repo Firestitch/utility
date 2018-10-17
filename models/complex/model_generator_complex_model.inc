@@ -9,7 +9,7 @@
 		protected $_smarty	 		= null;
 		protected $_extends	 		= null;
 
-		function __construct($model,$app_dir=null,$framework=false,$extends="") {
+		function __construct($model,$app_dir=null,$framework=false,$extends="",$options=[]) {
 			$this->_extends 		= strtoupper($extends);
 			$this->_lower_model 	= strtolower($model);
 			$this->_upper_model 	= strtoupper($model);
@@ -17,6 +17,7 @@
 			$this->_app_dir  		= $app_dir ? $app_dir : APPLICATION::get_main_application_directory();
 
 			$this->_smarty = new CMODEL_SMARTY();
+			$this->_smarty->assign("primary_object_id",value($options,"primary_object_id"));
 			$this->_smarty->assign("upper_model",$this->_upper_model);
 			$this->_smarty->assign("lower_model",$this->_lower_model);
 			$this->_smarty->assign("lower_models",LANG_UTIL::get_plural_string($this->_lower_model));

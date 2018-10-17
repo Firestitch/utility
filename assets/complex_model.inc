@@ -11,7 +11,19 @@
 		public function __construct() {
 			parent::__construct(DBO_{$upper_model}::create());
 		}
+{if $primary_object_id}
 
+		public function set_object($value) { return $this->data("object",$value); }
+
+		public function get_object($hmodel=true) {
+			if($hmodel && !$this->has_data("object") && $this->get_{$primary_key}()) {
+				$hmodel = is_a($hmodel,"HMODEL") ? $hmodel : HMODEL_OBJECT::create(false);
+				$this->data("object",$hmodel->where("objects.object_id","=",$this->get_{$primary_key}())
+												->get());
+			}
+			return $this->data("object");
+		}
+{/if}
 {foreach $consts as $const}{if $const!="state"}		public function is_{$const.const|lower}()	{ return $this->get_{$const.field}()==self::{$const.const}; }{/if}
 {/foreach}
 {foreach $columns as $name=>$column}{if $column->is_data_type("CHAR") || $name=="state"}		public function get_{$name}_name()	{ return value(self::get_{$name}s(),$this->get_{$name}()); }
@@ -29,55 +41,46 @@
 {/foreach}
 									->one("{$lower_model}_id"));
 {/if}
-
-{if $extended}
+{if $primary_object_id}
+			
 			try {
 
 				DB::start_transaction();
-				parent::save();
 
-{/if}
-			if(self::get_{$primary_key}()) {
-				$this->dbo("{$lower_model}")->update();
-			} else {
-{if $extended}
-				$this->dbo("{$lower_model}")
-					->set_{$extend_id}(parent::get_{$extend_id}()){if $has_object_id}
-					->set_object_id(CMODEL_OBJECT::create()
-										->set_class(CMODEL_OBJECT::CLASS_)
-										->save()
-										->get_object_id())
-							{/if}->insert();
+				if(self::get_{$primary_key}()) {
+					$this->dbo("{$lower_model}")->update();
+				} else {
 
-{else}				$this->dbo("{$lower_model}"){if $has_object_id}
-
-					->set_object_id(CMODEL_OBJECT::create()
-										->set_class(CMODEL_OBJECT::CLASS_)
-										->save()
-										->get_object_id())
-					{/if}->insert();
-{/if}
-			}
-{if $extended}
+					$this
+						->set_{$primary_key}(CMODEL_OBJECT::create(CMODEL_OBJECT::CLASS)
+												->save()
+												->get_object_id())
+						->dbo("{$lower_model}")
+							->insert();
+				}
 
 				if(!DB::complete_transaction())
 					throw new Exception("Error saving ".get_class());
 
-			} catch(Exception $e) {
+			} catch(CMODEL_SYSTEM_EXCEPTION $e) {
 				DB::complete_transaction();
 				throw $e;
 			}
-{/if}{if $has_object_id}
 
 			$this->get_object()
 				->set_name($this->get_name())
 				->set_primary_keyword($this->get_name())
 				->set_secondary_keyword($this->get_name())
 				->set_active($this->is_state_active())
-				->set_primary_id($this->get_{$primary_key}())
-				//->set_image_url()
 				->save();
 
+{else}
+
+			if(self::get_{$primary_key}()) {
+				$this->dbo("{$lower_model}")->update();
+			} else {
+				$this->dbo("{$lower_model}")->insert();
+			}
 {/if}
 			return $this;
 		}
@@ -106,9 +109,7 @@
 		}
 
 		public function arry($options=[]) {
-
 			$arry = parent::arry($options);
-
 			return $arry;
 		}
 	}

@@ -9,7 +9,8 @@
 																		"hmodel"=>"HMODEL"],["dbo","dbq"],["class"=>"objects"]));
 		$data[] = array("Name:",HTML_UTIL::input("name","",array("class"=>"w300")));
 		$data[] = array("Location:",HTML_UTIL::dropdown("location",CMODEL_GENERATOR::get_locations(),"",array("class"=>"wa")));
-		$data[] = array("",HTML_UTIL::checkbox("override","1",$override,["class"=>"override"],"Override"));
+		$data[] = array("",HTML_UTIL::checkbox("primary_object_id","1",false,["class"=>""],"CMODEL has primary key object_id"));
+		$data[] = array("",HTML_UTIL::checkbox("override","1",$override,["class"=>"override"],"Override existing files"));
 		$data[] = array("",HTML_UTIL::link("javascript:;","Generate",array("id"=>"generate","class"=>"btn btn-primary")));
 
 		$db_table = HTML_TABLE_UTIL::create()
