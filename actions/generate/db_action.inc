@@ -10,7 +10,7 @@
 			$tablename 			= strtolower($this->post("tablename"));
 			$name 				= strtoupper($this->post("name"));
 			$location			= $this->post("location");
-			$primary_object_id	= $this->post("override");
+			$primary_object_id	= $this->post("primary_object_id");
 			$override 			= $this->post("override");
 			$objects 			= (array)$this->post("objects");
 			$dir				= DIR_INSTANCE.$location.DIRECTORY_SEPARATOR;

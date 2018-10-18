@@ -5,9 +5,9 @@
 		const STATE_ACTIVE	= "active";
 		const STATE_DELETED	= "deleted";
 
-		public static function get_states()	{ return [self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"]; }
+		public static function get_states()	{ return array(self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"); }
 {/if}
-
+		
 		public function __construct() {
 			parent::__construct(DBO_{$upper_model}::create());
 		}
@@ -31,8 +31,7 @@
 {if $has_state}		public function delete()			{ return $this->set_state(self::STATE_DELETED)->save(); }
 		public function is_state_delete()	{ return $this->get_state()==self::STATE_DELETED; }
 		public function is_state_active()	{ return $this->get_state()==self::STATE_ACTIVE; }
-{/if}		public function get_manage_url()	{ return "/backend/{$lower_model|replace:'_':''}/{$id}:".$this->get_{$primary_key}()."/"; }
-
+{/if}
 		public function save() {
 {if $has_multiple_keys}
 			$this->set_{$lower_model}_id(DBQ_{$upper_model}::create()
@@ -71,6 +70,7 @@
 				->set_name($this->get_name())
 				->set_primary_keyword($this->get_name())
 				->set_secondary_keyword($this->get_name())
+				->set_modify_date(DB::get_date_time())
 				->set_active($this->is_state_active())
 				->save();
 

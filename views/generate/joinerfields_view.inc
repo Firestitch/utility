@@ -22,7 +22,7 @@
 
 			$this->_joiner_columns = array_combine($joiner_columns,$joiner_columns);
 
-			$this->set_var("joiner_list",DB::get_instance()->get_db_utility()->get_table_names());
+			$this->set_var("joiner_list",DB::get_instance()->get_utility()->get_table_names());
 			$this->set_var("index",$this->post("index"));
 			$this->set_var("joiner_columns",$this->_joiner_columns);
 			$this->set_var("joiner_source_column",$this->_joiner_source_column);
