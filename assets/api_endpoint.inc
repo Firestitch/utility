@@ -79,7 +79,7 @@
 					->fill($this->posts(),["{'", "'|implode:$accessible_fields}"])
 					->validate()
 					->save();
-					//->end_audit($this->get_api_token());
+					//->end_audit($this->get_session());
 
 				$this->data("{$model}",${$model}_cmodel->arry());
 
@@ -92,7 +92,7 @@
 														->set_{$model_id}(${$model_id}));
 
 				${$model}_cmodel->delete();
-					//->audit_delete($this->get_api_token());
+					//->audit_delete($this->get_session());
 
 				$this->data("{$model}",${$model}_cmodel->arry());
 			}
