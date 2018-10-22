@@ -52,6 +52,7 @@
 
 					$this
 						->set_{$primary_key}(CMODEL_OBJECT::create(CMODEL_OBJECT::CLASS)
+												->validate()
 												->save()
 												->get_object_id())
 						->dbo("{$lower_model}")
@@ -99,7 +100,7 @@
 {/if}
 {if $column->is_data_type_datetime() || $column->is_data_type_date()}						"sanitize"=>"time",
 {/if}						"validations"=>[{if $name=="state"}"required"=>true,
-										"key_exists"=>self::get_states(){/if}]{if preg_match("/_id$/",$name) || $name=="guid" || $name=="order" || $name=="modify_date" || $name=="create_date"},
+										"key_exists"=>self::get_states(){/if}]{if $column->is_primary() || $name=="guid" || $name=="order" || $name=="modify_date" || $name=="create_date"},
 						"diff"=>false{/if}
 
 					]{if !$smarty.foreach.columns.last},{/if}
