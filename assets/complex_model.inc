@@ -5,7 +5,7 @@
 		const STATE_ACTIVE	= "active";
 		const STATE_DELETED	= "deleted";
 
-		public static function get_states()	{ return array(self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"); }
+		public static function get_states()	{ return [self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"]; }
 {/if}
 		
 		public function __construct() {
