@@ -28,9 +28,9 @@
 		
 			$app_dir = APPLICATION::get_main_application_directory();		
 			
-			$security_manager = FILE_UTIL::get_file_contents($app_dir."system/managers/security_manager.inc");
+			$security_manager = FILE_UTIL::get_file_contents($app_dir."models/complex/acl_complex_model.inc");
 					
-			$has_matches = preg_match_all('/const (ROLE_[A-Z_]*)/', $security_manager,$matches);
+			$has_matches = preg_match_all('/const (PERMISSION_[A-Z_]*)/', $security_manager,$matches);
 			
 			if($has_matches) {				
 				$security_roles = get_value($matches,1);
