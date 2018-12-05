@@ -7,7 +7,7 @@
 
 		public static function get_states()	{ return [self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"]; }
 {/if}
-		
+
 		public function __construct() {
 			parent::__construct(DBO_{$upper_model}::create());
 		}
@@ -15,7 +15,7 @@
 
 		public function set_object($value) { return $this->data("object",$value); }
 
-		public function get_object($hmodel=true) {
+		public function get_object($hmodel=false) {
 			if($hmodel && !$this->has_data("object") && $this->get_{$primary_key}()) {
 				$hmodel = is_a($hmodel,"HMODEL") ? $hmodel : HMODEL_OBJECT::create(false);
 				$this->data("object",$hmodel->where("objects.object_id","=",$this->get_{$primary_key}())
@@ -41,7 +41,7 @@
 									->one("{$lower_model}_id"));
 {/if}
 {if $primary_object_id}
-			
+
 			try {
 
 				DB::start_transaction();
@@ -67,7 +67,7 @@
 				throw $e;
 			}
 
-			$this->get_object()
+			$this->get_object(true)
 				->set_name($this->get_name())
 				->set_primary_keyword($this->get_name())
 				->set_secondary_keyword($this->get_name())

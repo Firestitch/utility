@@ -42,7 +42,7 @@
 			if($joiner=value($joiners,0))
 				$where_column = $joiner["table"].".".$joiner["source_column"];
 
-			$reference_name_get = 	"\n\t\tpublic function ".$reference_name_get_function."(\$hmodel=".($map_child ? "true" : "null").") {\n".
+			$reference_name_get = 	"\n\t\tpublic function ".$reference_name_get_function."(\$hmodel=false) {\n".
 									"\t\t\tif(\$hmodel && !\$this->has_data(\"".$reference_key."\") && \$this->get_".$source_model_column."()) {\n".
 									"\t\t\t\t\$hmodel = is_a(\$hmodel,\"HMODEL\") ? \$hmodel : HMODEL_".strtoupper($reference_model)."::create(".($map_child ? "false" : "true").");\n".
 									"\t\t\t\t\$this->data(\"".$reference_key."\",\$hmodel";
