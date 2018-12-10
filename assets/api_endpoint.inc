@@ -1,4 +1,7 @@
-		public function {$method}({if $parent_model}${$parent_model}_id=null,{/if}${$model_id}=null) {
+		public function {$method}($params,$data) {
+
+			${$model_id} = value($params,"{$model_id}");
+
 {if $parent_model}
 
 			${$parent_model}_cmodel = HMODEL_{$parent_model|upper}::create()
