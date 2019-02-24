@@ -55,7 +55,7 @@
 					${$model_plural}[] = ${$model}_cmodel->arry();
 
 				if(${$model_id})
-					$this->data("{$model}",array_shift(${$model_plural}));
+					$this->require_data("{$model}",array_shift(${$model_plural}));
 				else
 					$this->data("{$model_plural}",array_values(${$model_plural}));
 
