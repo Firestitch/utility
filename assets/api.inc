@@ -4,8 +4,4 @@
 {{$endpoint}}
 
 {{$wsdl_function}}
-
-		public function wsdl() {
-			return [ "model"=>"{$model}", "name"=>"{$model_name}" ];
-		}
 	}

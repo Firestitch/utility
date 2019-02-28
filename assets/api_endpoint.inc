@@ -66,7 +66,6 @@
 				${$model}_cmodel = CMODEL_{$model_upper}::create();
 
 				if($this->is_post()) {
-					$this->acl()->writable();
 {if $parent_model}
 					${$model}_cmodel->set_{$parent_model}_id(${$parent_model}_id);
 {/if}

@@ -108,9 +108,4 @@
 
 			];
 		}
-
-		public function arry($options=[]) {
-			$arry = parent::arry($options);
-			return $arry;
-		}
 	}

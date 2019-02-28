@@ -65,34 +65,6 @@
 
 			$cmodel_content = FILE_UTIL::get($cmodel_model_file);
 
-			if(preg_match("/^(.*function\s+arry.*?)(\t+return\s+\\\$arry.*)$/is",$cmodel_content,$matches))  {
-
-				$code = "";
-				if($map_child) {
-
-					if(!preg_match("/\$arry[\"".$reference_name."\"]/is",$cmodel_content))
-						$code = "\t\t\tif(\$".$reference_name."_cmodel=\$this->get_".$reference_name."(false))\n".
-								"\t\t\t\t\$arry[\"".$reference_name."\"] = \$".$reference_name."_cmodel->arry();\n\n";
-
-
-				} else {
-
-					if(!preg_match("/\$arry[\"".$plural_reference_name."\"]/is",$cmodel_content))
-						$code = "\t\t\tforeach(\$this->get_".$plural_reference_name."(false) as \$".$reference_name."_cmodel)\n".
-								"\t\t\t\t\$arry[\"".$plural_reference_name."\"][] = \$".$reference_name."_cmodel->arry();\n\n";
-				}
-
-				if($code && !$this->has_code($cmodel_content,$code)) {
-
-					if($debug) {
-						p("CMODEL",$code);
-					}
-
-					$cmodel_content = value($matches,1).$code.value($matches,2);
-				}
-			}
-
-
 			if(stripos($cmodel_content,"n ".$reference_name_set_function."(")===false) {
 				if(preg_match("/^(.*?[^}]+})(.*?function\s+save\(.*)$/ism",$cmodel_content,$matches)) {
 					$cmodel_content = value($matches,1).$reference_name_set.$reference_name_get.value($matches,2);
