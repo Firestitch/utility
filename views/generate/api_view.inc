@@ -13,7 +13,7 @@
 			$apis = [];
 			foreach($views as $view) {
 				$name = preg_replace("/_view\.inc/","",$view);
-				$apis[$name] = "/".$name;
+				$apis[$name] = $name;
 			}
 
 			$this->set_var("model",$this->get("model"));

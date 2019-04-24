@@ -31,17 +31,22 @@
 				throw new Exception("API not found");
 
 			$code = FILE_UTIL::get($this->get_file());
-
-			$regex = "/(public\s+function\s+wsdl\(\).*)/is";
-			if(!preg_match($regex,$code,$matches))
-				throw new Exception("Failed to locate the wsdl() function");
-
 			$this->assign("parent_method", $this->_api."/".$this->_parent_model."_id/");
-
 			$endpoint = ltrim($this->get_endpoint())."\n\n".$this->get_wsdl_function();
 
-			$code = str_replace($matches[0],$endpoint.$matches[0],$code);
+			$regex = "/(public\s+function\s+wsdl\(\).*)/is";
+			if(preg_match($regex,$code,$matches)) {
+				$code = str_replace($matches[0],$endpoint.$matches[0],$code);
+			} else {
 
+				$pos = strrpos($code,"}");
+
+				if($pos===false)
+					throw new Exception("There was a problem trying to located the end of the class");
+
+				$code = substr_replace($code, $endpoint, $pos, 0);			
+			}
+			
 			FILE_UTIL::put($file,$code);
 
 			$messages = array("Successfully updated the file ".HTML_UTIL::get_link("file:".FILE_UTIL::sanitize_file($file),FILE_UTIL::sanitize_file($file)));
