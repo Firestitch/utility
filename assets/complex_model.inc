@@ -12,7 +12,6 @@
 			parent::__construct(DBO_{$upper_model}::create());
 		}
 {if $primary_object_id}
-
 		public function set_object($value) { return $this->data("object",$value); }
 
 		public function get_object($hmodel=false) {
@@ -49,14 +48,8 @@
 				if(self::get_{$primary_key}()) {
 					$this->dbo("{$lower_model}")->update();
 				} else {
-
-					$this
-						->set_{$primary_key}(CMODEL_OBJECT::create(CMODEL_OBJECT::CLASS)
-												->validate()
-												->save()
-												->get_object_id())
-						->dbo("{$lower_model}")
-							->insert();
+					$this->create_object();
+					$this->dbo("{$lower_model}")->insert();
 				}
 
 				if(!DB::complete_transaction())
