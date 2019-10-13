@@ -65,23 +65,27 @@
 
 				${$model}_cmodel = CMODEL_{$model_upper}::create();
 
-				if($this->is_post()) {
-{if $parent_model}
-					${$model}_cmodel->set_{$parent_model}_id(${$parent_model}_id);
-{/if}
-				} elseif($this->is_put())
+				if($this->is_put())
 					${$model}_cmodel = $this->acl()->write(HMODEL_{$model_upper}::create(false){if $parent_model}
 
 														->set_{$parent_model}_id(${$parent_model}_id){/if}
 
 														->set_{$model_id}(${$model_id}));
+				
+				//${$model}_cmodel->start_audit($this->get_session());
+
+				if($this->is_post()) {
+{if $parent_model}
+					${$model}_cmodel->set_{$parent_model}_id(${$parent_model}_id);
+{/if}
+				}
 
 				${$model}_cmodel
-					//->start_audit()
 					->fill($this->posts(),["{'", "'|implode:$accessible_fields}"])
 					->validate()
 					->save();
-					//->end_audit($this->get_session());
+				
+				//${$model}_cmodel->end_audit();
 
 				$this->data("{$model}",${$model}_cmodel->arry());
 
@@ -93,8 +97,11 @@
 
 														->set_{$model_id}(${$model_id}));
 
+				//${$model}_cmodel->start_audit($this->get_session());
+
 				${$model}_cmodel->delete();
-					//->audit_delete($this->get_session());
+				
+				//${$model}_cmodel->end_audit();
 
 				$this->data("{$model}",${$model}_cmodel->arry());
 			}

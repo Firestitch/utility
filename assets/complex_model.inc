@@ -1,5 +1,5 @@
 <?
-	class {if $framework}B{/if}CMODEL_{$upper_model} extends {$extends} {
+	class {if $framework}B{/if}CMODEL_{$upper_model} extends CMODEL_BASE_OBJECT {
 {if $has_state}
 
 		const STATE_ACTIVE	= "active";
@@ -85,20 +85,41 @@
 					"{$name}"=> [{if $column->is_primary() || $column->is_data_type_datetime() || $column->is_data_type_date()}
 
 						"arry"=>[{if $column->is_primary()}
-							
+
 							"name"=>"id"
-{/if}{if $column->is_data_type_datetime() || $column->is_data_type_date()}"format"=>"iso8601"{/if}
+{/if}{if $column->is_data_type_datetime() || $column->is_data_type_date()}
+
+							"format"=>"iso8601"
+{/if}
 						],
-{/if}{if $name=="state"}						"default"=>self::STATE_ACTIVE,
-{/if}{if $name=="guid"}						"default"=>"guid",
-{/if}{if $name=="create_date"}						"default"=>"datetime",
+{/if}{if $name=="state"}
+
+						"default"=>self::STATE_ACTIVE,
+{/if}{if $name=="guid"}
+						"default"=>"guid",
+{/if}{if $name=="create_date"}
+						"default"=>"datetime",
 {/if}{if $column->is_data_type_datetime() || $column->is_data_type_date()}						"sanitize"=>"time",
-{/if}{if $name=="state"}						"validations"=>["required"=>true,
-						"key_exists"=>self::get_states()],
+{/if}{if $name=="state"}						"validations"=>[
+							"required"=>true,
+							"key_exists"=>self::get_states()
+						],
 {/if}{if $column->is_primary() || $name=="guid" || $name=="order" || $name=="modify_date" || $name=="create_date"}
 						"diff"=>false
-					{/if}]{if !$smarty.foreach.columns.last},
+{/if}{if $column->is_primary() || $name=="guid" || $name=="order" || $name=="state" || $name=="modify_date" || $name=="create_date" || $column->is_data_type_datetime() || $column->is_data_type_date()}					{/if}]{if !$smarty.foreach.columns.last},
 {/if}{/foreach}
 				];
 		}
+
+		public function get_object_id_value() {
+			return $this->get_{$primary_key}();
+		}
+
+		public function set_object_id_value($value) {
+			$this->set_{$primary_key}($value);
+		}
+
+	    public function __toString() {
+	        return $this->get_name();
+	    } 	
 	}
