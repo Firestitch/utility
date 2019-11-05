@@ -1,36 +1,23 @@
 <?
-	class {if $framework}B{/if}CMODEL_{$upper_model} extends CMODEL_BASE_OBJECT {
-{if $has_state}
+	class {if $framework}B{/if}CMODEL_{$upper_model} extends {if $primary_object_id}CMODEL_BASE_OBJECT{else}CMODEL{/if} {
 
+{if $has_state}
 		const STATE_ACTIVE	= "active";
 		const STATE_DELETED	= "deleted";
 
 		public static function get_states()	{ return [self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"]; }
 {/if}
-
 		public function __construct() {
 			parent::__construct(DBO_{$upper_model}::create());
-		}
-{if $primary_object_id}
-		public function set_object($value) { return $this->data("object",$value); }
-
-		public function get_object($hmodel=false) {
-			if($hmodel && !$this->has_data("object") && $this->get_{$primary_key}()) {
-				$hmodel = is_a($hmodel,"HMODEL") ? $hmodel : HMODEL_OBJECT::create(false);
-				$this->data("object",$hmodel->where("objects.object_id","=",$this->get_{$primary_key}())
-												->get());
-			}
-			return $this->data("object");
-		}
-{/if}
-{foreach $consts as $const}{if $const!="state"}		public function is_{$const.const|lower}()	{ return $this->get_{$const.field}()==self::{$const.const}; }{/if}
+		}{foreach $consts as $const}{if $const!="state"}
+		public function is_{$const.const|lower}()	{ return $this->get_{$const.field}()==self::{$const.const}; }{/if}
 {/foreach}
-{foreach $columns as $name=>$column}{if $column->is_data_type("CHAR") || $name=="state"}		public function get_{$name}_name()	{ return value(self::get_{$name}s(),$this->get_{$name}()); }
-{/if}{/foreach}
-{if $has_state}		public function delete()			{ return $this->set_state(self::STATE_DELETED)->save(); }
+{if $has_state}		public function get_state_name()	{ return value(self::get_states(),$this->get_state()); }
+		public function delete()			{ return $this->set_state(self::STATE_DELETED)->save(); }
 		public function is_state_delete()	{ return $this->get_state()==self::STATE_DELETED; }
 		public function is_state_active()	{ return $this->get_state()==self::STATE_ACTIVE; }
 {/if}
+
 		public function save() {
 {if $has_multiple_keys}
 			$this->set_{$lower_model}_id(DBQ_{$upper_model}::create()
@@ -110,6 +97,7 @@
 {/if}{/foreach}
 				];
 		}
+{if $primary_object_id}
 
 		public function get_object_id_value() {
 			return $this->get_{$primary_key}();
@@ -119,7 +107,12 @@
 			$this->set_{$primary_key}($value);
 		}
 
+		public function get_object_class() {
+			return CMODEL_OBJECT::CLASS_{$upper_model};
+		}
+
 	    public function __toString() {
 	        return $this->get_name();
-	    } 	
+	    }
+{/if}
 	}
