@@ -47,12 +47,12 @@
 				throw $e;
 			}
 
-			$this->get_object(true)
+			$this->object(true)
 				->set_name($this->get_name())
 				->set_primary_keyword($this->get_name())
 				->set_secondary_keyword($this->get_name())
 				->set_modify_date(DB::get_date_time())
-				->set_active($this->is_state_active())
+				->set_active(!$this->is_state_delete())
 				->save();
 
 {else}

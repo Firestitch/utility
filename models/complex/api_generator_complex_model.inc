@@ -32,7 +32,7 @@
 
 			$code = FILE_UTIL::get($this->get_file());
 			$this->assign("parent_method", $this->_api."/".$this->_parent_model."_id/");
-			$endpoint = ltrim($this->get_endpoint())."\n\n".$this->get_wsdl_function();
+			$endpoint = ltrim($this->get_endpoint());
 
 			$regex = "/(public\s+function\s+wsdl\(\).*)/is";
 			if(preg_match($regex,$code,$matches)) {
