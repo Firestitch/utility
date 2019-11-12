@@ -76,7 +76,7 @@
 							"name"=>"id"
 {/if}{if $column->is_data_type_datetime() || $column->is_data_type_date()}
 
-							"format"=>"iso8601"
+							"type"=>"{$column->get_data_type()}"
 {/if}
 						],
 {/if}{if $name=="state"}
@@ -86,7 +86,6 @@
 						"default"=>"guid",
 {/if}{if $name=="create_date"}
 						"default"=>"datetime",
-{/if}{if $column->is_data_type_datetime() || $column->is_data_type_date()}						"sanitize"=>"time",
 {/if}{if $name=="state"}						"validations"=>[
 							"required"=>true,
 							"key_exists"=>self::get_states()
