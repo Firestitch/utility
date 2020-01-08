@@ -61,51 +61,41 @@
 
 
 
-			}{/if}{if in_array("post",$methods) || in_array("put",$methods)} elseif($this->is_post() || $this->is_put()) {
+			}{/if}{if in_array("post",$methods) || in_array("put",$methods) || in_array("delete",$methods)} else {
 
 				${$model}_cmodel = CMODEL_{$model_upper}::create();
 
-				if($this->is_put())
+				if($this->is_post()) {
+{if $parent_model}
+					${$model}_cmodel->set_{$parent_model}_id(${$parent_model}_id);
+{/if}
+				} else
 					${$model}_cmodel = $this->acl()->write(HMODEL_{$model_upper}::create(false){if $parent_model}
 
 														->set_{$parent_model}_id(${$parent_model}_id){/if}
 
 														->set_{$model_id}(${$model_id}));
 				
-				//${$model}_cmodel->start_audit($this->get_session());
+				//${$model}_cmodel->start_audit($this->get_session()->get_account_id());
 
-				if($this->is_post()) {
-{if $parent_model}
-					${$model}_cmodel->set_{$parent_model}_id(${$parent_model}_id);
-{/if}
+				if($this->is_post() || $this->is_put()) {
+
+					${$model}_cmodel
+						->fill($this->posts(),["{'", "'|implode:$accessible_fields}"])
+						->validate()
+						->save();
+
+					$this->data("{$model}",${$model}_cmodel->arry());
+
+				}{/if}{if in_array("delete",$methods)} elseif($this->is_delete()) {
+
+					${$model}_cmodel->delete();
+
+					$this->data("{$model}",${$model}_cmodel->arry());
 				}
-
-				${$model}_cmodel
-					->fill($this->posts(),["{'", "'|implode:$accessible_fields}"])
-					->validate()
-					->save();
-				
+	{/if}	
 				//${$model}_cmodel->end_audit();
-
-				$this->data("{$model}",${$model}_cmodel->arry());
-
-			}{/if}{if in_array("delete",$methods)} elseif($this->is_delete()) {
-
-				${$model}_cmodel = $this->acl()->write(HMODEL_{$model_upper}::create(false){if $parent_model}
-
-														->set_{$parent_model}_id(${$parent_model}_id){/if}
-
-														->set_{$model_id}(${$model_id}));
-
-				//${$model}_cmodel->start_audit($this->get_session());
-
-				${$model}_cmodel->delete();
-				
-				//${$model}_cmodel->end_audit();
-
-				$this->data("{$model}",${$model}_cmodel->arry());
 			}
-{/if}
 		}
 {if in_array("order",$options)}
 
