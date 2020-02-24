@@ -70,15 +70,15 @@
 			return [
 {foreach from=$columns key=name item=column name=columns}
 					"{$name}"=> [{if $column->is_primary() || $column->is_data_type_datetime() || $column->is_data_type_date()}
+{if $column->is_data_type_datetime() || $column->is_data_type_date()}
 
-						"arry"=>[{if $column->is_primary()}
-
+						"type"=>"{$column->get_data_type()}",
+{/if}{if $column->is_primary()}
+						
+						"arry"=>[
 							"name"=>"id"
-{/if}{if $column->is_data_type_datetime() || $column->is_data_type_date()}
-
-							"type"=>"{$column->get_data_type()}"
-{/if}
 						],
+{/if}
 {/if}{if $name=="state"}
 
 						"default"=>self::STATE_ACTIVE,
