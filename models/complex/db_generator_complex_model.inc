@@ -35,9 +35,6 @@
 
 					$name 		= $row["Field"];
 
-					if($name=="data")
-						throw new Exception("The column name data is reserved for internal use and cannot be used. An alternative name could be meta.");
-
 					$columns[] = "\$this->_columns[\"".$name."\"] = new DBO_COLUMN(\"".$data_type."\",".$size.",".$not_null.",".$primary.");";
 				}
 
