@@ -4,6 +4,7 @@ namespace Utility\Model;
 
 use Framework\Model\SmartyModel;
 use Framework\Util\FILE_UTIL;
+use Framework\Util\STRING_UTIL;
 
 class GeneratorModel {
 
@@ -47,33 +48,11 @@ class GeneratorModel {
     return $cmodel_class::create();
   }
 
-  function autoload($class) {
-
-    if (preg_match("/CMODEL_/", $class)) {
-      return APPLICATION::include_model($class, "complex", $this->_instance_dir, array("framework" => false, "trigger" => false));
-    }
-
-    if (preg_match("/DBO_/", $class)) {
-      return APPLICATION::include_dbo($class, $this->_instance_dir, array("framework" => false, "trigger" => false));
-    }
-
-    if (preg_match("/DBQ_/", $class)) {
-      return APPLICATION::include_dbq($class, $this->_instance_dir, array("framework" => false, "trigger" => false));
-    }
+  static function get_model_class($basename) {
+    return "Backend\Model\\" . STRING_UTIL::pascalize($basename) . "Model";
   }
 
-  static function get_locations() {
-
-    $dirs = FILE_UTIL::get_directory_listing(DIR_INSTANCE);
-
-    $applications = array();
-
-    foreach ($dirs as $dir)
-      if (is_file(DIR_INSTANCE . $dir . "/system/managers/system_manager.inc"))
-        $applications[$dir] = $dir;
-
-    $applications["framework"] = "framework";
-
-    return $applications;
+  static function get_handler_class($basename) {
+    return "Handler\Model\\" . STRING_UTIL::pascalize($basename) . "Handler";
   }
 }

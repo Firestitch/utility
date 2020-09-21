@@ -116,6 +116,10 @@ class ModelGeneratorModel {
     return STRING_UTIL::pascalize($basename) . "Model";
   }
 
+  static function get_handler_class($basename) {
+    return STRING_UTIL::pascalize($basename) . "Handler";
+  }
+
   static function get_model($basename) {
     $class = "Backend\Model\\" . self::get_model_class($basename);
     return new $class();

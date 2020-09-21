@@ -158,32 +158,20 @@ use Framework\Db\Dbo\Column;
   }
 
   static function get_dbq_class($basename) {
-    return STRING_UTIL::pascalize($basename) . "Dbq";
+    return "Backend\Dbq\\" . STRING_UTIL::pascalize($basename) . "Dbq";
   }
 
   static function get_dbo_class($basename) {
-    return STRING_UTIL::pascalize($basename) . "Dbo";
+    return "Backend\Dbo\\" . STRING_UTIL::pascalize($basename) . "Dbo";
   }
 
   static function get_dbo($basename) {
-    $class = "Backend\Dbo\\" . self::get_dbo_class($basename);
+    $class = self::get_dbo_class($basename);
     return new $class();
   }
 
   static function get_dbq($basename) {
-    $class = "Backend\Dbq\\" . self::get_dbq_class($basename);
+    $class = self::get_dbq_class($basename);
     return new $class();
-  }
-
-  function get_dbo_columns($basename, $app_dir) {
-
-    if (!is_file(self::get_dbo_file($basename, $app_dir)))
-      return array();
-
-    $db_class = "DBO_" . strtoupper($basename);
-
-    $dbo = new $db_class();
-
-    return $dbo->get_columns();
   }
 }

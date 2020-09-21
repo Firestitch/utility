@@ -2,10 +2,9 @@
 
 use Framework\Util\HTML_TABLE_UTIL;
 use Framework\Util\HTML_UTIL;
-use Utility\Model\GeneratorModel;
 
 ?>
-<h1>Dbo, Ddq, Model & Handler Generation</h1>
+<h1>Db, Model & Handler</h1>
 
 <form id="form-db">
   <?
