@@ -1,4 +1,0 @@
-RewriteEngine on
-RewriteRule !((.*)(jpg|gif|png|swf|css|js|html|htm)|(unavailable/?.*))$ index.php [last,nocase]
-
-

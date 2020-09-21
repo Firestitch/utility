@@ -1,113 +1,113 @@
 		public function {$method}($params,$data) {
 
-			${$model_id} = value($params,"{$model_id}");
+		${$model_id} = value($params,"{$model_id}");
 
-{if $parent_model}
+		{if $parent_model}
 
-			${$parent_model}_cmodel = HMODEL_{$parent_model|upper}::create()
-											->require(${$parent_model}_id);
-{/if}{if in_array("get",$methods)}
-			if($this->is_get()) {
+		${$parent_model}_model = {$pascal_model}Handler::create()
+		->require(${$parent_model}_id);
+		{/if}{if in_array("get",$methods)}
+		if($this->is_get()) {
 
-				${$model}_hmodel = HMODEL_{$model_upper}::create(false){if $parent_model}
+		${$model}_handler = {$pascal_model}Handler::create(false){if $parent_model}
 
-										->set_{$parent_model}_id(${$parent_model}_id){/if};
+		->set_{$parent_model}_id(${$parent_model}_id){/if};
 
-				if(${$model_id})
-					${$model}_hmodel->set_{$model_id}(${$model_id});
-{if $keywords}
+		if(${$model_id})
+		${$model}_handler->set_{$model_id}(${$model_id});
+		{if $keywords}
 
-				if(!is_null($value=$this->get("keyword")))
-					${$model}_hmodel->group(DB_GROUP::create()
-{foreach from=$keywords item=keyword name=keywords}										->where("{$keyword.tablename}.{$keyword.name}","LIKE","%".$value."%","OR"){if $smarty.foreach.keywords.last});
-{else}
+		if(!is_null($value=$this->get("keyword")))
+		${$model}_handler->group(Group::create()
+		{foreach from=$keywords item=keyword name=keywords} ->where("{$keyword.tablename}.{$keyword.name}","LIKE","%".$value."%","OR"){if $smarty.foreach.keywords.last});
+		{else}
 
-{/if}{/foreach}
-{/if}{foreach $dbos as $dbo}{foreach $dbo->get_columns() as $name=>$column}{if in_array($name,$accessible_fields)}{if $name=="state"}
+		{/if}{/foreach}
+		{/if}{foreach $dbos as $dbo}{foreach $dbo->get_columns() as $name=>$column}{if in_array($name,$accessible_fields)}{if $name=="state"}
 
-				if(!is_null($value=$this->get("state")))
-					${$model}_hmodel->set_states(explode(",",$value));
-				elseif(!${$model_id})
-					${$model}_hmodel->set_state(CMODEL_{$model_upper}::STATE_ACTIVE);
-{elseif preg_match("/(name|description)/",$name)}{continue}{elseif $column->is_data_type("date") || $column->is_data_type("datetime")}
+		if(!is_null($value=$this->get("state")))
+		${$model}_handler->set_states(explode(",",$value));
+		elseif(!${$model_id})
+		${$model}_handler->set_state({$pascal_model}Model::STATE_ACTIVE);
+		{elseif preg_match("/(name|description)/",$name)}{continue}{elseif $column->is_data_type("date") || $column->is_data_type("datetime")}
 
-				if(!is_null($value=$this->get("{$name}")))
-					${$model}_hmodel->where("{$dbo->get_tablename()}.{$name}",">",CMODEL_TIME::create($value)->db());
+		if(!is_null($value=$this->get("{$name}")))
+		${$model}_handler->where("{$dbo->get_tablename()}.{$name}",">",TimeModel::create($value)->db());
 
-				if(!is_null($value=$this->get("{$name}")))
-					${$model}_hmodel->where("{$dbo->get_tablename()}.{$name}","<",CMODEL_TIME::create($value)->db());
-{else}
+		if(!is_null($value=$this->get("{$name}")))
+		${$model}_handler->where("{$dbo->get_tablename()}.{$name}","<",TimeModel::create($value)->db());
+		  {else}
 
-				if(!is_null($value=$this->get("{$name}")))
-					${$model}_hmodel->where("{$dbo->get_tablename()}.{$name}","=",$value);
-{/if}{/if}{/foreach}{/foreach}
-{foreach $loads as $load}				if(!is_null($this->get("{$load}")))
-					${$model}_hmodel->load_{$load}();
+		  if(!is_null($value=$this->get("{$name}")))
+		  ${$model}_handler->where("{$dbo->get_tablename()}.{$name}","=",$value);
+		  {/if}{/if}{/foreach}{/foreach}
+		  {foreach $loads as $load} if(!is_null($this->get("{$load}")))
+		  ${$model}_handler->load_{$load}();
 
-{/foreach}
-				$this->acl()->apply(${$model}_hmodel);
+		  {/foreach}
+		  $this->acl()->apply(${$model}_handler);
 
-				if(!${$model_id})
-					$this->handler(${$model}_hmodel{if $order_by},"{$order_by}"{/if});
+		  if(!${$model_id})
+		  $this->handler(${$model}_handler{if $order_by},"{$order_by}"{/if});
 
-				${$model_plural} = [];
-				foreach(${$model}_hmodel->gets() as ${$model}_cmodel)
-					${$model_plural}[] = ${$model}_cmodel->arry();
+		  ${$model_plural} = [];
+		  foreach(${$model}_handler->gets() as ${$model}_model)
+		  ${$model_plural}[] = ${$model}_model->arry();
 
-				if(${$model_id})
-					$this->require_data("{$model}",array_shift(${$model_plural}));
-				else
-					$this->data("{$model_plural}",array_values(${$model_plural}));
+		  if(${$model_id})
+		  $this->require_data("{$model}",array_shift(${$model_plural}));
+		  else
+		  $this->data("{$model_plural}",array_values(${$model_plural}));
 
 
 
-			}{/if}{if in_array("post",$methods) || in_array("put",$methods) || in_array("delete",$methods)} else {
+		  }{/if}{if in_array("post",$methods) || in_array("put",$methods) || in_array("delete",$methods)} else {
 
-				${$model}_cmodel = CMODEL_{$model_upper}::create();
+		  ${$model}_model = {$pascal_model}Model::create();
 
-				if($this->is_post()) {
-{if $parent_model}
-					${$model}_cmodel->set_{$parent_model}_id(${$parent_model}_id);
-{/if}
-				} else
-					${$model}_cmodel = $this->acl()->write(HMODEL_{$model_upper}::create(false){if $parent_model}
+		  if($this->is_post()) {
+		  {if $parent_model}
+		  ${$model}_model->set_{$parent_model}_id(${$parent_model}_id);
+		  {/if}
+		  } else
+		  ${$model}_model = $this->acl()->write({$pascal_model}Handler::create(false){if $parent_model}
 
-														->set_{$parent_model}_id(${$parent_model}_id){/if}
+		  ->set_{$parent_model}_id(${$parent_model}_id){/if}
 
-														->set_{$model_id}(${$model_id}));
-				
-				//${$model}_cmodel->start_audit($this->get_session()->get_account_id());
+		  ->set_{$model_id}(${$model_id}));
 
-				if($this->is_post() || $this->is_put()) {
+		  //${$model}_model->start_audit($this->get_session()->get_account_id());
 
-					${$model}_cmodel
-						->fill($this->posts(),["{'", "'|implode:$accessible_fields}"])
-						->validate()
-						->save();
+		  if($this->is_post() || $this->is_put()) {
 
-					$this->data("{$model}",${$model}_cmodel->arry());
+		  ${$model}_model
+		  ->fill($this->posts(),["{'", "'|implode:$accessible_fields}"])
+		  ->validate()
+		  ->save();
 
-				}{/if}{if in_array("delete",$methods)} elseif($this->is_delete()) {
+		  $this->data("{$model}",${$model}_model->arry());
 
-					${$model}_cmodel->delete();
+		  }{/if}{if in_array("delete",$methods)} elseif($this->is_delete()) {
 
-					$this->data("{$model}",${$model}_cmodel->arry());
-				}
-	{/if}	
-				//${$model}_cmodel->end_audit();
-			}
-		}
-{if in_array("order",$options)}
+		  ${$model}_model->delete();
 
-		public function order() {
+		  $this->data("{$model}",${$model}_model->arry());
+		  }
+		  {/if}
+		  //${$model}_model->end_audit();
+		  }
+		  }
+		  {if in_array("order",$options)}
 
-			if($this->is_put()) {
+		  public function order() {
 
-				$hmodel = $this->acl()->apply(HMODEL_{$model_upper}::create(false));
-				$ids = is_array($this->post("{$model_id}s")) ? $this->post("{$model_id}s") : explode(",",$this->post("{$model_id}s"));
-				
-				CMODEL_ORDERING::create($hmodel,"{$model_id}")
-					->reorder($ids,$this->post("page") * $this->post("limit"));
-			}
-		}
-{/if}
+		  if($this->is_put()) {
+
+		  $hmodel = $this->acl()->apply({$pascal_model}Handler::create(false));
+		  $ids = is_array($this->post("{$model_id}s")) ? $this->post("{$model_id}s") : explode(",",$this->post("{$model_id}s"));
+
+		  OrderingModel::create($hmodel,"{$model_id}")
+		  ->reorder($ids,$this->post("page") * $this->post("limit"));
+		  }
+		  }
+		  {/if}

@@ -1,5 +1,13 @@
 <?
-	class VIEW_API_{$model_plural_upper_trim} extends VIEW_API_BASE {
+
+namespace Backend\View;
+
+use Backend\Model\{$pascal_model}Model;
+use Backend\Handler\{$pascal_model}Handler;
+use Framework\Db\Dbq\Group;
+use Framework\Model\TimeModel;
+
+class {$pascal_model}View extends BaseView {
 
 {{$endpoint}}
 	}
