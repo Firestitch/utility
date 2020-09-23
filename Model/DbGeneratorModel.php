@@ -17,11 +17,10 @@ class DbGeneratorModel {
     $this->_db_utility = DB::get_instance()->get_utility();
   }
 
-  function create_dbo($tablename, $classname, $override = false, $framework = false) {
+  function create_dbo($tablename, $name, $override = false) {
 
+    $classname = basename(self::get_dbo_class(strtolower($name)));
     $dbo_file = self::get_dbo_file($classname, $this->_app_dir);
-
-    FILE_UTIL::mkdir($this->_app_dir . "Dbo");
 
     $has_success = false;
 
@@ -47,37 +46,44 @@ class DbGeneratorModel {
         $columns[] = "\$this->_columns[\"" . $name . "\"] = new Column(\"" . $data_type . "\"," . $size . "," . $not_null . "," . $primary . ");";
       }
 
-      $class = "DBO_" . $classname;
-
-      if ($framework)
-        $class = "BASE_" . $class;
-
       $str =   "<?php
-namespace Backend\Dbq;
 
+namespace Backend\Dbo;
+
+use Framework\Db\Dbo\Dbo;
 use Framework\Db\Dbo\Column;
 
-class " . $class . " extends Dbo {\n\n";
+class " . $classname . " extends Dbo {\n\n";
 
-      $str .= "		function __construct() {\n" .
-        "			\$this->_tablename = \"" . $tablename . "\";\n";
+      $str .= "  function __construct() {\n" .
+        "    \$this->_tablename = \"" . $tablename . "\";\n";
 
       foreach ($columns as $column)
-        $str .= "			" . $column . "\n";
+        $str .= "    " . $column . "\n";
 
-      $str .=  "		}\n" .
-        "	}";
+      $str .=  "  }\n\n";
+
+      foreach ($result as $row) {
+        $str .= '  public function set_' . $row["Field"] . '($value) {
+    return $this->set_column_value("' . $row["Field"] . '", $value);
+  }' . "\n\n";
+        $str .= '  public function get_' . $row["Field"] . '() {
+    return $this->get_column_value("' . $row["Field"] . '");
+  }' . "\n\n";
+      }
+
+      $str .= "}";
 
       $has_success = $this->write_file($dbo_file, $str);
     } else
-      WebApplication::instance()->add_warning("The DBO class `" . $classname . "` already exists");
+      WebApplication::instance()->add_warning("The class `" . $classname . "` already exists");
 
     return $has_success;
   }
 
-  function create_dbq($tablename, $classname, $override = false, $framework = false) {
+  function create_dbq($tablename, $name, $override = false) {
 
-    FILE_UTIL::mkdir($this->_app_dir . "Dbq");
+    $classname = basename(self::get_dbq_class(strtolower($name)));
 
     $dbq_file = self::get_dbq_file($classname, $this->_app_dir);
 
@@ -85,14 +91,13 @@ class " . $class . " extends Dbo {\n\n";
 
     if (!is_file($dbq_file) || $override) {
 
-      $class = self::get_dbq_class($classname);
+      $str = "<?php
 
-      $str = `<?php
 namespace Backend\Dbq;
 
-use Framework\Db\Dbo\Column;
-` .
-        "	class " . $class . " extends Dbq {\n\n";
+use Framework\Db\Dbq\Dbq;
+
+class " . $classname . " extends Dbq {\n\n";
 
       $fields = $this->_db_utility->get_table_fields($tablename);
 
@@ -111,10 +116,10 @@ use Framework\Db\Dbo\Column;
 
       $primary_key = count($primary_keys) == 1 ? implode(",", $primary_keys) :  "array(" . implode(",", $primary_keys) . ")";
 
-      $str .= "		public function __construct() {\n" .
-        "			parent::__construct(\"" . $tablename . "\", " . $primary_key . ");\n" .
-        "		}\n" .
-        "	}";
+      $str .= "  public function __construct() {\n" .
+        "    parent::__construct(\"" . $tablename . "\", " . $primary_key . ");\n" .
+        "  }\n" .
+        "}";
 
       $has_success = $this->write_file($dbq_file, $str);
     } else
@@ -144,12 +149,12 @@ use Framework\Db\Dbo\Column;
     return $has_success;
   }
 
-  static function get_dbo_file($basename, $app_dir) {
-    return FILE_UTIL::sanitize_file($app_dir . "Dbo/" . STRING_UTIL::pascalize($basename) . ".php");
+  static function get_dbo_file($classname, $app_dir) {
+    return FILE_UTIL::sanitize_file($app_dir . "Dbo/" . $classname . ".php");
   }
 
-  static function get_dbq_file($basename, $app_dir) {
-    return FILE_UTIL::sanitize_file($app_dir . "Dbq/" . STRING_UTIL::pascalize($basename) . ".php");
+  static function get_dbq_file($classname, $app_dir) {
+    return FILE_UTIL::sanitize_file($app_dir . "Dbq/" . $classname . ".php");
   }
 
   static function get_dbq_tablename($basename, $app_dir) {

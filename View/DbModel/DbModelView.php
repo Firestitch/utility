@@ -9,6 +9,7 @@ use Framework\Db\DB;
 use Framework\Model\PathModel;
 use Framework\Model\ResponseModel;
 use Framework\Util\ARRAY_UTIL;
+use Framework\Util\STRING_UTIL;
 use Utility\Model\DbGeneratorModel;
 use Utility\Model\ModelGeneratorModel;
 
@@ -58,7 +59,7 @@ class DbModelView extends View {
         $response = new ResponseModel();
 
         $tablename       = strtolower($this->post("tablename"));
-        $name         = strtoupper($this->post("name"));
+        $name         = $this->post("name");
         $primary_object_id  = $this->post("primary_object_id");
         $override       = $this->post("override");
         $objects       = (array)$this->post("objects");
@@ -76,18 +77,22 @@ class DbModelView extends View {
 
           if (in_array("dbq", $objects)) {
 
-            $has_success = $db_generator_cmodel->create_dbq($tablename, $name, $override, false);
+            $has_success = $db_generator_cmodel->create_dbq($tablename, $name, $override);
+
+            $classname = DbGeneratorModel::get_dbq_class($tablename);
 
             if ($has_success)
-              WebApplication::add_notify('Successfully created DBQ_' . strtoupper($name));
+              WebApplication::add_notify('Successfully created ' . $classname);
           }
 
           if (in_array("dbo", $objects)) {
 
-            $has_success = $db_generator_cmodel->create_dbo($tablename, $name, $override, false);
+            $has_success = $db_generator_cmodel->create_dbo($tablename, $name, $override);
+
+            $classname = DbGeneratorModel::get_dbo_class($tablename);
 
             if ($has_success)
-              WebApplication::add_notify('Successfully created DBO_' . strtoupper($name));
+              WebApplication::add_notify('Successfully created ' . $classname);
           }
 
           $model_generator_complex_cmoddel = new ModelGeneratorModel($name, $app_dir, false, false, ["primary_object_id" => $primary_object_id]);
