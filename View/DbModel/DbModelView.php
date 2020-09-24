@@ -12,6 +12,7 @@ use Framework\Util\ARRAY_UTIL;
 use Framework\Util\STRING_UTIL;
 use Utility\Model\DbGeneratorModel;
 use Utility\Model\ModelGeneratorModel;
+use Utility\Model\ModelTraitGeneratorModel;
 
 class DbModelView extends View {
 
@@ -90,6 +91,17 @@ class DbModelView extends View {
             $has_success = $db_generator_cmodel->create_dbo($tablename, $name, $override);
 
             $classname = DbGeneratorModel::get_dbo_class($tablename);
+
+            if ($has_success)
+              WebApplication::add_notify('Successfully created ' . $classname);
+          }
+
+          if (in_array("trait", $objects)) {
+
+            $model_trait_generator_complex_cmoddel = new ModelTraitGeneratorModel( $app_dir);
+            $has_success = $model_trait_generator_complex_cmoddel->create_trait($tablename, $name, $override);
+
+            $classname = $model_trait_generator_complex_cmoddel::get_trait_name($name);
 
             if ($has_success)
               WebApplication::add_notify('Successfully created ' . $classname);

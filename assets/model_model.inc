@@ -10,6 +10,8 @@ use Framework\Exception\SystemException;{/if}
 
 class {$pascal_model}Model extends {if $primary_object_id}BaseObjectModel{else}Model{/if} {
 
+    use Traits\{$pascal_model}Trait;
+
 {if $has_state}
 		const STATE_ACTIVE	= "active";
 		const STATE_DELETED	= "deleted";

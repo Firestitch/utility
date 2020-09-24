@@ -11,6 +11,7 @@ use Framework\Util\HTML_UTIL;
   $data[] = array("Generate:", HTML_UTIL::checkboxes("objects", [
     "dbo" => "Ddo",
     "dbq" => "Dbq",
+    "trait" => "Trait",
     "cmodel" => "Model",
     "hmodel" => "Handler"
   ], ["dbo", "dbq"], ["class" => "objects"]));
