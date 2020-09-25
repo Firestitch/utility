@@ -27,14 +27,11 @@ class BodyView extends \Framework\View\Application\Body\BodyView {
       ->add_js_url("//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js")
       ->add_js_url("//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js")
       ->add_js_url("//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js")
-      ->add_js_lib("jquery/plugins/colorbox/colorbox/jquery.colorbox-min.js")
+      ->add_css_url("//netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css")
+      ->add_css_url("//fonts.googleapis.com/css?family=Open+Sans")
       ->add_js_lib("common.js")
       ->add_js_app("global.js")
       ->add_css_lib("base.css")
-      ->add_js_lib("jquery/plugins/colorbox/example1/colorbox.css")
-      ->add_css_url("//netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css")
-      ->add_css_app("jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.10.0.custom.css")
-      ->add_css_url("//fonts.googleapis.com/css?family=Open+Sans")
       ->add_css_app("styles.css");
   }
 }
