@@ -10,4 +10,4 @@ if (!$has_bootstrap)
 
 WebApplication::instance()
   ->register_manager(RouteManager::class)
-  ->run();
+  ->start();
