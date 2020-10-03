@@ -3,7 +3,7 @@
 use Framework\Core\WebApplication;
 use Utility\Manager\RouteManager;
 
-$has_bootstrap = @include_once(realpath(dirname(__FILE__) . "/../..") . "/framework/boot/webbootstrap.inc");
+$has_bootstrap = @include_once(dirname(__FILE__) . "/../../framework/Boot/webbootstrap.inc");
 
 if (!$has_bootstrap)
   header("location: /unavailable/");
