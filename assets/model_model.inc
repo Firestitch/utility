@@ -120,7 +120,7 @@ class {$pascal_model}Model extends {if $primary_object_id}BaseObjectModel{else}M
 		}
 
 		public function get_object_class() {
-			return CMODEL_OBJECT::CLASS_{$upper_model};
+			return ObjectModel::CLASS_{$upper_model};
 		}
 
 	    public function __toString() {

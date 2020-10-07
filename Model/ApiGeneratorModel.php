@@ -17,10 +17,10 @@ class ApiGeneratorModel extends GeneratorModel {
   function __construct($dir, $api, $model, $model_plural, $methods = [], $parent_model = null, $options = []) {
     parent::__construct($dir);
 
-    $this->_model = $model;
+    $this->_model = strtolower($model);
     $this->_options = $options;
     $this->_api = $api;
-    $this->_parent_model = $parent_model;
+    $this->_parent_model = strtolower($parent_model);
     $this->_model_plural = $model_plural;
     $this->_methods = $methods;
     $this->_method = value($this->_options, "method", str_replace("_", "", $this->_model_plural));
@@ -103,6 +103,7 @@ class ApiGeneratorModel extends GeneratorModel {
     $accessible_fields = array_values(array_filter(array_keys($fields), function ($v) {
       return !preg_match("/(" . $this->_model . "_id$|guid|create_date|configs|_time|meta$)/", $v);
     }));
+
 
     return $this
       ->assign("options", $this->_options)
