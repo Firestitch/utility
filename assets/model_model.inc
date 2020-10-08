@@ -23,11 +23,14 @@ class {$pascal_model}Model extends {if $primary_object_id}BaseObjectModel{else}M
 			parent::__construct({$pascal_model}Dbo::create());
     }
 {foreach $consts as $const}{if $const!="state"}
-		public function is_{$const.const|lower}()	{ return $this->get_{$const.field}()==self::{$const.const}; }{/if}
+    public function is_{$const.const|lower}()	{ return $this->get_{$const.field}()==self::{$const.const}; }
+{/if}
 {/foreach}
 {if $has_state}		public function get_state_name()	{ return value(self::get_states(),$this->get_state()); }
-		public function delete()			{ return $this->set_state(self::STATE_DELETED)->save(); }
-		public function is_state_delete()	{ return $this->get_state()==self::STATE_DELETED; }
+    public function delete()			{ return $this->set_state(self::STATE_DELETED)->save(); }
+
+    public function is_state_delete()	{ return $this->get_state()==self::STATE_DELETED; }
+
 		public function is_state_active()	{ return $this->get_state()==self::STATE_ACTIVE; }
 {/if}
 
@@ -123,8 +126,8 @@ class {$pascal_model}Model extends {if $primary_object_id}BaseObjectModel{else}M
 			return ObjectModel::CLASS_{$upper_model};
 		}
 
-	    public function __toString() {
-	        return $this->get_name();
-	    }
+    public function __toString() {
+        return $this->get_name();
+    }
 {/if}
 	}

@@ -14,7 +14,7 @@ use Framework\Util\HTML_UTIL;
     "trait" => "Trait",
     "cmodel" => "Model",
     "hmodel" => "Handler"
-  ], ["dbo", "dbq"], ["class" => "objects"]));
+  ], ["dbo", "dbq", "trait"], ["class" => "objects"]));
   $data[] = array("Name:", HTML_UTIL::input("name", "", array("class" => "w300")));
   $data[] = array("", HTML_UTIL::checkbox("primary_object_id", "1", false, ["class" => ""], "CMODEL has primary key object_id"));
   $data[] = array("", HTML_UTIL::checkbox("override", "1", $override, ["class" => "override"], "Override existing files"));

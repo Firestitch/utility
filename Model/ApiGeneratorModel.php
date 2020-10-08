@@ -5,6 +5,7 @@ namespace Utility\Model;
 use Exception;
 use Framework\Util\FILE_UTIL;
 use Framework\Util\HTML_UTIL;
+use Framework\Util\LANG_UTIL;
 use Framework\Util\STRING_UTIL;
 
 class ApiGeneratorModel extends GeneratorModel {
@@ -17,10 +18,11 @@ class ApiGeneratorModel extends GeneratorModel {
   function __construct($dir, $api, $model, $model_plural, $methods = [], $parent_model = null, $options = []) {
     parent::__construct($dir);
 
-    $this->_model = strtolower($model);
+    $this->_snake_model = STRING_UTIL::snakeize($model);
+    $this->_model = $model;
     $this->_options = $options;
     $this->_api = $api;
-    $this->_parent_model = strtolower($parent_model);
+    $this->_parent_model = STRING_UTIL::snakeize($parent_model);
     $this->_model_plural = $model_plural;
     $this->_methods = $methods;
     $this->_method = value($this->_options, "method", str_replace("_", "", $this->_model_plural));
@@ -104,12 +106,14 @@ class ApiGeneratorModel extends GeneratorModel {
       return !preg_match("/(" . $this->_model . "_id$|guid|create_date|configs|_time|meta$)/", $v);
     }));
 
+    $pascal_model = STRING_UTIL::pascalize($this->_model);
 
     return $this
       ->assign("options", $this->_options)
       ->assign("order_by", $order_by)
+      ->assign("snake_model", $this->_snake_model)
       ->assign("model_upper", strtoupper($this->_model))
-      ->assign("pascal_model", STRING_UTIL::pascalize($this->_model))
+      ->assign("pascal_model", $pascal_model)
       ->assign("method", $this->_method)
       ->assign("loads", (array)value($this->_options, "loads"))
       ->assign("model_plural_upper", strtoupper($this->_model_plural))
@@ -120,13 +124,14 @@ class ApiGeneratorModel extends GeneratorModel {
       ->assign("model", $this->_model)
       ->assign("methods", $this->_methods)
       ->assign("keywords", $keywords)
+      ->assign("plural_pascal_model", LANG_UTIL::get_plural($pascal_model))
       ->assign("api", $this->_api)
       ->assign("api_singular", rtrim($this->_api, "s"))
       ->assign("dbos", $cmodel->get_dbos())
       ->assign("accessible_fields", $accessible_fields)
       ->assign("has_state", in_array("state", array_keys($fields)))
       ->assign("fields", array_keys($fields))
-      ->assign("model_id", $this->_model . "_id")
+      ->assign("model_id", $this->_snake_model . "_id")
       ->assign("model_plural", $this->_model_plural)
       ->assign("parent_model", $this->_parent_model)
       ->fetch($template);
