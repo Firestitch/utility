@@ -50,14 +50,14 @@
 		  if(!${$model_id})
 		  $this->handler(${$snake_model}_handler{if $order_by},"{$order_by}"{/if});
 
-		  ${$model_plural} = [];
+		  ${$plural_snake_model} = [];
 		  foreach(${$snake_model}_handler->gets() as ${$snake_model}_model)
-		  ${$model_plural}[] = ${$snake_model}_model->arry();
+		  ${$plural_snake_model}[] = ${$snake_model}_model->arry();
 
 		  if(${$model_id})
-		    $this->require_data("{$snake_model}",array_shift(${$model_plural}));
+		    $this->require_data("{$snake_model}",array_shift(${$plural_snake_model}));
 		  else
-		    $this->data("{$model_plural}",array_values(${$model_plural}));
+		    $this->data("{$plural_snake_model}",array_values(${$plural_snake_model}));
 
 
 

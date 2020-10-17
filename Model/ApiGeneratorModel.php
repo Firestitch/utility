@@ -24,6 +24,7 @@ class ApiGeneratorModel extends GeneratorModel {
     $this->_api = $api;
     $this->_parent_model = STRING_UTIL::snakeize($parent_model);
     $this->_model_plural = $model_plural;
+    $this->_plural_snake_model = STRING_UTIL::snakeize($model_plural);
     $this->_methods = $methods;
     $this->_method = value($this->_options, "method", str_replace("_", "", $this->_model_plural));
     $this->_dir = $this->get_instance_dir() . "View/Api/";
@@ -112,9 +113,10 @@ class ApiGeneratorModel extends GeneratorModel {
       ->assign("options", $this->_options)
       ->assign("order_by", $order_by)
       ->assign("snake_model", $this->_snake_model)
+      ->assign("plural_snake_model", $this->_plural_snake_model)
       ->assign("model_upper", strtoupper($this->_model))
       ->assign("pascal_model", $pascal_model)
-      ->assign("method", $this->_method)
+      ->assign("method", strtolower($this->_method))
       ->assign("loads", (array)value($this->_options, "loads"))
       ->assign("model_plural_upper", strtoupper($this->_model_plural))
       ->assign("model_plural_upper_trim", strtoupper(str_replace("_", "", $this->_model_plural)))
