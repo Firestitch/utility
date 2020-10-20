@@ -1,10 +1,10 @@
 		public function {$method}($params,$data) {
 
-		${$model_id} = value($params,"{$model_id}");
+		${$model_id} = value($params,"{$model_id}");{if $parent_model}
 
-		{if $parent_model}
+		${$parent_model}_id = value($params,"{$parent_model}_id");
 
-		${$parent_model}_model = {$pascal_model}Handler::create()
+		${$parent_model}_model = {$pascal_parent_model}Handler::create()
 		->require(${$parent_model}_id);
 		{/if}{if in_array("get",$methods)}
 		if($this->is_get()) {
@@ -55,9 +55,9 @@
 		  ${$plural_snake_model}[] = ${$snake_model}_model->arry();
 
 		  if(${$model_id})
-		    $this->require_data("{$snake_model}",array_shift(${$plural_snake_model}));
+		  $this->require_data("{$snake_model}",array_shift(${$plural_snake_model}));
 		  else
-		    $this->data("{$plural_snake_model}",array_values(${$plural_snake_model}));
+		  $this->data("{$plural_snake_model}",array_values(${$plural_snake_model}));
 
 
 
@@ -67,9 +67,9 @@
 
 		  if($this->is_post()) {
 		  {if $parent_model}
-		  ${$snake_model}_model->set_{$parent_model}_id(${$parent_model}_id);
+		  ${$snake_model}_model->set_{$parent_model}_id(${$parent_model}_model->get_{$parent_model}_id());
 		  {/if}
-		  } else
+	} else
 		  ${$snake_model}_model = $this->acl()->write({$pascal_model}Handler::create(false){if $parent_model}
 
 		  ->set_{$parent_model}_id(${$parent_model}_id){/if}
@@ -109,5 +109,5 @@
 		  OrderingModel::create($hmodel,"{$model_id}")
 		  ->reorder($ids,$this->post("page") * $this->post("limit"));
 		  }
-		  }
-		  {/if}
+		}
+{/if}

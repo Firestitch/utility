@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Backend\Handler;
 
 use Framework\Core\Handler;

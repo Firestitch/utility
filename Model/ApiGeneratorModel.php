@@ -108,6 +108,7 @@ class ApiGeneratorModel extends GeneratorModel {
     }));
 
     $pascal_model = STRING_UTIL::pascalize($this->_model);
+    $pascal_parent_model = STRING_UTIL::pascalize($this->_parent_model);
 
     return $this
       ->assign("options", $this->_options)
@@ -136,6 +137,7 @@ class ApiGeneratorModel extends GeneratorModel {
       ->assign("model_id", $this->_snake_model . "_id")
       ->assign("model_plural", $this->_model_plural)
       ->assign("parent_model", $this->_parent_model)
+      ->assign("pascal_parent_model", $pascal_parent_model)
       ->fetch($template);
   }
 }
