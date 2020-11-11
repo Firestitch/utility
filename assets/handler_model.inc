@@ -8,7 +8,6 @@ use Backend\Dbq\{$pascal_model}Dbq;
 /**
  * @method {$pascal_model}Model get()
  * @method {$pascal_model}Model require()
- * @method {$pascal_model}Model[] gets()
  */
 class {$pascal_model}Handler extends Handler {
 
@@ -20,6 +19,9 @@ class {$pascal_model}Handler extends Handler {
 {/if}
   }
 
+  /**
+   * @return {$pascal_model}Model[]
+   */
   public function gets() {
     ${$lower_models} = $this->get_dbq()->select($this->_select_fields);
 

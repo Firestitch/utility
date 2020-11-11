@@ -8,7 +8,7 @@ use Framework\Db\DB;
 use Framework\Util\FILE_UTIL;
 use Framework\Util\STRING_UTIL;
 
-class ModelTraitGeneratorModel  {
+class ModelTraitGeneratorModel {
 
   protected $_app_dir = null;
   protected $_db_utility;
@@ -27,29 +27,31 @@ class ModelTraitGeneratorModel  {
     $classname = basename(self::get_trait_name(strtolower($name)));
     $trait_file = self::get_trait_file($classname, $this->_app_dir);
     $has_success = false;
+    $model_name = self::get_model_classname($name);
+    $model_classname = basename(self::get_model_classname($name));
 
     if (!is_dir($this->_app_dir . "/Model/Traits/"))
       FILE_UTIL::mkdir($this->_app_dir . "/Model/Traits/");
 
     if (!is_file($trait_file) || $override) {
 
-      $str = "<?php\n\nnamespace " . self::$base_namespace . "\Model\Traits;\n\ntrait {$classname} {\n\n";
+      $str = "<?php\n\nnamespace " . self::$base_namespace . "\Model\Traits;\n\nuse {$model_name};\n\ntrait {$classname} {\n\n";
 
       $field_names = [];
-      foreach($tablenames as $tablename) {
+      foreach ($tablenames as $tablename) {
         try {
           foreach ($this->_db_utility->get_table_fields($tablename) as $field) {
-            $field_names[]=$field["Field"];
+            $field_names[] = $field["Field"];
           }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
           WebApplication::instance()->add_warning("The tablename `" . $tablename . "` doest not exists");
           continue;
         }
       }
 
       $field_names = array_unique($field_names);
-      foreach($field_names as $field_name) {
-        $str .= '  public function set_' . $field_name . '($value) {
+      foreach ($field_names as $field_name) {
+        $str .= '  public function set_' . $field_name . '($value): ' . $model_classname . '  {
     return $this->set_dbo_value("' . $field_name . '", $value);
   }' . "\n\n";
         $str .= '  public function get_' . $field_name . '() {
@@ -68,7 +70,7 @@ class ModelTraitGeneratorModel  {
 
   function append_model_trait($model_name, $trait_name = null) {
 
-    $model_classname = basename(self::get_model_classname(strtolower($model_name)));
+    $model_classname = basename(self::get_model_classname($model_name));
     $model_file = self::get_model_file($model_classname, $this->_app_dir);
 
     $trait_name = $trait_name ? $trait_name : basename(self::get_trait_name(strtolower($model_name)));
@@ -108,11 +110,10 @@ class ModelTraitGeneratorModel  {
   }
 
   public static function get_model_classname($basename) {
-    return self::$base_namespace . "\Model\\" . STRING_UTIL::pascalize($basename) . "Model";
+    return self::$base_namespace . "\Model\\" . STRING_UTIL::pascalize(strtolower($basename)) . "Model";
   }
 
   public static function get_model_file($classname, $app_dir) {
     return FILE_UTIL::sanitize_file($app_dir . "/Model/" . $classname . ".php");
   }
 }
-
