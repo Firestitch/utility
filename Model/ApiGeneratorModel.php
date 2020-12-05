@@ -104,7 +104,7 @@ class ApiGeneratorModel extends GeneratorModel {
     }
 
     $accessible_fields = array_values(array_filter(array_keys($fields), function ($v) {
-      return !preg_match("/(" . $this->_model . "_id$|guid|create_date|configs|_time|meta$)/", $v);
+      return !preg_match("/(" . $this->_snake_model . "_id$|guid|create_date|configs|_time|meta$)/", $v);
     }));
 
     $pascal_model = STRING_UTIL::pascalize($this->_model);
@@ -133,6 +133,8 @@ class ApiGeneratorModel extends GeneratorModel {
       ->assign("dbos", $cmodel->get_dbos())
       ->assign("accessible_fields", $accessible_fields)
       ->assign("has_state", in_array("state", array_keys($fields)))
+      ->assign("has_guid", in_array("guid", array_keys($fields)))
+      ->assign("create_date", in_array("create_date", array_keys($fields)))
       ->assign("fields", array_keys($fields))
       ->assign("model_id", $this->_snake_model . "_id")
       ->assign("model_plural", $this->_model_plural)
