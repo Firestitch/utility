@@ -7,9 +7,8 @@ use Framework\Core\View;
 use Framework\Core\WebApplication;
 use Framework\Db\DB;
 use Framework\Model\PathModel;
-use Framework\Model\ResponseModel;
+use Framework\Model\ApiResponseModel;
 use Framework\Util\ARRAY_UTIL;
-use Framework\Util\STRING_UTIL;
 use Utility\Model\DbGeneratorModel;
 use Utility\Model\ModelGeneratorModel;
 use Utility\Model\ModelTraitGeneratorModel;
@@ -57,7 +56,7 @@ class DbModelView extends View {
 
       try {
 
-        $response = new ResponseModel();
+        $response = new ApiResponseModel();
 
         $tablename       = strtolower($this->post("tablename"));
         $name         = $this->post("name");
@@ -98,7 +97,7 @@ class DbModelView extends View {
 
           if (in_array("trait", $objects)) {
 
-            $model_trait_generator_complex_cmoddel = new ModelTraitGeneratorModel( $app_dir);
+            $model_trait_generator_complex_cmoddel = new ModelTraitGeneratorModel($app_dir);
             $has_success = $model_trait_generator_complex_cmoddel->create_trait($tablename, $name, $override);
 
             $classname = $model_trait_generator_complex_cmoddel::get_trait_name($name);
@@ -139,7 +138,7 @@ class DbModelView extends View {
       $response
         ->data("warnings", WebApplication::get_warning_messages())
         ->data("messages", WebApplication::get_notify_messages())
-        ->render(true);
+        ->render();
     }
   }
 

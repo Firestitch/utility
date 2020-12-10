@@ -5,7 +5,7 @@ namespace Utility\View\Api;
 use Exception;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
-use Framework\Model\ResponseModel;
+use Framework\Model\ApiResponseModel;
 use Framework\Util\FILE_UTIL;
 use Utility\Model\ApiGeneratorModel;
 use Utility\Model\ModelGeneratorModel;
@@ -41,7 +41,7 @@ class ApiView extends View {
 
       try {
 
-        $response = new ResponseModel();
+        $response = new ApiResponseModel();
 
         $dir       = WebApplication::get_main_application_directory();
         $model       = $this->post("model");
@@ -96,7 +96,7 @@ class ApiView extends View {
       $response
         ->data("warnings", WebApplication::get_warning_messages())
         ->data("messages", WebApplication::get_notify_messages())
-        ->render(true);
+        ->render();
     }
   }
 }

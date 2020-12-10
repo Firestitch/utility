@@ -6,7 +6,7 @@ use Exception;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
 use Framework\Db\DB;
-use Framework\Model\ResponseModel;
+use Framework\Model\ApiResponseModel;
 use Framework\Util\FILE_UTIL;
 use Framework\Util\LANG_UTIL;
 use Framework\Util\STRING_UTIL;
@@ -53,7 +53,7 @@ class MapModelView extends View {
 
     try {
 
-      $response = new ResponseModel();
+      $response = new ApiResponseModel();
 
       $debug = false;
       $source_model = strtolower($this->request("source_model"));
@@ -199,7 +199,7 @@ class MapModelView extends View {
     $response
       ->data("warnings", WebApplication::get_warning_messages())
       ->data("messages", WebApplication::get_notify_messages())
-      ->render(true);
+      ->render();
   }
 
   function has_code($content, $code) {
