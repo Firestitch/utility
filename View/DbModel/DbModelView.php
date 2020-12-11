@@ -7,7 +7,7 @@ use Framework\Core\View;
 use Framework\Core\WebApplication;
 use Framework\Db\DB;
 use Framework\Model\PathModel;
-use Framework\Model\ApiResponseModel;
+use Framework\Api\ApiResponse;
 use Framework\Util\ARRAY_UTIL;
 use Utility\Model\DbGeneratorModel;
 use Utility\Model\ModelGeneratorModel;
@@ -56,7 +56,7 @@ class DbModelView extends View {
 
       try {
 
-        $response = new ApiResponseModel();
+        $response = new ApiResponse();
 
         $tablename       = strtolower($this->post("tablename"));
         $name         = $this->post("name");

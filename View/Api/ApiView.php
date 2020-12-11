@@ -5,7 +5,7 @@ namespace Utility\View\Api;
 use Exception;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
-use Framework\Model\ApiResponseModel;
+use Framework\Api\ApiResponse;
 use Framework\Util\FILE_UTIL;
 use Utility\Model\ApiGeneratorModel;
 use Utility\Model\ModelGeneratorModel;
@@ -41,7 +41,7 @@ class ApiView extends View {
 
       try {
 
-        $response = new ApiResponseModel();
+        $response = new ApiResponse();
 
         $dir       = WebApplication::get_main_application_directory();
         $model       = $this->post("model");
