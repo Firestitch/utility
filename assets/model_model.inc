@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Backend\Model;
 
 {if !$primary_object_id}

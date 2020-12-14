@@ -133,7 +133,7 @@ use Framework\Util\JSON_UTIL;
 
         FF.msg.clear();
 
-        if (response.has_success) {
+        if (response.success) {
           FF.msg.success('Successfully generated');
         } else
           FF.msg.error(response.errors);
