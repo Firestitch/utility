@@ -140,7 +140,7 @@ class MapModelView extends View {
 
           $function         = $map_child ? "map_child" : "map_children";
           $parent_object_function = "set_" . ($map_child ? $reference_name : $reference_name_plual);
-          $child_reference_column = $reference_model . "s." . $reference_model_column;
+          $child_reference_column = LANG_UTIL::plural($reference_model) . "." . $reference_model_column;
           $cmodels         = stripos($hmodel_content, 'return $cmodel') === false ? '$' . $source_model . '_cmodels' : '$cmodels';
           $joins           = [];
 

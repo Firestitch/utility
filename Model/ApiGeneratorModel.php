@@ -104,7 +104,7 @@ class ApiGeneratorModel extends GeneratorModel {
     }
 
     $accessible_fields = array_values(array_filter(array_keys($fields), function ($v) {
-      return !preg_match("/(" . $this->_snake_model . "_id$|guid|create_date|configs|_time|meta$)/", $v);
+      return !preg_match("/(" . $this->_snake_model . "_id$|guid|create_date|configs|_time|order|meta$)/", $v);
     }));
 
     $pascal_model = STRING_UTIL::pascalize($this->_model);
