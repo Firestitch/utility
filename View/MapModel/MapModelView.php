@@ -81,7 +81,7 @@ class MapModelView extends View {
 
       $reference_key           = $map_child ? $reference_name : $plural_reference_name;
 
-      $reference_name_set    = "\n\n\t\tpublic function " . $reference_name_set_function . "(" . GeneratorModel::get_model_classname($reference_model) . " \$value) { return \$this->data(\"" . $reference_key . "\",\$value); }\n";
+      $reference_name_set    = "\n\n\t\tpublic function " . $reference_name_set_function . "(?" . GeneratorModel::get_model_classname($reference_model) . " \$value) { return \$this->data(\"" . $reference_key . "\",\$value); }\n";
 
       $where_column       = $reference_model_plual . "." . $reference_model_column;
       $last_table       = $reference_model_plual;
