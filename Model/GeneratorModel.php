@@ -49,10 +49,18 @@ class GeneratorModel {
   }
 
   static function get_model_class($basename) {
-    return "Backend\Model\\" . STRING_UTIL::pascalize($basename) . "Model";
+    return "Backend\Model\\" . self::get_model_classname($basename);
+  }
+
+  static function get_model_classname($basename) {
+    return STRING_UTIL::pascalize($basename) . "Model";
   }
 
   static function get_handler_class($basename) {
-    return "Handler\Model\\" . STRING_UTIL::pascalize($basename) . "Handler";
+    return "Handler\Model\\" . self::get_handler_classname($basename);
+  }
+
+  static function get_handler_classname($basename) {
+    return STRING_UTIL::pascalize($basename) . "Handler";
   }
 }

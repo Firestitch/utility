@@ -81,7 +81,7 @@ class MapModelView extends View {
 
       $reference_key           = $map_child ? $reference_name : $plural_reference_name;
 
-      $reference_name_set    = "\n\n\t\tpublic function " . $reference_name_set_function . "(\$value) { return \$this->data(\"" . $reference_key . "\",\$value); }\n";
+      $reference_name_set    = "\n\n\t\tpublic function " . $reference_name_set_function . "(" . GeneratorModel::get_model_classname($reference_model) . " \$value) { return \$this->data(\"" . $reference_key . "\",\$value); }\n";
 
       $where_column       = $reference_model_plual . "." . $reference_model_column;
       $last_table       = $reference_model_plual;
@@ -90,7 +90,7 @@ class MapModelView extends View {
       if ($joiner = value($joiners, 0))
         $where_column = $joiner["table"] . "." . $joiner["source_column"];
 
-      $reference_name_get =   "\n\t\tpublic function " . $reference_name_get_function . "(\$handler=false) {\n" .
+      $reference_name_get =   "\n\t\tpublic function " . $reference_name_get_function . "(\$handler=false): ?" . GeneratorModel::get_model_classname($reference_model) . " {\n" .
         "\t\t\tif(\$handler && !\$this->has_data(\"" . $reference_key . "\") && \$this->get_" . $source_model_column . "()) {\n" .
         "\t\t\t\t\$handler = \$handler instanceof Handler ? \$handler : " . basename(GeneratorModel::get_handler_class($reference_model)) . "::create(" . ($map_child ? "false" : "true") . ");\n" .
         "\t\t\t\t\$this->data(\"" . $reference_key . "\",\$handler";
