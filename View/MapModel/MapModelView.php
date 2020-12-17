@@ -64,12 +64,16 @@ class MapModelView extends View {
       $joiners = (array)$this->request("joiners");
       $map_child = $this->request("relationship") == "child";
       $application = $this->request("application");
+      $source_model_handler = ModelGeneratorModel::get_handler_class($source_model);
       $dir = $application ? DIR_INSTANCE . $application . "/" : WebApplication::get_main_application_directory();
       $cmodel_model_file = $dir . "Model/" . ModelGeneratorModel::get_model_class($source_model) . ".php";
-      $hmodel_model_file = $dir . "Handler/" . ModelGeneratorModel::get_handler_class($source_model) . ".php";
+      $hmodel_model_file = $dir . "Handler/" . $source_model_handler . ".php";
       $warnings = [];
       $reference_name = $this->post("object_name_custom");
       $reference_name_plual = LANG_UTIL::plural($reference_name);
+
+      if (!$source_model_column)
+        throw new Exception("Invalid sourse column");
 
       if ($this->post("object_name") == "source" || $this->post("object_name") == "reference") {
         $reference_name = preg_replace("/_id$/", "", $this->post("object_name") == "source" ? $source_model_column : $reference_model);
@@ -81,7 +85,10 @@ class MapModelView extends View {
 
       $reference_key           = $map_child ? $reference_name : $plural_reference_name;
 
-      $reference_name_set    = "\n\n\t\tpublic function " . $reference_name_set_function . "(?" . GeneratorModel::get_model_classname($reference_model) . " \$value) { return \$this->data(\"" . $reference_key . "\",\$value); }\n";
+      $set_function_type = $map_child ? "?" . GeneratorModel::get_model_classname($reference_model) . " " : "";
+      $reference_name_set    = "
+  public function {$reference_name_set_function}({$set_function_type}\$value) { return \$this->data(\"{$reference_key}\",\$value); }
+  ";
 
       $where_column       = $reference_model_plual . "." . $reference_model_column;
       $last_table       = $reference_model_plual;
@@ -90,23 +97,19 @@ class MapModelView extends View {
       if ($joiner = value($joiners, 0))
         $where_column = $joiner["table"] . "." . $joiner["source_column"];
 
-      $reference_name_get =   "\n\t\tpublic function " . $reference_name_get_function . "(\$handler=false): ?" . GeneratorModel::get_model_classname($reference_model) . " {\n" .
-        "\t\t\tif(\$handler && !\$this->has_data(\"" . $reference_key . "\") && \$this->get_" . $source_model_column . "()) {\n" .
-        "\t\t\t\t\$handler = \$handler instanceof Handler ? \$handler : " . basename(GeneratorModel::get_handler_class($reference_model)) . "::create(" . ($map_child ? "false" : "true") . ");\n" .
-        "\t\t\t\t\$this->data(\"" . $reference_key . "\",\$handler";
-      foreach (array_reverse($joiners) as $joiner) {
-        $reference_name_get .= "->join(\"" . $last_table . "\",\"" . $joiner["table"] . "\",\"" . $last_column . "\",\"" . $joiner["reference_column"] . "\")\n\t\t\t\t\t\t\t\t\t\t\t\t";
-
-        $last_table = $joiner["table"];
-        $last_column = $joiner["source_column"];
-      }
-
-      $reference_name_get .= "->where(\"" . $where_column . "\",\"=\",\$this->get_" . $source_model_column . "())";
-
-      $reference_name_get .=   "\n\t\t\t\t\t\t\t\t\t\t\t\t->" . ($map_child ? "get" : "gets") . "());\n" .
-        "\t\t\t}\n" .
-        "\t\t\treturn " . ($map_child ? "" : "(array)") . "\$this->data(\"" . $reference_key . "\");\n" .
-        "\t\t}";
+      $get_function_type = $map_child ? ": ?" . GeneratorModel::get_model_classname($reference_model) : "";
+      $reference_name_get =   "
+  public function {$reference_name_get_function}(\$handler = false){$get_function_type} {
+    if(\$handler && !\$this->has_data(\"{$reference_key}\") && \$this->get_{$source_model_column}())
+      \$this->data(
+        \"{$reference_key}\",
+        {$source_model_handler}::create_{$reference_key}_handler(\$handler)
+          ->where(\"{$where_column}\",\"=\",\$this->get_{$source_model_column}())
+          ->" . ($map_child ? "get" : "gets") . "()
+        );
+    return " . ($map_child ? "" : "(array)") . "\$this->data(\"{$reference_key}\");
+  }
+";
 
       if (!$reference_name)
         throw new Exception("Invalid reference name");
@@ -142,23 +145,16 @@ class MapModelView extends View {
           $parent_object_function = "set_" . ($map_child ? $reference_name : $reference_name_plual);
           $child_reference_column = LANG_UTIL::plural($reference_model) . "." . $reference_model_column;
           $cmodels         = stripos($hmodel_content, 'return $cmodel') === false ? '$' . $source_model . '_cmodels' : '$cmodels';
-          $joins           = [];
 
-          $last_table = $reference_model_plual;
-          $last_column = $reference_model_column;
-          foreach (array_reverse($joiners) as $joiner) {
-            $joins[] = '["from"=>"' . $last_table . '","to"=>"' . $joiner["table"] . '","from_column"=>"' . $last_column . '","to_column"=>"' . $joiner["reference_column"] . '"]';
-            $last_table = $joiner["table"];
-            $last_column = $joiner["source_column"];
+          foreach (array_reverse($joiners) as $joiner)
             $child_reference_column = $joiner["table"] . "." . $joiner["source_column"];
-          }
 
-          $joins = "[" . implode(",", $joins) . "]";
+          $code = "
+    \$this->{$function}({$cmodels}, \$this->handler(\"{$reference_key}_handler\"), \"get_{$source_model_column}\", \"{$parent_object_function}\", \"{$child_reference_column}\");
 
-          $code = "\n\t\t\t" . '$this->' . $function . '(' . $cmodels . ', $this->handler("' . $reference_name . '_handler"), "get_' . $source_model_column . '", "' . $parent_object_function . '", "' . $child_reference_column . '",' . $joins . ');' . "\n\n\t\t\t";
+    ";
 
           if (!$this->has_code($hmodel_content, $code)) {
-
             if ($debug)
               p("Handler MAP", $code);
 
@@ -166,17 +162,48 @@ class MapModelView extends View {
           }
         }
 
+        $reference_model_pasalize = STRING_UTIL::pascalize($reference_model);
+
         if (preg_match("/(.*)(}[\s\n]*)$/ism", $hmodel_content, $matches)) {
 
-          $code = "\n\t\tpublic function load_" . $plural_reference_name . "(\$handler=null) {\n" .
-            "\t\t\treturn \$this->handler(\"" . $reference_name . "_handler\",\$handler ? \$handler : " . STRING_UTIL::pascalize($reference_model) . "Handler::create());\n" .
-            "\t\t}\n\t}";
+          $joins = "";
+          $last_table = $reference_model_plual;
+          $last_column = $reference_model_column;
+          foreach (array_reverse($joiners) as $joiner) {
+            $joins .= "->join(\"{$last_table}\", \"{$joiner["table"]}\", \"{$last_column}\", \"{$joiner["reference_column"]}\")";
+            $last_table = $joiner["table"];
+            $last_column = $joiner["source_column"];
+          }
+
+          $code = "
+  public function load_{$plural_reference_name}(\$handler = null) {
+    return \$this->handler(\"{$reference_key}_handler\", \$this->create_{$reference_key}_handler(\$handler));
+  }
+
+  public static function create_{$reference_key}_handler(\$handler = null): {$reference_model_pasalize}Handler {
+    \$handler = \$handler instanceof {$reference_model_pasalize}Handler ? \$handler : {$reference_model_pasalize}Handler::create(true);
+    return \$handler$joins;
+  }
+}
+";
+
+          // foreach (array_reverse($joiners) as $joiner) {
+          //   $reference_name_get .= "->join(\"" . $last_table . "\",\"" . $joiner["table"] . "\",\"" . $last_column . "\",\"" . $joiner["reference_column"] . "\")\n\t\t\t\t\t\t\t\t\t\t\t\t";
+
+          //   $last_table = $joiner["table"];
+          //   $last_column = $joiner["source_column"];
+          // }
+
+
+          // $code = "\n\t\tpublic function load_" . $plural_reference_name . "(\$handler=null) {\n" .
+          //   "\t\t\treturn \$this->handler(\"" . $reference_name . "_handler\",\$handler ? \$handler : " . STRING_UTIL::pascalize($reference_model) . "Handler::create());\n" .
+          //   "\t\t}\n\t}";
 
           if ($code && !$this->has_code($hmodel_content, $code)) {
             $hmodel_content = value($matches, 1) . $code;
 
             if ($debug)
-              p("HMODEL LOAD", $code);
+              p("Handler Load", $code);
           }
         }
 
