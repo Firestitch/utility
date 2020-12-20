@@ -70,7 +70,6 @@ class MapModelView extends View {
       $hmodel_model_file = $dir . "Handler/" . $source_model_handler . ".php";
       $warnings = [];
       $reference_name = $this->post("object_name_custom");
-      $reference_name_plual = LANG_UTIL::plural($reference_name);
 
       if (!$source_model_column)
         throw new Exception("Invalid sourse column");
@@ -79,6 +78,7 @@ class MapModelView extends View {
         $reference_name = preg_replace("/_id$/", "", $this->post("object_name") == "source" ? $source_model_column : $reference_model);
       }
 
+      $reference_name_plual = LANG_UTIL::plural($reference_name);
       $plural_reference_name      = LANG_UTIL::get_plural_string($reference_name);
       $reference_name_set_function  = "set_" . ($map_child ? $reference_name : $plural_reference_name);
       $reference_name_get_function   = "get_" . ($map_child ? $reference_name : $plural_reference_name);
