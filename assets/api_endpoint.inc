@@ -69,7 +69,7 @@
 		  {if $parent_model}
 		  ${$snake_model}_model->set_{$parent_model}_id(${$parent_model}_model->get_{$parent_model}_id());
 		  {/if}
-	} else
+		  } else
 		  ${$snake_model}_model = $this->acl()->write({$pascal_model}Handler::create(false){if $parent_model}
 
 		  ->set_{$parent_model}_id(${$parent_model}_id){/if}
@@ -103,11 +103,11 @@
 
 		  if($this->is_put()) {
 
-		  $hmodel = $this->acl()->apply({$pascal_model}Handler::create(false));
+		  $handler = $this->acl()->apply({$pascal_model}Handler::create(false));
 		  $ids = is_array($this->post("{$model_id}s")) ? $this->post("{$model_id}s") : explode(",",$this->post("{$model_id}s"));
 
-		  OrderingModel::create($hmodel,"{$model_id}")
+		  OrderingModel::create($handler,"{$model_id}")
 		  ->reorder($ids,$this->post("page") * $this->post("limit"));
 		  }
-		}
-{/if}
+		  }
+		  {/if}
