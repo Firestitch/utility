@@ -12,7 +12,7 @@ use Framework\Util\MISC_UTIL;{/if}
 
 
 
-class {$pascal_model}Model extends {if $primary_object_id}BaseObjectModel{else}Model{/if} {
+class {$pascal_model}Model extends {if $primary_object_id}ObjectBaseModel{else}Model{/if} {
 
   use Traits\{$pascal_model}Trait;
 
