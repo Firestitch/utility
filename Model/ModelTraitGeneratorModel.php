@@ -35,7 +35,7 @@ class ModelTraitGeneratorModel {
 
     if (!is_file($trait_file) || $override) {
 
-      $str = "<?php\n\nnamespace " . self::$base_namespace . "\Model\Traits;\n\nuse {$model_name};\n\ntrait {$classname} {\n\n";
+      $str = "<?php\n\nnamespace " . self::$base_namespace . "\Model\Traits;\n\ntrait {$classname} {\n\n";
 
       $field_names = [];
       foreach ($tablenames as $tablename) {
@@ -51,7 +51,10 @@ class ModelTraitGeneratorModel {
 
       $field_names = array_unique($field_names);
       foreach ($field_names as $field_name) {
-        $str .= '  public function set_' . $field_name . '($value): ' . $model_classname . '  {
+        $str .= '  /**
+   * @return static
+   */
+  public function set_' . $field_name . '($value) {
     return $this->set_dbo_value("' . $field_name . '", $value);
   }' . "\n\n";
         $str .= '  public function get_' . $field_name . '() {
