@@ -16,6 +16,7 @@ use Framework\Util\SERVER_UTIL;
         <li><a href="/dbmodel">Db, Model & Handler</a></li>
         <li><a href="/mapmodel">Map Model</a></li>
         <li><a href="/api">API</a></li>
+        <li><a href="/wsdl">WSDL</a></li>
       </ul>
     </div>
 

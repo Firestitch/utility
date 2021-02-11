@@ -1,20 +1,19 @@
 <?php
 
-namespace Utility\View\Api;
+namespace Utility\View\Wsdl;
 
 use Exception;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
 use Framework\Api\ApiResponse;
 use Framework\Util\FILE_UTIL;
-use Utility\Model\ApiGeneratorModel;
-use Utility\Model\ModelGeneratorModel;
+use Utility\Model\WsdlGeneratorModel;
 
-class ApiView extends View {
+class WsdlView extends View {
 
   public function __construct() {
     $this->disable_authorization();
-    $this->set_template("./ApiTemplate.php");
+    $this->set_template("./WsdlTemplate.php");
     $this->set_form("javascript:;", false, "form-api");
   }
 
@@ -27,11 +26,16 @@ class ApiView extends View {
     $apis = [];
     foreach ($views as $view) {
       $name = preg_replace("/View\.php/", "", $view);
-      $apis[$name] = $name;
+      $label = $name;
+
+      if(file_exists(WebApplication::get_main_application_directory() . "View/Api/Wsdl/".$name."Wsdl.php"))
+        $label .= " (existing)";
+
+      $apis[$name] = $label;
     }
 
-    $this->set_var("model", $this->get("model"));
-    $this->set_var("models", ModelGeneratorModel::get_cmodels());
+    // $this->set_var("model", $this->get("model"));
+    // $this->set_var("models", ModelGeneratorModel::get_cmodels());
     $this->set_var("apis", $apis);
   }
 
@@ -44,50 +48,43 @@ class ApiView extends View {
         $response = new ApiResponse();
 
         $dir       = WebApplication::get_main_application_directory();
-        $model       = $this->post("model");
+        //$model       = $this->post("model");
         $api       = $this->post("api");
-        $model_plural  = $this->post("model-plural");
+        // $model_plural  = $this->post("model-plural");
         $options    = (array)$this->post("options");
-        $methods    = (array)$this->post("methods");
-        $method     = $this->post("method");
+        // $methods    = (array)$this->post("methods");
+        // $method     = $this->post("method");
 
-        if (!$model)
-          throw new Exception("Invalid model");
+        // if (!$model)
+        //   throw new Exception("Invalid model");
 
-        if (!$model_plural)
-          throw new Exception("Plural model");
+        // if (!$model_plural)
+        //   throw new Exception("Plural model");
 
         $messages = [];
 
         if ($api) {
-          $options["method"] = $method;
-          (new ApiGeneratorModel(
+
+          (new WsdlGeneratorModel(
             $dir,
             $api,
-            $model,
-            $model_plural,
-            $methods,
-            rtrim($api, "s"),
             $options
           ))
-            ->append($messages);
+            ->generate($messages);
         } else {
 
-          (new ApiGeneratorModel(
-            $dir,
-            $model_plural,
-            $model,
-            $model_plural,
-            $methods,
-            "",
-            $options
-          ))
-            ->generate(in_array("override", $options), $messages);
+          // (new WsdlGeneratorModel(
+          //   $dir,
+          //   $model_plural,
+          //   "",
+          //   $options
+          // ))
+          //   ->generate(in_array("override", $options), $messages);
         }
 
         $response->success();
 
-        WebApplication::add_notify("Successfully generated API");
+        WebApplication::add_notify("Successfully generated WSDL");
       } catch (Exception $e) {
         WebApplication::add_error($e->getMessage());
         $response->data("errors", WebApplication::get_error_messages());

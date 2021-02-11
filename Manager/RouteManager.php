@@ -13,6 +13,7 @@ class RouteManager extends RouteManagerBase {
         "children" => [
           ["path" => "dbmodel", "class" => \Utility\View\DbModel\DbModelView::class],
           ["path" => "api", "class" => \Utility\View\Api\ApiView::class],
+          ["path" => "wsdl", "class" => \Utility\View\Wsdl\WsdlView::class],
           [
             "path" => "mapmodel",
             "children" => [

@@ -1,4 +1,4 @@
-<?
+<?php
 
 use Framework\Util\HTML_TABLE_UTIL;
 use Framework\Util\HTML_UTIL;
@@ -7,7 +7,7 @@ use Framework\Util\HTML_UTIL;
 <h1>Db, Model & Handler</h1>
 
 <form id="form-db">
-  <?
+  <?php
   $data[] = array("Generate:", HTML_UTIL::checkboxes("objects", [
     "dbo" => "Ddo",
     "dbq" => "Dbq",

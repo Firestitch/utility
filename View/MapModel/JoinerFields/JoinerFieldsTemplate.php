@@ -1,4 +1,4 @@
-<?
+<?php
 
 use Framework\Util\HTML_UTIL;
 
