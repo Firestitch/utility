@@ -3,6 +3,7 @@
 namespace Utility\Model;
 
 use Exception;
+use Framework\Util\ARRAY_UTIL;
 use Framework\Util\FILE_UTIL;
 use Framework\Util\HTML_UTIL;
 use Framework\Util\LANG_UTIL;
@@ -35,40 +36,7 @@ class WsdlGeneratorModel extends GeneratorModel {
   }
 
 
-
-  function append(&$messages = array()) {
-
-    $view_file = $this->get_view_file();
-
-    if (!is_file($view_file))
-      throw new Exception("API not found");
-
-    $code = FILE_UTIL::get($this->get_file());
-    $this->assign("parent_method", $this->_api . "/" . $this->_parent_model . "_id/");
-    $endpoint = ltrim($this->get_endpoint());
-
-    $regex = "/(public\s+function\s+wsdl\(\).*)/is";
-    if (preg_match($regex, $code, $matches)) {
-      $code = str_replace($matches[0], $endpoint . $matches[0], $code);
-    } else {
-
-      $pos = strrpos($code, "}");
-
-      if ($pos === false)
-        throw new Exception("There was a problem trying to located the end of the class");
-
-      $code = substr_replace($code, $endpoint, $pos, 0);
-    }
-
-    FILE_UTIL::put($file, $code);
-
-    $messages = array("Successfully updated the file " . HTML_UTIL::get_link("file:" . FILE_UTIL::sanitize_file($file), FILE_UTIL::sanitize_file($file)));
-  }
-
-
   function generate($override, &$messages = array()) {
-
-    $messages = [];
 
     if (!is_file($this->get_wsdl_file())) {
       $this->assign("api", $this->_api);
@@ -80,7 +48,6 @@ class WsdlGeneratorModel extends GeneratorModel {
     }
 
     $view_name = "\\Backend\\View\\Api\\".$this->_api."View";
-    //$view = new $view_name();
 
     $class = new ReflectionClass($view_name);
     $methods = [];
@@ -136,45 +103,76 @@ class WsdlGeneratorModel extends GeneratorModel {
       if(preg_match("/this->is_delete\(\)/",$function_code))
         $request_types[] = "delete";
 
+      //if didnt fine any request type hints assume its a post
       if(!$request_types)
         $request_types = ["post"];
+
 
       //look for params i.e. this->get("state")
       preg_match_all("/this->get\(['\"](\w+)['\"]\)/", $function_code, $matches);
       $get_params = array_unique(value($matches,1,[]));
       preg_match_all("/this->post\(['\"](\w+)['\"]\)/", $function_code, $matches);
-      $post_params = array_unique(value($matches,1,[]));
+      $post_params = value($matches,1,[]);
       preg_match_all("/this->request\(['\"](\w+)['\"]\)/", $function_code, $matches);
       $request_params = array_unique(value($matches,1,[]));
 
       //look for fills
       preg_match_all("/->fill\([^,]+, *\[([^\]]+)\]/", $function_code, $matches);
-      $param_groups = value($matches,1,[]);
+      $param_groups = [];
+      foreach(value($matches,1,[]) as $match) {
+        preg_match_all("/['\"]([^'\"]+)['\"]/", $match, $p_matches);
+        if(isset($p_matches[1])) {
+          $group = $p_matches[1];
+          sort($group);
+          $param_groups[] = array_unique($group);
+          $post_params = array_merge($post_params, $group);
+        }
+      }
+
 
       //look for returns
-      preg_match_all("/this->data\(['\"](.*)['\"]\W*,/", $function_code, $matches);
+      preg_match_all("/this->data\(['\"]([^'\"]+)['\"]\W*,/", $function_code, $matches);
       $returns = array_unique(value($matches,1,[]));
 
-      //todo: move this to template
 
+      //start generating wsdl code
       $endpoints = [];
       foreach($request_types as $type) {
 
         $params = $request_params;
         if($type=="get")
-          $params += $get_params;
+          $params = array_merge($params,$get_params);
         else
-          $params += $post_params;
+          $params = array_merge($params,$post_params);
+
+        $params = array_unique($params);
+        sort($params);
+
+
+        //make a guess at return model so that we can guess param constants i.e. states
+        $model_name = false;
+        if($returns) {
+          foreach($returns as $return) {
+            $single_return = substr($return, -1)=="s" ? substr($return, 0, -1) : $return;
+            $potential_model_name = "\Backend\Model\\".ucfirst($single_return)."Model";
+            if(class_exists($potential_model_name)) {
+              $model_name = $potential_model_name;
+              break;
+            }
+          }
+        }
+
+
 
         $endpoint = "      Endpoint::create(\"{$type}\")\n";
         if($type!="delete") {
           if($params) {
-            $endpoint .= "        ->params([\"".implode("\",\"",$params)."\"])\n";
+            $endpoint .= "        ->params(".$this->get_param_list($params, $model_name).")\n";
           }
 
           if(in_array($type, ["post","put"]) && $param_groups) {
             foreach($param_groups as $idx=>$group) {
-              $endpoint .= "        ->param_group(\"group{$idx}\", [{$group}])\n";
+              $endpoint .= "        ->param_group(\"group{$idx}\", ".$this->get_param_list($group, $model_name, false).")\n";
             }
           }
         }
@@ -203,7 +201,7 @@ class WsdlGeneratorModel extends GeneratorModel {
 
       $function_code = $this
         ->assign("method", $method)
-        ->assign("endpoints", implode(",\n",$endpoints))
+        ->assign("endpoints", implode("      ,\n",$endpoints))
       ->fetch(PathModel::get_assets_directory() . "wsdl_endpoint.inc");
 
 
@@ -239,4 +237,31 @@ class WsdlGeneratorModel extends GeneratorModel {
     return true;
   }
 
+
+
+  private function get_param_list($params, $model_name, $include_types=true) {
+    $list = "[";
+    foreach($params as $idx=>$param){
+      if($include_types) {
+        if(substr($param,-3)==="_id") {
+          $list .= "\n          \"{$param}\"=>[\"type\"=>\"int\"]";
+        } elseif($model_name && method_exists($model_name, "get_{$param}s")) {
+          $list .= "\n          \"{$param}\"=>[\"type\"=>array_keys({$model_name}::get_{$param}s())]";
+        } else {
+          $list .= "\n          \"{$param}\"";
+        }
+      } else {
+        $list .= "\"{$param}\"";
+      }
+
+      if($idx+1 < sizeof($params)) {
+        $list .= ", ";
+      } elseif($include_types) {
+        $list .= "\n        ";
+      }
+    }
+    $list .= "]";
+
+    return $list;
+  }
 }
