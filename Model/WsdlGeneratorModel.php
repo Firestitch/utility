@@ -141,7 +141,7 @@ class WsdlGeneratorModel extends GeneratorModel {
 
         $params = $request_params;
         if($type=="get")
-          $params = array_merge($params,$get_params);
+          $params = array_merge($params,$get_params,["limit","order","offset","page"]);
         else
           $params = array_merge($params,$post_params);
 
