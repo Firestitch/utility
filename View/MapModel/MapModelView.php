@@ -181,7 +181,7 @@ class MapModelView extends View {
   }
 
   public static function create_{$reference_key}_handler(\$handler = null): {$reference_model_pasalize}Handler {
-    \$handler = \$handler instanceof {$reference_model_pasalize}Handler ? \$handler : {$reference_model_pasalize}Handler::create(true);
+    \$handler = \$handler instanceof {$reference_model_pasalize}Handler ? \$handler : {$reference_model_pasalize}Handler::create(false);
     return \$handler$joins;
   }
 }
