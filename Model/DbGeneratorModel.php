@@ -19,9 +19,8 @@ class DbGeneratorModel {
 
   function create_dbo($tablename, $name, $override = false) {
 
-    $classname = basename(self::get_dbo_class(strtolower($name)));
+    $classname = self::get_dbo_classname(strtolower($name));
     $dbo_file = self::get_dbo_file($classname, $this->_app_dir);
-
     $has_success = false;
 
     if (!is_file($dbo_file) || $override) {
@@ -83,7 +82,7 @@ class " . $classname . " extends Dbo {\n\n";
 
   function create_dbq($tablename, $name, $override = false) {
 
-    $classname = basename(self::get_dbq_class(strtolower($name)));
+    $classname = self::get_dbq_classname(strtolower($name));
 
     $dbq_file = self::get_dbq_file($classname, $this->_app_dir);
 
@@ -163,11 +162,19 @@ class " . $classname . " extends Dbq {\n\n";
   }
 
   static function get_dbq_class($basename) {
-    return "Backend\Dbq\\" . STRING_UTIL::pascalize($basename) . "Dbq";
+    return "Backend\Dbq\\" . self::get_dbq_classname($basename);
   }
 
   static function get_dbo_class($basename) {
-    return "Backend\Dbo\\" . STRING_UTIL::pascalize($basename) . "Dbo";
+    return "Backend\Dbo\\" . self::get_dbo_classname($basename);
+  }
+
+  static function get_dbq_classname($basename) {
+    return STRING_UTIL::pascalize($basename) . "Dbq";
+  }
+
+  static function get_dbo_classname($basename) {
+    return STRING_UTIL::pascalize($basename) . "Dbo";
   }
 
   static function get_dbo($basename) {
