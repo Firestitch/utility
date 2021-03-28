@@ -30,7 +30,6 @@ class MapModelView extends View {
 
     $this->process_post();
 
-    $task       = strtolower($this->request("task"));
     $application  = strtolower($this->request("application"));
     $app_dir    = $application ? DIR_INSTANCE . $application . "/" : WebApplication::get_main_application_directory();
 
@@ -175,13 +174,15 @@ class MapModelView extends View {
             $last_column = $joiner["source_column"];
           }
 
+          $default_boolean = $map_child ? "false" : "true";
+
           $code = "
   public function load_{$plural_reference_name}(\$handler = null) {
     return \$this->handler(\"{$reference_key}_handler\", \$this->create_{$reference_key}_handler(\$handler));
   }
 
   public static function create_{$reference_key}_handler(\$handler = null): {$reference_model_pasalize}Handler {
-    \$handler = \$handler instanceof {$reference_model_pasalize}Handler ? \$handler : {$reference_model_pasalize}Handler::create(false);
+    \$handler = \$handler instanceof {$reference_model_pasalize}Handler ? \$handler : {$reference_model_pasalize}Handler::create({$default_boolean});
     return \$handler$joins;
   }
 }
