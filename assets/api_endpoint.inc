@@ -17,12 +17,11 @@
 		${$snake_model}_handler->set_{$model_id}(${$model_id});
 		{if $keywords}
 
-		if(!is_null($value=$this->get("keyword")))
-		${$snake_model}_handler->group(Group::create()
-		{foreach from=$keywords item=keyword name=keywords} ->where("{$keyword.tablename}.{$keyword.name}","LIKE","%".$value."%","OR"){if $smarty.foreach.keywords.last});
-		{else}
-
-		{/if}{/foreach}
+		{if $keywords}
+      if(!is_null($value=$this->get("keyword")))
+		  ${$snake_model}_handler->like_keyword(["{$keywords[0].tablename}.{$keywords[0].name}"],$value);
+    {/if}
+		
 		{/if}{foreach $dbos as $dbo}{foreach $dbo->get_columns() as $name=>$column}{if in_array($name,$accessible_fields)}{if $name=="state"}
 
 		if(!is_null($value=$this->get("state")))
@@ -59,23 +58,23 @@
 		  else
 		  $this->data("{$plural_snake_model}",array_values(${$plural_snake_model}));
 
-
-
 		  }{/if}{if in_array("post",$methods) || in_array("put",$methods) || in_array("delete",$methods)} else {
 
 		  ${$snake_model}_model = {$pascal_model}Model::create();
 
-		  if($this->is_post()) {
-		  {if $parent_model}
-		  ${$snake_model}_model->set_{$parent_model}_id(${$parent_model}_model->get_{$parent_model}_id());
-		  {/if}
-		  } else
+		  if($this->is_put() || $this->is_delete()) {
 		  ${$snake_model}_model = $this->acl()->write({$pascal_model}Handler::create(false){if $parent_model}
 
 		  ->set_{$parent_model}_id(${$parent_model}_id){/if}
 
 		  ->set_{$model_id}(${$model_id}));
+		  }
 
+		  {if $parent_model}
+      if($this->is_post()) {
+		  ${$snake_model}_model->set_{$parent_model}_id(${$parent_model}_model->get_{$parent_model}_id());		  
+		  }
+      {/if}
 		  //${$snake_model}_model->start_audit($this->get_session()->get_account_id());
 
 		  if($this->is_post() || $this->is_put()) {

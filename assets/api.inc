@@ -4,7 +4,6 @@ namespace Backend\View\Api;
 
 use Backend\Model\{$pascal_model}Model;
 use Backend\Handler\{$pascal_model}Handler;
-use Framework\Db\Dbq\Group;
 use Framework\Model\TimeModel;
 use Backend\View\Api\BaseView;
 
