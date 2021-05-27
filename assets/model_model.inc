@@ -48,37 +48,27 @@ class {$pascal_model}Model extends {if $primary_object_id}ObjectBaseModel{else}M
 {/if}
 {if $primary_object_id}
 
-		try {
-
-			DB::start_transaction();
-
 			if($this->get_{$primary_key}()) {
 				$this->dbo("{$lower_model}")->update();
 			} else {
+        DB::transaction(function () {
 {if $has_state}
-        if(!$this->get_state())
-          $this->set_state(self::STATE_ACTIVE);
+          if(!$this->get_state())
+            $this->set_state(self::STATE_ACTIVE);
 
 {/if}{if $has_guid}
-        if(!$this->get_guid())
-          $this->set_guid(MISC_UTIL::guid());
+          if(!$this->get_guid())
+            $this->set_guid(MISC_UTIL::guid());
 
 {/if}{if $has_create_date}
-        if(!$this->get_create_date())
-          $this->set_create_date(time());
+          if(!$this->get_create_date())
+            $this->set_create_date(time());
 
 {/if}
-				$this->create_object();
-				$this->dbo("{$lower_model}")->insert();
+          $this->create_object();
+          $this->dbo("{$lower_model}")->insert();
+        });
 			}
-
-			if(!DB::complete_transaction())
-        throw new \Exception("Error saving ".get_class());
-
-		} catch(SystemException $e) {
-			DB::complete_transaction();
-			throw $e;
-		}
 
 		$this->object(true)
 			->set_name($this->get_name())
