@@ -19,9 +19,6 @@ class SourceFieldsView extends View {
     $source_model       = $this->request("source_model");
     $source_model_column   = $this->request("source_model_column");
 
-    if ($source_model)
-      $source_model = $source_model;
-
     if ($source_model && @class_exists(DbGeneratorModel::get_dbo_class($source_model)))
       $this->_source_columns = DbGeneratorModel::get_dbo($source_model)->get_columns();
 

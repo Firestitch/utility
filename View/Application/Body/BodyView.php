@@ -20,6 +20,7 @@ class BodyView extends \Framework\View\Application\Body\BodyView {
     self::add_web_assets($this->get_web_asset_manager());
 
     $this->set_var("web_asset_manager", $this->get_web_asset_manager());
+    $this->set_var("self", $this);
   }
 
   static function add_web_assets($web_asset_manager_cmodel) {

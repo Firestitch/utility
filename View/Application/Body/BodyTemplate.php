@@ -9,13 +9,13 @@
 
 <body>
   <div class="container">
-    <? $this->show_view("header"); ?>
+    <? $self->show_view("header"); ?>
 
-    <? $this->show_view("messages"); ?>
+    <? $self->show_view("messages"); ?>
 
-    <? $this->show_view("body"); ?>
+    <? $self->show_view("body"); ?>
 
-    <? $this->show_view("footer"); ?>
+    <? $self->show_view("footer"); ?>
   </div>
 
 </body>
