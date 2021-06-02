@@ -43,7 +43,7 @@ class ModelTraitGeneratorModel {
           foreach ($this->_db_utility->get_table_fields($tablename) as $field) {
             $field_names[] = $field["Field"];
           }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
           WebApplication::instance()->add_warning("The tablename `" . $tablename . "` doest not exists");
           continue;
         }
