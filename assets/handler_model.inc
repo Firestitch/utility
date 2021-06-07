@@ -8,6 +8,7 @@ use Backend\Dbq\{$pascal_model}Dbq;
 /**
  * @method {$pascal_model}Model get()
  * @method {$pascal_model}Model require()
+ * @method {$pascal_model}Model[] page()
  */
 class {$pascal_model}Handler extends Handler {
 
