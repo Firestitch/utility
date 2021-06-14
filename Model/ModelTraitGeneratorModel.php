@@ -5,118 +5,98 @@ namespace Utility\Model;
 use Exception;
 use Framework\Core\WebApplication;
 use Framework\Db\DB;
-use Framework\Util\FILE_UTIL;
-use Framework\Util\STRING_UTIL;
-
-class ModelTraitGeneratorModel {
-
-  protected $_app_dir = null;
-  protected $_db_utility;
-
-  public static $base_namespace = "Backend";
-
-  function __construct($app_dir = null) {
-    $this->_app_dir  = $app_dir ? $app_dir : WebApplication::get_main_application_directory();
-
-    $this->_db_utility = DB::get_instance()->get_utility();
-  }
-
-  public function create_trait($tablenames, $name, $override = false) {
-
-    $tablenames = is_array($tablenames) ? $tablenames : [$tablenames];
-    $classname = basename(self::get_trait_name(strtolower($name)));
-    $trait_file = self::get_trait_file($classname, $this->_app_dir);
-    $has_success = false;
-    $model_name = self::get_model_classname($name);
-    $model_classname = basename(self::get_model_classname($name));
-
-    if (!is_dir($this->_app_dir . "/Model/Traits/"))
-      FILE_UTIL::mkdir($this->_app_dir . "/Model/Traits/");
-
-    if (!is_file($trait_file) || $override) {
-
-      $str = "<?php\n\nnamespace " . self::$base_namespace . "\Model\Traits;\n\ntrait {$classname} {\n\n";
-
-      $field_names = [];
-      foreach ($tablenames as $tablename) {
-        try {
-          foreach ($this->_db_utility->get_table_fields($tablename) as $field) {
-            $field_names[] = $field["Field"];
-          }
-        } catch (Exception $e) {
-          WebApplication::instance()->add_warning("The tablename `" . $tablename . "` doest not exists");
-          continue;
+use Framework\Util\FileUtil;
+use Framework\Util\StringUtil;
+class ModelTraitGeneratorModel
+{
+    protected $_appDir = null;
+    protected $_dbUtility;
+    public static $baseNamespace = "Backend";
+    function __construct($appDir = null)
+    {
+        $this->_appDir = $appDir ? $appDir : WebApplication::getMainApplicationDirectory();
+        $this->_dbUtility = Db::getInstance()->getUtility();
+    }
+    public function createTrait($tablenames, $name, $override = false)
+    {
+        $tablenames = is_array($tablenames) ? $tablenames : [$tablenames];
+        $classname = basename(self::getTraitName(strtolower($name)));
+        $traitFile = self::getTraitFile($classname, $this->_appDir);
+        $hasSuccess = false;
+        $modelName = self::getModelClassname($name);
+        $modelClassname = basename(self::getModelClassname($name));
+        if (!is_dir($this->_appDir . "/Model/Traits/")) {
+            FileUtil::mkdir($this->_appDir . "/Model/Traits/");
         }
-      }
-
-      $field_names = array_unique($field_names);
-      foreach ($field_names as $field_name) {
-        $str .= '  /**
+        if (!is_file($traitFile) || $override) {
+            $str = "<?php\n\nnamespace " . self::$baseNamespace . "\\Model\\Traits;\n\ntrait {$classname} {\n\n";
+            $fieldNames = [];
+            foreach ($tablenames as $tablename) {
+                try {
+                    foreach ($this->_dbUtility->getTableFields($tablename) as $field) {
+                        $fieldNames[] = $field["Field"];
+                    }
+                } catch (Exception $e) {
+                    WebApplication::instance()->addWarning("The tablename `" . $tablename . "` doest not exists");
+                    continue;
+                }
+            }
+            $fieldNames = array_unique($fieldNames);
+            foreach ($fieldNames as $fieldName) {
+                $str .= '  /**
    * @return static
    */
-  public function set_' . $field_name . '($value) {
-    return $this->set_dbo_value("' . $field_name . '", $value);
+  public function set_' . $fieldName . '($value) {
+    return $this->set_dbo_value("' . $fieldName . '", $value);
   }' . "\n\n";
-        $str .= '  public function get_' . $field_name . '() {
-    return $this->get_dbo_value("' . $field_name . '");
+                $str .= '  public function get_' . $fieldName . '() {
+    return $this->get_dbo_value("' . $fieldName . '");
   }' . "\n\n";
-      }
-
-      $str .= "}";
-
-      $has_success = $this->write_file($trait_file, $str);
-    } else
-      WebApplication::instance()->add_warning("The Trait `" . $classname . "` already exists");
-
-    return $has_success;
-  }
-
-  function append_model_trait($model_name, $trait_name = null) {
-
-    $model_classname = basename(self::get_model_classname($model_name));
-    $model_file = self::get_model_file($model_classname, $this->_app_dir);
-
-    $trait_name = $trait_name ? $trait_name : basename(self::get_trait_name(strtolower($model_name)));
-
-    $code = FILE_UTIL::get($model_file);
-
-    if (strpos($code, $trait_name) === false) {
-
-      $code = preg_replace_callback("/extends.+{/", function ($matches) use ($trait_name) {
-
-        return $matches[0] . "\n\n" . "  use Traits\\$trait_name;";
-      }, $code);
+            }
+            $str .= "}";
+            $hasSuccess = $this->writeFile($traitFile, $str);
+        } else {
+            WebApplication::instance()->addWarning("The Trait `" . $classname . "` already exists");
+        }
+        return $hasSuccess;
     }
-
-    FILE_UTIL::put($model_file, $code);
-
-    return $this;
-  }
-
-  function write_file($file, $string) {
-
-    $error_message = "";
-    $has_success = FILE_UTIL::put_file_contents($file, $string, $error_message);
-
-    if (!$has_success)
-      throw new Exception($error_message);
-
-    return $has_success;
-  }
-
-  public static function get_trait_name($basename) {
-    return self::$base_namespace . "\Model\Traits\\" . STRING_UTIL::pascalize(strtolower($basename)) . "Trait";
-  }
-
-  public static function get_trait_file($classname, $app_dir) {
-    return FILE_UTIL::sanitize_file($app_dir . "/Model/Traits/" . $classname . ".php");
-  }
-
-  public static function get_model_classname($basename) {
-    return self::$base_namespace . "\Model\\" . STRING_UTIL::pascalize(strtolower($basename)) . "Model";
-  }
-
-  public static function get_model_file($classname, $app_dir) {
-    return FILE_UTIL::sanitize_file($app_dir . "/Model/" . $classname . ".php");
-  }
+    function appendModelTrait($modelName, $traitName = null)
+    {
+        $modelClassname = basename(self::getModelClassname($modelName));
+        $modelFile = self::getModelFile($modelClassname, $this->_appDir);
+        $traitName = $traitName ? $traitName : basename(self::getTraitName(strtolower($modelName)));
+        $code = FileUtil::get($modelFile);
+        if (strpos($code, $traitName) === false) {
+            $code = preg_replace_callback("/extends.+{/", function ($matches) use($traitName) {
+                return $matches[0] . "\n\n" . "  use Traits\\{$traitName};";
+            }, $code);
+        }
+        FileUtil::put($modelFile, $code);
+        return $this;
+    }
+    function writeFile($file, $string)
+    {
+        $errorMessage = "";
+        $hasSuccess = FileUtil::putFileContents($file, $string, $errorMessage);
+        if (!$hasSuccess) {
+            throw new Exception($errorMessage);
+        }
+        return $hasSuccess;
+    }
+    public static function getTraitName($basename)
+    {
+        return self::$baseNamespace . "\\Model\\Traits\\" . StringUtil::pascalize(strtolower($basename)) . "Trait";
+    }
+    public static function getTraitFile($classname, $appDir)
+    {
+        return FileUtil::sanitizeFile($appDir . "/Model/Traits/" . $classname . ".php");
+    }
+    public static function getModelClassname($basename)
+    {
+        return self::$baseNamespace . "\\Model\\" . StringUtil::pascalize(strtolower($basename)) . "Model";
+    }
+    public static function getModelFile($classname, $appDir)
+    {
+        return FileUtil::sanitizeFile($appDir . "/Model/" . $classname . ".php");
+    }
 }

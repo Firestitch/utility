@@ -1,38 +1,20 @@
 <?php
 
-use Framework\Util\HTML_TABLE_UTIL;
-use Framework\Util\HTML_UTIL;
-
+use Framework\Util\HtmlTableUtil;
+use Framework\Util\HtmlUtil;
 ?>
 <h1>Db, Model & Handler</h1>
 
 <form id="form-db">
   <?php
-  $data[] = array("Generate:", HTML_UTIL::checkboxes("objects", [
-    "dbo" => "Ddo",
-    "dbq" => "Dbq",
-    "trait" => "Trait",
-    "cmodel" => "Model",
-    "hmodel" => "Handler"
-  ], ["dbo", "dbq", "trait"], ["class" => "objects"]));
-  $data[] = array("Name:", HTML_UTIL::input("name", "", array("class" => "w300")));
-  $data[] = array("", HTML_UTIL::checkbox("primary_object_id", "1", false, ["class" => ""], "CMODEL has primary key object_id"));
-  $data[] = array("", HTML_UTIL::checkbox("override", "1", $override, ["class" => "override"], "Override existing files"));
-  $data[] = array("", HTML_UTIL::link("javascript:;", "Generate", array("id" => "generate", "class" => "btn btn-primary")));
-
-  $db_table = HTML_TABLE_UTIL::create()
-    ->set_data($data)
-    ->set_class("")
-    ->set_padding(3);
-
-  $tablename_dd = HTML_UTIL::dropdown("tablename", $tablename_list, $tablename, array("onKeyUp" => "update_class_name(this)", "onChange" => "update_class_name(this)", "size" => 30), 50);
-
-  HTML_TABLE_UTIL::create()
-    ->set_data(array(array("Table Name: ", $tablename_dd, $db_table->get_html())))
-    ->set_default_column_attribute("class", "vat")
-    ->set_class("")
-    ->set_padding(3)
-    ->render();
+  $data[] = array("Generate:", HtmlUtil::checkboxes("objects", ["dbo" => "Ddo", "dbq" => "Dbq", "trait" => "Trait", "cmodel" => "Model", "hmodel" => "Handler"], ["dbo", "dbq", "trait"], ["class" => "objects"]));
+  $data[] = array("Name:", HtmlUtil::input("name", "", array("class" => "w300")));
+  $data[] = array("", HtmlUtil::checkbox("primary_object_id", "1", false, ["class" => ""], "CMODEL has primary key object_id"));
+  $data[] = array("", HtmlUtil::checkbox("override", "1", $override, ["class" => "override"], "Override existing files"));
+  $data[] = array("", HtmlUtil::link("javascript:;", "Generate", array("id" => "generate", "class" => "btn btn-primary")));
+  $dbTable = HtmlTableUtil::create()->setData($data)->setClass("")->setPadding(3);
+  $tablenameDd = HtmlUtil::dropdown("tablename", $tablenameList, $tablename, array("onKeyUp" => "update_class_name(this)", "onChange" => "update_class_name(this)", "size" => 30), 50);
+  HtmlTableUtil::create()->setData(array(array("Table Name: ", $tablenameDd, $dbTable->getHtml())))->setDefaultColumnAttribute("class", "vat")->setClass("")->setPadding(3)->render();
   ?>
 </form>
 

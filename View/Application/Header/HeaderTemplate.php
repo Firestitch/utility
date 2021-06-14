@@ -1,12 +1,14 @@
 <?php
 
-use Framework\Util\SERVER_UTIL;
+use Framework\Util\ServerUtil;
 ?>
 <div id="header">
   <div class="navbar navbar-default">
 
     <div class="navbar-header">
-      <a class="navbar-brand" href="/"> <?= SERVER_UTIL::get_server_host() ?> </a>
+      <a class="navbar-brand" href="/"> <?php 
+echo ServerUtil::getServerHost();
+?> </a>
     </div>
 
     <div class="collapse navbar-collapse">

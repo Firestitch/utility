@@ -1,26 +1,12 @@
 <?php
 
-use Framework\Util\FORM_UTIL;
+use Framework\Util\FormUtil;
 ?>
 
 <h1>WSDL Generation</h1>
 
-<?php
-FORM_UTIL::create()
-  ->dropdown("api", "API", $apis, "", ["class" => "w400 api-name"])
-  // ->dropdown("model", "Model", $models, "", ["placeholder" => "ie. account", "class" => "w400"])
-  // ->input("model-plural", "Plural Model Name", "", ["placeholder" => "ie. accounts", "class" => "w400"])
-  // ->input("method", "Namespace", "", ["placeholder" => "ie. users", "class" => "w400 api-existing"], ["info" => "ie: <span id='namespace-example'></span>"])
-  // ->checkboxes("methods", "Methods", [
-  //   "get" => "GET",
-  //   "post" => "POST",
-  //   "put" => "PUT",
-  //   "delete" => "DELETE"
-  // ], ["get", "put", "post", "delete"])
-  // ->checkboxes("loads", "Load", [], "", [], ["row" => ["class" => "api-loads"]])
-  // ->checkboxes("options", "Options", ["order" => "Add ordering method", "override" => "Override existing files"])
-  ->button("generate", "Generate", ["type" => "button", "id" => "generate", "class" => "btn-primary"])
-  ->render();
+<?php 
+FormUtil::create()->dropdown("api", "API", $apis, "", ["class" => "w400 api-name"])->button("generate", "Generate", ["type" => "button", "id" => "generate", "class" => "btn-primary"])->render();
 ?>
 <script>
   $(function() {

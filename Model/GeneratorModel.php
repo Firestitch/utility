@@ -3,64 +3,51 @@
 namespace Utility\Model;
 
 use Framework\Model\SmartyModel;
-use Framework\Util\FILE_UTIL;
-use Framework\Util\STRING_UTIL;
+use Framework\Util\FileUtil;
+use Framework\Util\StringUtil;
 
 class GeneratorModel {
-
-  protected $_instance_dir   = "";
-  protected $_smarty_cmodel   = "";
-
-  function __construct($instance_dir) {
-    $this->_instance_dir = $instance_dir;
-
-    $this->_smarty_cmodel = new SmartyModel();
-    $this->_smarty_cmodel->allow_php_tag();
-    $this->_smarty_cmodel->disableSecurity();
+  protected $_instanceDir = "";
+  protected $_smartyModel = "";
+  function __construct($instanceDir) {
+    $this->_instanceDir = $instanceDir;
+    $this->_smartyModel = new SmartyModel();
+    $this->_smartyModel->allowPhpTag();
+    $this->_smartyModel->disableSecurity();
   }
-
-  function get_instance_dir() {
-    return $this->_instance_dir;
+  function getInstanceDir() {
+    return $this->_instanceDir;
   }
-
-  function write_template($template, $file) {
-    $content = $this->_smarty_cmodel->fetch($template);
+  function writeTemplate($template, $file) {
+    $content = $this->_smartyModel->fetch($template);
     $this->write($file, $content);
     return $this;
   }
-
   function write($file, $string) {
-    FILE_UTIL::put($file, $string);
+    FileUtil::put($file, $string);
     return $this;
   }
-
   function assign($name, $value) {
-    $this->_smarty_cmodel->assign($name, $value);
-    return $this->_smarty_cmodel;
+    $this->_smartyModel->assign($name, $value);
+    return $this->_smartyModel;
   }
-
-  function register_autoload() {
+  function registerAutoload() {
     spl_autoload_register(array($this, "autoload"), true, true);
   }
-
-  function create_cmodel($model) {
-    $cmodel_class = "CMODEL_" . strtoupper($model);
-    return $cmodel_class::create();
+  function createModel($model) {
+    $cmodelClass = "CMODEL_" . strtoupper($model);
+    return $cmodelClass::create();
   }
-
-  static function get_model_class($basename) {
-    return "Backend\Model\\" . self::get_model_classname($basename);
+  static function getModelClass($basename) {
+    return "Backend\\Model\\" . self::getModelClassname($basename);
   }
-
-  static function get_model_classname($basename) {
-    return STRING_UTIL::pascalize($basename) . "Model";
+  static function getModelClassname($basename) {
+    return StringUtil::pascalize($basename) . "Model";
   }
-
-  static function get_handler_class($basename) {
-    return "Handler\Model\\" . self::get_handler_classname($basename);
+  static function getHandlerClass($basename) {
+    return "Handler\\Model\\" . self::getHandlerClassname($basename);
   }
-
-  static function get_handler_classname($basename) {
-    return STRING_UTIL::pascalize($basename) . "Handler";
+  static function getHandlerClassname($basename) {
+    return StringUtil::pascalize($basename) . "Handler";
   }
 }

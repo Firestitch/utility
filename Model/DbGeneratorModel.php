@@ -5,185 +5,138 @@ namespace Utility\Model;
 use Exception;
 use Framework\Core\WebApplication;
 use Framework\Db\DB;
-use Framework\Util\FILE_UTIL;
-use Framework\Util\STRING_UTIL;
-
-class DbGeneratorModel {
-
-  protected $_app_dir = null;
-
-  function __construct($app_dir = null) {
-    $this->_app_dir  = $app_dir ? $app_dir : WebApplication::get_main_application_directory();
-    $this->_db_utility = DB::get_instance()->get_utility();
-  }
-
-  function create_dbo($tablename, $name, $override = false) {
-
-    $classname = self::get_dbo_classname(strtolower($name));
-    $dbo_file = self::get_dbo_file($classname, $this->_app_dir);
-    $has_success = false;
-
-    if (!is_file($dbo_file) || $override) {
-
-      $result = $this->_db_utility->get_table_fields($tablename);
-
-      $columns = array();
-      foreach ($result as $row) {
-        $type     = str_replace("unsigned", "", strtolower($row["Type"]));
-
-        $data_type   = preg_replace("/[^a-z]+/", "$1", $type);
-        $size     = preg_replace("/[a-z]+\((\d+)\)/", "$1", $type);
-
-        $size    = is_numeric($size) ? $size : "null";
-
-
-        $not_null  = $row["Null"] == "YES" ? "true" : "false";
-        $primary  = $row["Key"] == "PRI" ? "true" : "false";
-
-        $name     = $row["Field"];
-
-        $columns[] = "\$this->_columns[\"" . $name . "\"] = new Column(\"" . $data_type . "\"," . $size . "," . $not_null . "," . $primary . ");";
-      }
-
-      $str =   "<?php
-
-namespace Backend\Dbo;
-
-use Framework\Db\Dbo\Dbo;
-use Framework\Db\Dbo\Column;
-
-class " . $classname . " extends Dbo {\n\n";
-
-      $str .= "  function __construct() {\n" .
-        "    \$this->_tablename = \"" . $tablename . "\";\n";
-
-      foreach ($columns as $column)
-        $str .= "    " . $column . "\n";
-
-      $str .=  "  }\n\n";
-
-      foreach ($result as $row) {
-        $str .= '  public function set_' . $row["Field"] . '($value) {
+use Framework\Util\FileUtil;
+use Framework\Util\StringUtil;
+class DbGeneratorModel
+{
+    protected $_appDir = null;
+    function __construct($appDir = null)
+    {
+        $this->_appDir = $appDir ? $appDir : WebApplication::getMainApplicationDirectory();
+        $this->_dbUtility = Db::getInstance()->getUtility();
+    }
+    function createDbo($tablename, $name, $override = false)
+    {
+        $classname = self::getDboClassname(strtolower($name));
+        $dboFile = self::getDboFile($classname, $this->_appDir);
+        $hasSuccess = false;
+        if (!is_file($dboFile) || $override) {
+            $result = $this->_dbUtility->getTableFields($tablename);
+            $columns = array();
+            foreach ($result as $row) {
+                $type = str_replace("unsigned", "", strtolower($row["Type"]));
+                $dataType = preg_replace("/[^a-z]+/", "\$1", $type);
+                $size = preg_replace("/[a-z]+\\((\\d+)\\)/", "\$1", $type);
+                $size = is_numeric($size) ? $size : "null";
+                $notNull = $row["Null"] == "YES" ? "true" : "false";
+                $primary = $row["Key"] == "PRI" ? "true" : "false";
+                $name = $row["Field"];
+                $columns[] = "\$this->_columns[\"" . $name . "\"] = new Column(\"" . $dataType . "\"," . $size . "," . $notNull . "," . $primary . ");";
+            }
+            $str = "<?php\n\nnamespace Backend\\Dbo;\n\nuse Framework\\Db\\Dbo\\Dbo;\nuse Framework\\Db\\Dbo\\Column;\n\nclass " . $classname . " extends Dbo {\n\n";
+            $str .= "  function __construct() {\n" . "    \$this->_tablename = \"" . $tablename . "\";\n";
+            foreach ($columns as $column) {
+                $str .= "    " . $column . "\n";
+            }
+            $str .= "  }\n\n";
+            foreach ($result as $row) {
+                $str .= '  public function set_' . $row["Field"] . '($value) {
     return $this->set_column_value("' . $row["Field"] . '", $value);
   }' . "\n\n";
-        $str .= '  public function get_' . $row["Field"] . '() {
+                $str .= '  public function get_' . $row["Field"] . '() {
     return $this->get_column_value("' . $row["Field"] . '");
   }' . "\n\n";
-      }
-
-      $str .= "}";
-
-      $has_success = $this->write_file($dbo_file, $str);
-    } else
-      WebApplication::instance()->add_warning("The class `" . $classname . "` already exists");
-
-    return $has_success;
-  }
-
-  function create_dbq($tablename, $name, $override = false) {
-
-    $classname = self::get_dbq_classname(strtolower($name));
-
-    $dbq_file = self::get_dbq_file($classname, $this->_app_dir);
-
-    $has_success = false;
-
-    if (!is_file($dbq_file) || $override) {
-
-      $str = "<?php
-
-namespace Backend\Dbq;
-
-use Framework\Db\Dbq\Dbq;
-
-class " . $classname . " extends Dbq {\n\n";
-
-      $fields = $this->_db_utility->get_table_fields($tablename);
-
-      $primary_keys = array();
-
-      foreach ($fields as $field) {
-
-        $name = value($field, "Field");
-
-        if ($name == "state")
-          continue;
-
-        if (get_value($field, "Key") == "PRI")
-          $primary_keys[] = '"' . $name . '"';
-      }
-
-      $primary_key = count($primary_keys) == 1 ? implode(",", $primary_keys) :  "array(" . implode(",", $primary_keys) . ")";
-
-      $str .= "  public function __construct() {\n" .
-        "    parent::__construct(\"" . $tablename . "\", " . $primary_key . ");\n" .
-        "  }\n" .
-        "}";
-
-      $has_success = $this->write_file($dbq_file, $str);
-    } else
-      WebApplication::instance()->add_warning("The DBQ class `" . $classname . "` already exists");
-
-    return $has_success;
-  }
-
-  function get_key_count($tablename) {
-    $fields = $this->_db_utility->get_table_fields($tablename);
-
-    $count = 0;
-    foreach ($fields as $field)
-      if (get_value($field, "Key") == "PRI")
-        $count++;
-    return $count;
-  }
-
-  function write_file($file, $string) {
-
-    $error_message = "";
-    $has_success = FILE_UTIL::put_file_contents($file, $string, $error_message);
-
-    if (!$has_success)
-      throw new Exception($error_message);
-
-    return $has_success;
-  }
-
-  static function get_dbo_file($classname, $app_dir) {
-    return FILE_UTIL::sanitize_file($app_dir . "Dbo/" . $classname . ".php");
-  }
-
-  static function get_dbq_file($classname, $app_dir) {
-    return FILE_UTIL::sanitize_file($app_dir . "Dbq/" . $classname . ".php");
-  }
-
-  static function get_dbq_tablename($basename, $app_dir) {
-    $dbq = self::get_dbq($basename, $app_dir);
-    return $dbq ? $dbq->get_tablename() : "";
-  }
-
-  static function get_dbq_class($basename) {
-    return "Backend\Dbq\\" . self::get_dbq_classname($basename);
-  }
-
-  static function get_dbo_class($basename) {
-    return "Backend\Dbo\\" . self::get_dbo_classname($basename);
-  }
-
-  static function get_dbq_classname($basename) {
-    return STRING_UTIL::pascalize($basename) . "Dbq";
-  }
-
-  static function get_dbo_classname($basename) {
-    return STRING_UTIL::pascalize($basename) . "Dbo";
-  }
-
-  static function get_dbo($basename) {
-    $class = self::get_dbo_class($basename);
-    return new $class();
-  }
-
-  static function get_dbq($basename) {
-    $class = self::get_dbq_class($basename);
-    return new $class();
-  }
+            }
+            $str .= "}";
+            $hasSuccess = $this->writeFile($dboFile, $str);
+        } else {
+            WebApplication::instance()->addWarning("The class `" . $classname . "` already exists");
+        }
+        return $hasSuccess;
+    }
+    function createDbq($tablename, $name, $override = false)
+    {
+        $classname = self::getDbqClassname(strtolower($name));
+        $dbqFile = self::getDbqFile($classname, $this->_appDir);
+        $hasSuccess = false;
+        if (!is_file($dbqFile) || $override) {
+            $str = "<?php\n\nnamespace Backend\\Dbq;\n\nuse Framework\\Db\\Dbq\\Dbq;\n\nclass " . $classname . " extends Dbq {\n\n";
+            $fields = $this->_dbUtility->getTableFields($tablename);
+            $primaryKeys = array();
+            foreach ($fields as $field) {
+                $name = value($field, "Field");
+                if ($name == "state") {
+                    continue;
+                }
+                if (get_value($field, "Key") == "PRI") {
+                    $primaryKeys[] = '"' . $name . '"';
+                }
+            }
+            $primaryKey = count($primaryKeys) == 1 ? implode(",", $primaryKeys) : "array(" . implode(",", $primaryKeys) . ")";
+            $str .= "  public function __construct() {\n" . "    parent::__construct(\"" . $tablename . "\", " . $primaryKey . ");\n" . "  }\n" . "}";
+            $hasSuccess = $this->writeFile($dbqFile, $str);
+        } else {
+            WebApplication::instance()->addWarning("The DBQ class `" . $classname . "` already exists");
+        }
+        return $hasSuccess;
+    }
+    function getKeyCount($tablename)
+    {
+        $fields = $this->_dbUtility->getTableFields($tablename);
+        $count = 0;
+        foreach ($fields as $field) {
+            if (get_value($field, "Key") == "PRI") {
+                $count++;
+            }
+        }
+        return $count;
+    }
+    function writeFile($file, $string)
+    {
+        $errorMessage = "";
+        $hasSuccess = FileUtil::putFileContents($file, $string, $errorMessage);
+        if (!$hasSuccess) {
+            throw new Exception($errorMessage);
+        }
+        return $hasSuccess;
+    }
+    static function getDboFile($classname, $appDir)
+    {
+        return FileUtil::sanitizeFile($appDir . "Dbo/" . $classname . ".php");
+    }
+    static function getDbqFile($classname, $appDir)
+    {
+        return FileUtil::sanitizeFile($appDir . "Dbq/" . $classname . ".php");
+    }
+    static function getDbqTablename($basename, $appDir)
+    {
+        $dbq = self::getDbq($basename, $appDir);
+        return $dbq ? $dbq->getTablename() : "";
+    }
+    static function getDbqClass($basename)
+    {
+        return "Backend\\Dbq\\" . self::getDbqClassname($basename);
+    }
+    static function getDboClass($basename)
+    {
+        return "Backend\\Dbo\\" . self::getDboClassname($basename);
+    }
+    static function getDbqClassname($basename)
+    {
+        return StringUtil::pascalize($basename) . "Dbq";
+    }
+    static function getDboClassname($basename)
+    {
+        return StringUtil::pascalize($basename) . "Dbo";
+    }
+    static function getDbo($basename)
+    {
+        $class = self::getDboClass($basename);
+        return new $class();
+    }
+    static function getDbq($basename)
+    {
+        $class = self::getDbqClass($basename);
+        return new $class();
+    }
 }

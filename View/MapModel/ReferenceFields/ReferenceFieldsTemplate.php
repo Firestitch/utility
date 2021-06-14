@@ -1,11 +1,15 @@
 <?php
 
-use Framework\Util\HTML_UTIL;
-
+use Framework\Util\HtmlUtil;
 ?>
 <div class="lbl">Model Field</div>
-<? if ($reference_model_column_list) { ?>
-  <?= HTML_UTIL::get_dropdown("reference_model_column", $reference_model_column_list, $reference_model_column, array(), count($reference_model_column_list)) ?>
-<? } else { ?>
+<?php 
+if ($referenceModelColumnList) {
+    ?>
+  <?php 
+    echo HtmlUtil::getDropdown("reference_model_column", $referenceModelColumnList, $referenceModelColumn, array(), count($referenceModelColumnList));
+} else {
+    ?>
   There are no reference fields
-<? } ?>
+<?php 
+}

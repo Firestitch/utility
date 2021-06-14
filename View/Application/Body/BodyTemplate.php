@@ -4,18 +4,28 @@
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 
-  <? $web_asset_manager->render() ?>
+  <?php 
+$webAssetManager->render();
+?>
 </head>
 
 <body>
   <div class="container">
-    <? $self->show_view("header"); ?>
+    <?php 
+$self->showView("header");
+?>
 
-    <? $self->show_view("messages"); ?>
+    <?php 
+$self->showView("messages");
+?>
 
-    <? $self->show_view("body"); ?>
+    <?php 
+$self->showView("body");
+?>
 
-    <? $self->show_view("footer"); ?>
+    <?php 
+$self->showView("footer");
+?>
   </div>
 
 </body>
