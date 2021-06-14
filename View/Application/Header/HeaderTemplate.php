@@ -6,9 +6,10 @@ use Framework\Util\ServerUtil;
   <div class="navbar navbar-default">
 
     <div class="navbar-header">
-      <a class="navbar-brand" href="/"> <?php 
-echo ServerUtil::getServerHost();
-?> </a>
+      <a class="navbar-brand" href="/">
+        <?php
+        echo ServerUtil::getServerHost();
+        ?> </a>
     </div>
 
     <div class="collapse navbar-collapse">

@@ -28,9 +28,12 @@ class ModelGeneratorModel {
     $this->_appDir = $appDir ? $appDir : WebApplication::getMainApplicationDirectory();
     $this->_smarty = new SmartyModel();
     $this->_smarty->disableSecurity();
+    $this->_smartyModel->registerModifierPlugin("pascalize", [StringUtil::class, "pascalize"]);
+    $this->_smartyModel->registerModifierPlugin("camelize", [StringUtil::class, "camelize"]);
     $this->_smarty->assign("primary_object_id", value($options, "primary_object_id"));
     $this->_smarty->assign("upper_model", $this->_upperModel);
     $this->_smarty->assign("pascal_model", $this->_pascalModel);
+    $this->_smarty->assign("pascal_models", LangUtil::getPlural($this->_pascalModel));
     $this->_smarty->assign("lower_model", $this->_lowerModel);
     $this->_smarty->assign("lower_models", LangUtil::getPluralString($this->_lowerModel));
   }

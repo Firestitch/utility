@@ -14,6 +14,9 @@ class GeneratorModel {
     $this->_smartyModel = new SmartyModel();
     $this->_smartyModel->allowPhpTag();
     $this->_smartyModel->disableSecurity();
+
+    $this->_smartyModel->registerModifierPlugin("pascalize", [StringUtil::class, "pascalize"]);
+    $this->_smartyModel->registerModifierPlugin("camelizeize", [StringUtil::class, "camelize"]);
   }
   function getInstanceDir() {
     return $this->_instanceDir;

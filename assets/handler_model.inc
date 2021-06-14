@@ -12,7 +12,7 @@ use Backend\Dbq\{$pascal_model}Dbq;
  */
 class {$pascal_model}Handler extends Handler {
 
-  protected $_select_fields = [{$select_fields}];
+  protected $_selectFields = [{$select_fields}];
 
   public function __construct() {
 {if $extends}    parent::__construct({$pascal_model}Dbq::create()->inner("{$extend_tablename}","{$extend_primary_id}"));
@@ -24,27 +24,27 @@ class {$pascal_model}Handler extends Handler {
    * @return {$pascal_model}Model[]
    */
   public function gets() {
-    ${$lower_models} = $this->get_dbq()->select($this->_select_fields);
+    ${$pascalModels} = $this->getDbq()->select($this->_select_fields);
 
-    $cmodels = [];
-    foreach(${$lower_models} as ${$lower_model}) {
-      $cmodel = {$pascal_model}Model::create()->populate(${$lower_model},true,false);
-      $this->apply_properties($cmodel,${$lower_model});
-      $cmodels[] = $cmodel;
+    $models = [];
+    foreach(${$pascalModels} as ${$pascalModel}) {
+      $model = {$pascal_model}Model::create()->populate(${$pascalModel},true,false);
+      $this->applyProperties($model,${$pascalModel});
+      $models[] = $model;
     }
 
-    if(!$cmodels)
+    if(!$models)
       return [];
 
-    return $cmodels;
+    return $models;
   }
 
-{if $has_state}  public function where_state_active() { return $this->set_state({$pascal_model}Model::STATE_ACTIVE); }
+{if $has_state}  public function whereStateActive() { return $this->setState({$pascal_model}Model::STATE_ACTIVE); }
 {/if}
-  public function set_{$lower_model}_ids($values)	{ return $this->where("{$tablename}.{$lower_model}_id","IN",$values); }
-  public function set_{$lower_model}_id($value)	{ return $this->where("{$tablename}.{$lower_model}_id","=",$value); }
-{foreach $fields as $name=>$field}  public function set_{$name}($value) { return $this->where("{$field}","=",$value); }
-  public function set_{$name}s($values) { return $this->where("{$field}","IN",$values); }
+  public function set{$pascalModel}_ids($values)	{ return $this->where("{$tablename}.{$pascalModel}_id","IN",$values); }
+  public function set{$pascalModel}_id($value)	{ return $this->where("{$tablename}.{$pascalModel}_id","=",$value); }
+{foreach $fields as $name=>$field}  public function set{$name}($value) { return $this->where("{$field}","=",$value); }
+  public function set{$name}s($values) { return $this->where("{$field}","IN",$values); }
 {/foreach}
 
   public static function create($defaults=false) {

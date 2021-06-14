@@ -8,7 +8,9 @@ use Framework\Core\Model;
 use Framework\Db\DB;
 use Framework\Exception\SystemException;{/if}
 {if $has_guid}
-use Framework\Util\MISC_UTIL;{/if}
+use Framework\Util\MiscUtil;
+
+{/if}
 
 
 
@@ -20,27 +22,27 @@ class {$pascal_model}Model extends {if $primary_object_id}ObjectBaseModel{else}M
 	const STATE_ACTIVE	= "active";
 	const STATE_DELETED	= "deleted";
 
-	public static function get_states()	{ return [self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"]; }
+	public static function getStates()	{ return [self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"]; }
 {/if}
 
 	public function __construct() {
 		parent::__construct({$pascal_model}Dbo::create());
   }
 {foreach $consts as $const}{if $const!="state"}
-  public function is_{$const.const|lower}()	{ return $this->get_{$const.field}()==self::{$const.const}; }
+  public function is{$const.const|pascalize}()	{ return $this->get{$const.field|pascalize}()==self::{$const.const}; }
 {/if}
 {/foreach}
-{if $has_state}		public function get_state_name()	{ return value(self::get_states(),$this->get_state()); }
-  public function delete()			{ return $this->set_state(self::STATE_DELETED)->save(); }
+{if $has_state}		public function getStateName()	{ return value(self::getStates(),$this->getState()); }
+  public function delete()			{ return $this->setState(self::STATE_DELETED)->save(); }
 
-  public function is_state_delete()	{ return $this->get_state()==self::STATE_DELETED; }
+  public function isStateDelete()	{ return $this->getState()==self::STATE_DELETED; }
 
-	public function is_state_active()	{ return $this->get_state()==self::STATE_ACTIVE; }
+	public function isStateActive()	{ return $this->getState()==self::STATE_ACTIVE; }
 {/if}
 
 	public function save() {
 {if $has_multiple_keys}
-		$this->set_{$lower_model}_id({$pascal_model}Dbq::create()
+		$this->set{$pascal_model}Id({$pascal_model}Dbq::create()
 {foreach $keys as $key}
 								->where("{$key}","=",$this->get_{$key}())
 {/foreach}
@@ -48,54 +50,54 @@ class {$pascal_model}Model extends {if $primary_object_id}ObjectBaseModel{else}M
 {/if}
 {if $primary_object_id}
 
-			if($this->get_{$primary_key}()) {
+			if($this->get{$primary_key|pascalize}()) {
 				$this->dbo("{$lower_model}")->update();
 			} else {
         DB::transaction(function () {
 {if $has_state}
-          if(!$this->get_state())
-            $this->set_state(self::STATE_ACTIVE);
+          if(!$this->getState())
+            $this->setState(self::STATE_ACTIVE);
 
 {/if}{if $has_guid}
-          if(!$this->get_guid())
-            $this->set_guid(MISC_UTIL::guid());
+          if(!$this->getGuid())
+            $this->setGuid(MiscUtil::guid());
 
 {/if}{if $has_create_date}
-          if(!$this->get_create_date())
-            $this->set_create_date(time());
+          if(!$this->getCreateDate())
+            $this->setCreateDate(time());
 
 {/if}
-          $this->create_object();
+          $this->createObject();
           $this->dbo("{$lower_model}")->insert();
         });
 			}
 
 		$this->object(true)
-			->set_name($this->get_name())
-			->set_primary_keyword($this->get_name())
-			->set_secondary_keyword($this->get_name())
-			->set_modify_date(DB::get_date_time()){if $has_state}
+			->setName($this->getName())
+			->setPrimaryKeyword($this->getName())
+			->setSecondaryKeyword($this->getName())
+			->setModifyDate(DB::getDateTime()){if $has_state}
 
-			->set_active(!$this->is_state_delete())
+			->setActive(!$this->isStateDelete())
 {/if}
 			->save();
 
 {else}
 
-		if($this->get_{$primary_key}()) {
+		if($this->get{$primary_key|pascalize}()) {
 			$this->dbo("{$lower_model}")->update();
 		} else {
 {if $has_state}
-      if(!$this->get_state())
-        $this->set_state(self::STATE_ACTIVE);
+      if(!$this->getState())
+        $this->setState(self::STATE_ACTIVE);
 
 {/if}{if $has_guid}
-      if(!$this->get_guid())
-        $this->set_guid(MISC_UTIL::guid());
+      if(!$this->getGuid())
+        $this->setGuid(MiscUtil::guid());
 
 {/if}{if $has_create_date}
-      if(!$this->get_create_date())
-        $this->set_create_date(time());
+      if(!$this->getCreateDate())
+        $this->setCreateDate(time());
 
 {/if}
 			$this->dbo("{$lower_model}")->insert();
@@ -107,41 +109,41 @@ class {$pascal_model}Model extends {if $primary_object_id}ObjectBaseModel{else}M
 	public function describe() {
 		return [
 {foreach from=$columns key=name item=column name=columns}
-				"{$name}"=> [{if $column->is_primary() || $column->is_data_type_datetime() || $column->is_data_type_date()}
-{if $column->is_data_type_datetime() || $column->is_data_type_date()}
+				"{$name}"=> [{if $column->isPrimary() || $column->isDataTypeDatetime() || $column->isDataTypeDate()}
+{if $column->isDataTypeDatetime() || $column->isDataTypeDate()}
 
-					"type"=>"{$column->get_data_type()}",
-{/if}{if $column->is_primary()}
+					"type"=>"{$column->getDataType()}",
+{/if}{if $column->isPrimary()}
 
 					"arry"=>[
 						"name"=>"id"
 					],
 {/if}
 {/if}{if $name=="state"}						"validations"=>[
-						"key_exists"=>self::get_states()
+						"key_exists"=>self::getStates()
 					],
-{/if}{if $column->is_primary() || $name=="guid" || $name=="order" || $name=="modify_date" || $name=="create_date"}
+{/if}{if $column->isPrimary() || $name=="guid" || $name=="order" || $name=="modify_date" || $name=="create_date"}
 					"diff"=>false
-{/if}{if $column->is_primary() || $name=="guid" || $name=="order" || $name=="state" || $name=="modify_date" || $name=="create_date" || $column->is_data_type_datetime() || $column->is_data_type_date()}					{/if}]{if !$smarty.foreach.columns.last},
+{/if}{if $column->isPrimary() || $name=="guid" || $name=="order" || $name=="state" || $name=="modify_date" || $name=="create_date" || $column->isDataTypeDatetime() || $column->isDataTypeDate()}					{/if}]{if !$smarty.foreach.columns.last},
 {/if}{/foreach}
 			];
 	}
 {if $primary_object_id}
 
-	public function get_object_id_value() {
+	public function getObjectIdValue() {
 		return $this->get_{$primary_key}();
 	}
 
-	public function set_object_id_value($value) {
+	public function setObjectIdValue($value) {
 		$this->set_{$primary_key}($value);
 	}
 
-	public function get_object_class() {
+	public function getObjectClass() {
 		return ObjectModel::CLASS_{$upper_model};
 	}
 
   public function __toString() {
-    return $this->get_name();
+    return $this->getName();
   }
 {/if}
 }
