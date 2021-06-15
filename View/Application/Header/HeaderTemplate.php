@@ -1,6 +1,7 @@
 <?php
 
 use Framework\Util\ServerUtil;
+
 ?>
 <div id="header">
   <div class="navbar navbar-default">

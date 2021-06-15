@@ -19,7 +19,7 @@ class ModelGeneratorModel {
   protected $_framework = null;
   protected $_smarty = null;
   protected $_extends = null;
-  function __construct($model, $appDir = null, $framework = false, $extends = "", $options = []) {
+  public function __construct($model, $appDir = null, $framework = false, $extends = "", $options = []) {
     $this->_extends = strtoupper($extends);
     $this->_lowerModel = strtolower($model);
     $this->_upperModel = strtoupper($model);
@@ -37,14 +37,14 @@ class ModelGeneratorModel {
     $this->_smarty->assign("lower_model", $this->_lowerModel);
     $this->_smarty->assign("lower_models", LangUtil::getPluralString($this->_lowerModel));
   }
-  function init() {
+  public function init() {
     $dbo = $this->getDbo($this->_lowerModel);
     $this->_smarty->assign("columns", $dbo->getColumns());
   }
-  function generateComplexModel() {
+  public function generateComplexModel() {
     $this->init();
     $dbo = DbGeneratorModel::getDbo($this->_lowerModel);
-    $columns = array();
+    $columns = [];
     foreach ($dbo->getColumns() as $name => $column) {
       $columns[$name] = $column;
     }
@@ -60,10 +60,10 @@ class ModelGeneratorModel {
     $refl = new ReflectionClass(dbq::class);
     $dbqConsts = array_keys($refl->getConstants());
     $diffConsts = array_diff($objectConsts, $dbqConsts);
-    $consts = array();
+    $consts = [];
     foreach ($diffConsts as $const) {
       $field = strtolower(get_value(explode("_", $const), 0));
-      $consts[] = array("const" => $const, "field" => $field);
+      $consts[] = ["const" => $const, "field" => $field];
     }
     $dbo = $this->getDbo($this->_lowerModel);
     $extends = "CMODEL";
@@ -84,31 +84,34 @@ class ModelGeneratorModel {
     $this->_smarty->assign("consts", $consts);
     $this->_smarty->assign("id", self::getAbr($this->_lowerModel) . "id");
     $this->_smarty->allowPhpTag();
+
     return $this->generateModel("model");
   }
-  static function getAbr($field) {
-    $parts = array();
+  public static function getAbr($field) {
+    $parts = [];
     foreach (explode("_", $field) as $part) {
       $parts[] = $part == "id" ? "id" : substr($part, 0, 1);
     }
+
     return implode("", $parts);
   }
-  static function getModelClass($basename) {
+  public static function getModelClass($basename) {
     return StringUtil::pascalize($basename) . "Model";
   }
-  static function getHandlerClass($basename) {
+  public static function getHandlerClass($basename) {
     return StringUtil::pascalize($basename) . "Handler";
   }
-  static function getModel($basename) {
+  public static function getModel($basename) {
     $class = "Backend\\Model\\" . self::getModelClass($basename);
+
     return new $class();
   }
-  function generateHandlerModel() {
+  public function generateHandlerModel() {
     $this->init();
     $cmodel = self::getModel($this->_lowerModel);
     $dbos = array_values($cmodel::create()->getDbos());
     $extendPrimaryId = null;
-    $fields = array();
+    $fields = [];
     foreach ($dbos as $index => $dbo) {
       $tablenames[] = $dbo->getTablename();
       if (!$index) {
@@ -128,34 +131,37 @@ class ModelGeneratorModel {
     $this->_smarty->assign("fields", $fields);
     $this->_smarty->assign("has_state", array_key_exists("state", $fields));
     $this->_smarty->assign("framework", $this->_framework);
+
     return $this->generateModel("handler");
   }
-  function getDbo($model) {
+  public function getDbo($model) {
     return DbGeneratorModel::getDbo($model);
   }
-  function generateModel($modelType) {
+  public function generateModel($modelType) {
     $templateFile = PathModel::getAssetsDirectory() . $modelType . "_model.inc";
     $content = $this->_smarty->fetch($templateFile);
+
     return $this->writeFile($this->getModelFile($modelType), $content);
   }
-  function getModelFile($modelType) {
+  public function getModelFile($modelType) {
     return FileUtil::sanitizeFile($this->_appDir . StringUtil::pascalize($modelType) . "/" . StringUtil::pascalize($this->_lowerModel) . StringUtil::pascalize($modelType) . ".php");
   }
-  function getComplexModelFile() {
+  public function getComplexModelFile() {
     return $this->getModelFile("Model");
   }
-  function getHandlerModelFile() {
+  public function getHandlerModelFile() {
     return $this->getModelFile("Handler");
   }
-  function getModelDirectory($modelType) {
+  public function getModelDirectory($modelType) {
     return $this->_appDir . "Model";
   }
-  function writeFile($file, $string) {
+  public function writeFile($file, $string) {
     FileUtil::put($file, $string);
     WebApplication::addNotify('Successfully added the file <a href="' . $file . '">' . $file . '</a>');
+
     return true;
   }
-  static function getCmodels() {
+  public static function getCmodels() {
     $files = FileUtil::getDirectoryListing(WebApplication::getMainApplicationDirectory() . "Model");
     $cmodels = ["" => ""];
     foreach ($files as $file) {
@@ -163,6 +169,7 @@ class ModelGeneratorModel {
         $cmodels[$matches[1]] = $matches[1];
       }
     }
+
     return $cmodels;
   }
 }

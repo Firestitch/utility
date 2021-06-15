@@ -1,15 +1,16 @@
 <?php
 
 use Framework\Util\HtmlUtil;
+
 ?>
 <div class="lbl">Model Field</div>
-<?php 
+<?php
 if ($sourceModelColumnList) {
-    ?>
-  <?php 
-    echo HtmlUtil::getDropdown("source_model_column", $sourceModelColumnList, $sourceModelColumn, array(), count($sourceModelColumnList));
+  ?>
+  <?php
+    echo HtmlUtil::getDropdown("source_model_column", $sourceModelColumnList, $sourceModelColumn, [], count($sourceModelColumnList));
 } else {
-    ?>
+  ?>
   There are no source fields
-<?php 
+<?php
 }

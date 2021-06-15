@@ -2,33 +2,34 @@
 
 use Framework\Util\HtmlUtil;
 use Framework\Util\JsonUtil;
+
 ?>
 <h1>Map Model</h1>
 
 <div class="mt15 mb20 cb">
   <div class="fl mr50">
     <div class="lbl">Relationship</div>
-    <?php 
-echo HtmlUtil::radiobuttons("relationship", array("child" => "Map Child", "children" => "Map Children"));
+    <?php
+echo HtmlUtil::radiobuttons("relationship", ["child" => "Map Child", "children" => "Map Children"]);
 ?>
   </div>
   <div class="fl mr50 dns" id="object_names">
     <div class="lbl">Object Name</div>
-    <?php 
-echo HtmlUtil::radiobuttons("object_name", array("source" => HtmlUtil::span("N/A", ["id" => "source_object_name"]), "reference" => HtmlUtil::span("N/A", ["id" => "reference_object_name"]), "custom" => HtmlUtil::span(HtmlUtil::input("object_name_custom", "", ["class" => "object-name-custom", "placeholder" => "Custom"]))));
+    <?php
+echo HtmlUtil::radiobuttons("object_name", ["source" => HtmlUtil::span("N/A", ["id" => "source_object_name"]), "reference" => HtmlUtil::span("N/A", ["id" => "reference_object_name"]), "custom" => HtmlUtil::span(HtmlUtil::input("object_name_custom", "", ["class" => "object-name-custom", "placeholder" => "Custom"]))]);
 ?>
   </div>
   <div class="fl mr50">
     <div class="lbl">Joiner Tables</div>
-    <?php 
-echo HtmlUtil::button("add-joiner", "Add Joiner Table", array("class" => "btn"));
+    <?php
+echo HtmlUtil::button("add-joiner", "Add Joiner Table", ["class" => "btn"]);
 ?>
   </div>
 
   <div class="fl mr50">
     <div class="lbl">Generate</div>
-    <?php 
-echo HtmlUtil::button("generate", "Generate", array("class" => "btn-primary"));
+    <?php
+echo HtmlUtil::button("generate", "Generate", ["class" => "btn-primary"]);
 ?>
   </div>
 </div>
@@ -36,8 +37,8 @@ echo HtmlUtil::button("generate", "Generate", array("class" => "btn-primary"));
   <div class="model">
     <div class="lbl">Source Model</div>
     <div class="dib">
-      <?php 
-echo HtmlUtil::dropdown("source_model", $modelList, $model, array(""), 15);
+      <?php
+echo HtmlUtil::dropdown("source_model", $modelList, $model, [""], 15);
 ?>
     </div>
 
@@ -51,8 +52,8 @@ echo HtmlUtil::dropdown("source_model", $modelList, $model, array(""), 15);
   <div class="model">
     <div class="lbl">Reference Model</div>
     <div class="">
-      <?php 
-echo HtmlUtil::dropdown("reference_model", $modelList, $referenceModel, array(), 15);
+      <?php
+echo HtmlUtil::dropdown("reference_model", $modelList, $referenceModel, [], 15);
 ?>
     </div>
 
@@ -63,7 +64,7 @@ echo HtmlUtil::dropdown("reference_model", $modelList, $referenceModel, array(),
   <div class="cb"></div>
 </div>
 
-<?php 
+<?php
 echo HtmlUtil::hidden("joiner_tables", JsonUtil::encode($joinerList));
 ?>
 
@@ -73,7 +74,7 @@ echo HtmlUtil::hidden("joiner_tables", JsonUtil::encode($joinerList));
     $("select[name='source_model']").bind("click keyup", function() {
       $("#source_fields").load("/mapmodel/sourcefields/", {
         source_model: $(this).val(),
-        source_model_column: "<?php 
+        source_model_column: "<?php
 echo $sourceModelColumn;
 ?>"
       });

@@ -20,13 +20,13 @@ class DbModelView extends View {
   private $_createDbq = false;
   private $_createDbo = true;
   private $_override = true;
-  function __construct() {
+  public function __construct() {
     $this->setTemplate("./DbModelTemplate.php");
     $this->disableAuthorization();
     $this->_classname = $this->get("model");
     $this->_tablename = $this->get("table");
   }
-  function init() {
+  public function init() {
     $this->processPost();
     $dbUtility = Db::getInstance()->getUtility();
     $tablenameList = $dbUtility->getTableNames();
@@ -107,13 +107,14 @@ class DbModelView extends View {
       $response->data("warnings", WebApplication::getWarningMessages())->data("messages", WebApplication::getNotifyMessages())->render();
     }
   }
-  function isFormValid($tablename, $name) {
+  public function isFormValid($tablename, $name) {
     if (!$tablename) {
       throw new Exception("Invalid tablename");
     }
     if (!$name) {
       throw new Exception("Invalid name");
     }
+
     return true;
   }
 }

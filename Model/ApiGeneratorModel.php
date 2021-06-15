@@ -13,7 +13,7 @@ class ApiGeneratorModel extends GeneratorModel {
   protected $_model = "";
   protected $_modelPlural = "";
   protected $_options = [];
-  function __construct($dir, $api, $model, $modelPlural, $methods = [], $parentModel = null, $options = []) {
+  public function __construct($dir, $api, $model, $modelPlural, $methods = [], $parentModel = null, $options = []) {
     parent::__construct($dir);
     $this->_snakeModel = StringUtil::snakeize($model);
     $this->_model = $model;
@@ -27,11 +27,11 @@ class ApiGeneratorModel extends GeneratorModel {
     $this->_dir = $this->getInstanceDir() . "View/Api/";
   }
 
-  function getFile() {
+  public function getFile() {
     return $this->_dir . str_replace("_", "", $this->_api) . "View.php";
   }
 
-  function append(&$messages = array()) {
+  public function append(&$messages = []) {
     $file = $this->getFile();
     if (!is_file($file)) {
       throw new Exception("API not found");
@@ -50,9 +50,9 @@ class ApiGeneratorModel extends GeneratorModel {
       $code = substr_replace($code, $endpoint, $pos, 0);
     }
     FileUtil::put($file, $code);
-    $messages = array("Successfully updated the file " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($file), FileUtil::sanitizeFile($file)));
+    $messages = ["Successfully updated the file " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($file), FileUtil::sanitizeFile($file))];
   }
-  function generate($override, &$messages = array()) {
+  public function generate($override, &$messages = []) {
     $file = $this->getFile();
     if (!$override && is_file($file)) {
       throw new Exception("The file " . $file . " already exists");
@@ -63,15 +63,16 @@ class ApiGeneratorModel extends GeneratorModel {
       throw new Exception("Failed to generate " . $file);
     }
 
-    $messages = array("Successfully added the file " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($file), FileUtil::sanitizeFile($file)));
+    $messages = ["Successfully added the file " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($file), FileUtil::sanitizeFile($file))];
+
     return true;
   }
 
-  function getEndpoint() {
+  public function getEndpoint() {
     return $this->get(PathModel::getAssetsDirectory() . "api_endpoint.inc");
   }
 
-  function get($template) {
+  public function get($template) {
     $cmodel = ModelGeneratorModel::getModel($this->_model);
     $orderBy = "";
     $keywords = $accessibleFields = $fields = [];
@@ -91,6 +92,7 @@ class ApiGeneratorModel extends GeneratorModel {
     }));
     $pascalModel = StringUtil::pascalize($this->_model);
     $pascalParentModel = StringUtil::pascalize($this->_parentModel);
+
     return $this->assign("options", $this->_options)->assign("order_by", $orderBy)->assign("snake_model", $this->_snakeModel)->assign("plural_snake_model", $this->_pluralSnakeModel)->assign("model_upper", strtoupper($this->_model))->assign("pascal_model", $pascalModel)->assign("method", strtolower($this->_method))->assign("loads", (array) value($this->_options, "loads"))->assign("model_plural_upper", strtoupper($this->_modelPlural))->assign("model_plural_upper_trim", strtoupper(str_replace("_", "", $this->_modelPlural)))->assign("model_plural_proper", ucwords($this->_modelPlural))->assign("model_proper", ucwords($this->_model))->assign("model_name", ucwords(str_replace("_", " ", $this->_model)))->assign("model", $this->_model)->assign("methods", $this->_methods)->assign("keywords", $keywords)->assign("plural_pascal_model", LangUtil::getPlural($pascalModel))->assign("api", $this->_api)->assign("api_singular", rtrim($this->_api, "s"))->assign("dbos", $cmodel->getDbos())->assign("accessible_fields", $accessibleFields)->assign("has_state", in_array("state", array_keys($fields)))->assign("has_guid", in_array("guid", array_keys($fields)))->assign("create_date", in_array("create_date", array_keys($fields)))->assign("fields", array_keys($fields))->assign("model_id", $this->_snakeModel . "_id")->assign("model_plural", $this->_modelPlural)->assign("parent_model", $this->_parentModel)->assign("pascal_parent_model", $pascalParentModel)->fetch($template);
   }
 }

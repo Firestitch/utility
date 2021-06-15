@@ -1,11 +1,12 @@
 <?php
 
 use Framework\Util\FormUtil;
+
 ?>
 
 <h1>WSDL Generation</h1>
 
-<?php 
+<?php
 FormUtil::create()->dropdown("api", "API", $apis, "", ["class" => "w400 api-name"])->button("generate", "Generate", ["type" => "button", "id" => "generate", "class" => "btn-primary"])->render();
 ?>
 <script>

@@ -12,7 +12,6 @@ use Utility\View\MapModel\MapModelView;
 use Utility\View\MapModel\ReferenceFields\ReferenceFieldsView;
 use Utility\View\MapModel\SourceFields\SourceFieldsView;
 
-
 class RouteManager extends RouteManagerBase {
   public function getRoutes() {
     return [

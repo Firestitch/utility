@@ -2,19 +2,20 @@
 
 use Framework\Util\HtmlTableUtil;
 use Framework\Util\HtmlUtil;
+
 ?>
 <h1>Db, Model & Handler</h1>
 
 <form id="form-db">
   <?php
-  $data[] = array("Generate:", HtmlUtil::checkboxes("objects", ["dbo" => "Ddo", "dbq" => "Dbq", "trait" => "Trait", "cmodel" => "Model", "hmodel" => "Handler"], ["dbo", "dbq", "trait"], ["class" => "objects"]));
-  $data[] = array("Name:", HtmlUtil::input("name", "", array("class" => "w300")));
-  $data[] = array("", HtmlUtil::checkbox("primary_object_id", "1", false, ["class" => ""], "CMODEL has primary key object_id"));
-  $data[] = array("", HtmlUtil::checkbox("override", "1", $override, ["class" => "override"], "Override existing files"));
-  $data[] = array("", HtmlUtil::link("javascript:;", "Generate", array("id" => "generate", "class" => "btn btn-primary")));
+  $data[] = ["Generate:", HtmlUtil::checkboxes("objects", ["dbo" => "Ddo", "dbq" => "Dbq", "trait" => "Trait", "cmodel" => "Model", "hmodel" => "Handler"], ["dbo", "dbq", "trait"], ["class" => "objects"])];
+  $data[] = ["Name:", HtmlUtil::input("name", "", ["class" => "w300"])];
+  $data[] = ["", HtmlUtil::checkbox("primary_object_id", "1", false, ["class" => ""], "CMODEL has primary key object_id")];
+  $data[] = ["", HtmlUtil::checkbox("override", "1", $override, ["class" => "override"], "Override existing files")];
+  $data[] = ["", HtmlUtil::link("javascript:;", "Generate", ["id" => "generate", "class" => "btn btn-primary"])];
   $dbTable = HtmlTableUtil::create()->setData($data)->setClass("")->setPadding(3);
-  $tablenameDd = HtmlUtil::dropdown("tablename", $tablenameList, $tablename, array("onKeyUp" => "update_class_name(this)", "onChange" => "update_class_name(this)", "size" => 30), 50);
-  HtmlTableUtil::create()->setData(array(array("Table Name: ", $tablenameDd, $dbTable->getHtml())))->setDefaultColumnAttribute("class", "vat")->setClass("")->setPadding(3)->render();
+  $tablenameDd = HtmlUtil::dropdown("tablename", $tablenameList, $tablename, ["onKeyUp" => "update_class_name(this)", "onChange" => "update_class_name(this)", "size" => 30], 50);
+  HtmlTableUtil::create()->setData([["Table Name: ", $tablenameDd, $dbTable->getHtml()]])->setDefaultColumnAttribute("class", "vat")->setClass("")->setPadding(3)->render();
   ?>
 </form>
 
