@@ -28,14 +28,15 @@ class ModelGeneratorModel {
     $this->_appDir = $appDir ? $appDir : WebApplication::getMainApplicationDirectory();
     $this->_smarty = new SmartyModel();
     $this->_smarty->disableSecurity();
-    $this->_smartyModel->registerModifierPlugin("pascalize", [StringUtil::class, "pascalize"]);
-    $this->_smartyModel->registerModifierPlugin("camelize", [StringUtil::class, "camelize"]);
-    $this->_smarty->assign("primary_object_id", value($options, "primary_object_id"));
-    $this->_smarty->assign("upper_model", $this->_upperModel);
-    $this->_smarty->assign("pascal_model", $this->_pascalModel);
-    $this->_smarty->assign("pascal_models", LangUtil::getPlural($this->_pascalModel));
-    $this->_smarty->assign("lower_model", $this->_lowerModel);
-    $this->_smarty->assign("lower_models", LangUtil::getPluralString($this->_lowerModel));
+    $this->_smarty->registerModifierPlugin("pascalize", [StringUtil::class, "pascalize"]);
+    $this->_smarty->registerModifierPlugin("camelize", [StringUtil::class, "camelize"]);
+    $this->_smarty->registerModifierPlugin("plural", [LangUtil::class, "plural"]);
+    $this->_smarty->assign("primaryObjectId", value($options, "primary_object_id"));
+    $this->_smarty->assign("upperModel", $this->_upperModel);
+    $this->_smarty->assign("pascalModel", $this->_pascalModel);
+    $this->_smarty->assign("pascalModels", LangUtil::getPlural($this->_pascalModel));
+    $this->_smarty->assign("lowerModel", $this->_lowerModel);
+    $this->_smarty->assign("lowerModels", LangUtil::getPluralString($this->_lowerModel));
   }
   public function init() {
     $dbo = $this->getDbo($this->_lowerModel);
@@ -73,14 +74,14 @@ class ModelGeneratorModel {
     $this->_smarty->assign("extends", $extends);
     $this->_smarty->assign("extended", !!$this->_extends);
     $this->_smarty->assign("extend_id", $extendId);
-    $this->_smarty->assign("has_multiple_keys", count($dbo->getPrimaryKeys()) > 1);
+    $this->_smarty->assign("hasMultipleKeys", count($dbo->getPrimaryKeys()) > 1);
     $this->_smarty->assign("keys", array_keys($dbo->getPrimaryKeys()));
-    $this->_smarty->assign("primary_key", value(array_keys($dbo->getPrimaryKeys()), 0));
+    $this->_smarty->assign("primaryKey", value(array_keys($dbo->getPrimaryKeys()), 0));
     $this->_smarty->assign("framework", $this->_framework);
-    $this->_smarty->assign("has_guid", array_key_exists("guid", $columns));
-    $this->_smarty->assign("has_state", array_key_exists("state", $columns));
-    $this->_smarty->assign("has_create_date", array_key_exists("create_date", $columns));
-    $this->_smarty->assign("has_object_id", array_key_exists("object_id", $columns));
+    $this->_smarty->assign("hasGuid", array_key_exists("guid", $columns));
+    $this->_smarty->assign("hasState", array_key_exists("state", $columns));
+    $this->_smarty->assign("hasCreateDate", array_key_exists("create_date", $columns));
+    $this->_smarty->assign("hasObjectId", array_key_exists("object_id", $columns));
     $this->_smarty->assign("consts", $consts);
     $this->_smarty->assign("id", self::getAbr($this->_lowerModel) . "id");
     $this->_smarty->allowPhpTag();
@@ -123,13 +124,13 @@ class ModelGeneratorModel {
         }
       }
     }
-    $this->_smarty->assign("select_fields", '"' . implode('.*","', $tablenames) . '.*"');
+    $this->_smarty->assign("selectFields", '"' . implode('.*","', $tablenames) . '.*"');
     $this->_smarty->assign("extends", $this->_extends);
-    $this->_smarty->assign("extend_primary_id", $extendPrimaryId);
-    $this->_smarty->assign("extend_tablename", value($tablenames, 0));
+    $this->_smarty->assign("extendPrimaryId", $extendPrimaryId);
+    $this->_smarty->assign("extendTablename", value($tablenames, 0));
     $this->_smarty->assign("tablename", value($tablenames, count($tablenames) - 1));
     $this->_smarty->assign("fields", $fields);
-    $this->_smarty->assign("has_state", array_key_exists("state", $fields));
+    $this->_smarty->assign("hasState", array_key_exists("state", $fields));
     $this->_smarty->assign("framework", $this->_framework);
 
     return $this->generateModel("handler");

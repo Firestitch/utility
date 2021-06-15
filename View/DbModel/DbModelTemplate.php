@@ -15,6 +15,7 @@ use Framework\Util\HtmlUtil;
   $data[] = ["", HtmlUtil::link("javascript:;", "Generate", ["id" => "generate", "class" => "btn btn-primary"])];
   $dbTable = HtmlTableUtil::create()->setData($data)->setClass("")->setPadding(3);
   $tablenameDd = HtmlUtil::dropdown("tablename", $tablenameList, $tablename, ["onKeyUp" => "update_class_name(this)", "onChange" => "update_class_name(this)", "size" => 30], 50);
+
   HtmlTableUtil::create()->setData([["Table Name: ", $tablenameDd, $dbTable->getHtml()]])->setDefaultColumnAttribute("class", "vat")->setClass("")->setPadding(3)->render();
   ?>
 </form>

@@ -38,11 +38,11 @@ class DbGeneratorModel {
       }
       $str .= "  }\n\n";
       foreach ($result as $row) {
-        $str .= '  public function set_' . $row["Field"] . '($value) {
-    return $this->set_column_value("' . $row["Field"] . '", $value);
+        $str .= '  public function set' . StringUtil::pascalize($row["Field"]) . '($value) {
+    return $this->setColumnValue("' . $row["Field"] . '", $value);
   }' . "\n\n";
-        $str .= '  public function get_' . $row["Field"] . '() {
-    return $this->get_column_value("' . $row["Field"] . '");
+        $str .= '  public function get' . StringUtil::pascalize($row["Field"]) . '() {
+    return $this->getColumnValue("' . $row["Field"] . '");
   }' . "\n\n";
       }
       $str .= "}";

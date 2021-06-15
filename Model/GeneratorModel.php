@@ -16,7 +16,7 @@ class GeneratorModel {
     $this->_smartyModel->disableSecurity();
 
     $this->_smartyModel->registerModifierPlugin("pascalize", [StringUtil::class, "pascalize"]);
-    $this->_smartyModel->registerModifierPlugin("camelizeize", [StringUtil::class, "camelize"]);
+    $this->_smartyModel->registerModifierPlugin("camelize", [StringUtil::class, "camelize"]);
   }
   public function getInstanceDir() {
     return $this->_instanceDir;

@@ -1,99 +1,99 @@
 		public function {$method}($params,$data) {
 
-		${$model_id|camelize} = value($params,"{$model_id}");{if $parent_model}
+		${$modelId|camelize} = value($params,"{$modelId}");{if $parentModel}
 
-		${$parent_model|camelize}Id = value($params,"{$parent_model}_id");
+		${$parentModel|camelize}Id = value($params,"{$parentModel}Id");
 
-		${$parent_model|pascalize}Model = {$pascal_parent_model}Handler::create()
-		->require(${$parent_model|camelize}Id);
+		${$parentModel|pascalize}Model = {$pascalParentModel}Handler::create()
+		->require(${$parentModel|camelize}Id);
 		{/if}{if in_array("get",$methods)}
-		if($this->is_get()) {
+		if($this->isGet()) {
 
-		${$snake_model|camelize}Handler = {$pascal_model}Handler::create(false){if $parent_model}
+		${$snakeModel|camelize}Handler = {$pascalModel}Handler::create(false){if $parentModel}
 
-		->set{$parent_model|pascalize}Id(${$parent_model|camelize}Id){/if};
+		->set{$parentModel|pascalize}Id(${$parentModel|camelize}Id){/if};
 
-		if(${$model_id|camelize})
-		${$snake_model|camelize}Handler->set{$model_id|pascalize}(${$model_id|camelize});
+		if(${$modelId|camelize})
+		${$snakeModel|camelize}Handler->set{$modelId|pascalize}(${$modelId|camelize});
 		{if $keywords}
 
 		{if $keywords}
 		if(!is_null($value=$this->get("keyword")))
-		${$snake_model|camelize}Handler->likeKeyword(["{$keywords[0].tablename}.{$keywords[0].name}"],$value);
+		${$snakeModel|camelize}Handler->likeKeyword(["{$keywords[0].tablename}.{$keywords[0].name}"],$value);
 		{/if}
 
-		{/if}{foreach $dbos as $dbo}{foreach $dbo->getColumns() as $name=>$column}{if in_array($name,$accessible_fields)}{if $name=="state"}
+		{/if}{foreach $dbos as $dbo}{foreach $dbo->getColumns() as $name=>$column}{if in_array($name,$accessibleFields)}{if $name=="state"}
 
 		if(!is_null($value=$this->get("state")))
-		${$snake_model|camelize}Handler->setStates(explode(",",$value));
-		elseif(!${$model_id|camelize})
-		${$snake_model|camelize}Handler->set_state({$pascal_model}Model::STATE_ACTIVE);
-		{elseif preg_match("/(name|description)/",$name)}{continue}{elseif $column->is_data_type("date") || $column->is_data_type("datetime")}
+		${$snakeModel|camelize}Handler->setStates(explode(",",$value));
+		elseif(!${$modelId|camelize})
+		${$snakeModel|camelize}Handler->setState({$pascalModel}Model::STATE_ACTIVE);
+		{elseif preg_match("/(name|description)/",$name)}{continue}{elseif $column->isDataType("date") || $column->isDataType("datetime")}
 
 		if(!is_null($value=$this->get("{$name}")))
-		${$snake_model|camelize}Handler->where("{$dbo->get_tablename()}.{$name}",">",TimeModel::create($value)->db());
+		${$snakeModel|camelize}Handler->where("{$dbo->getTablename()}.{$name}",">",TimeModel::create($value)->db());
 
 		if(!is_null($value=$this->get("{$name}")))
-		${$snake_model|camelize}Handler->where("{$dbo->get_tablename()}.{$name}","<",TimeModel::create($value)->db());
+		${$snakeModel|camelize}Handler->where("{$dbo->getTablename()}.{$name}","<",TimeModel::create($value)->db());
 		  {else}
 
 		  if(!is_null($value=$this->get("{$name}")))
-		  ${$snake_model|camelize}Handler->where("{$dbo->get_tablename()}.{$name}","=",$value);
+		  ${$snakeModel|camelize}Handler->where("{$dbo->getTablename()}.{$name}","=",$value);
 		  {/if}{/if}{/foreach}{/foreach}
 		  {foreach $loads as $load} if(!is_null($this->get("{$load}")))
-		  ${$snake_model|camelize}Handler->load{$load|pascalize}();
+		  ${$snakeModel|camelize}Handler->load{$load|pascalize}();
 
 		  {/foreach}
-		  $this->acl()->apply(${$snake_model|camelize}Handler);
+		  $this->acl()->apply(${$snakeModel|camelize}Handler);
 
-		  if(!${$model_id|camelize})
-		  $this->handler(${$snake_model|camelize}Handler{if $order_by},"{$order_by}"{/if});
+		  if(!${$modelId|camelize})
+		  $this->handler(${$snakeModel|camelize}Handler{if $orderBy},"{$orderBy}"{/if});
 
-		  ${$plural_snake_model|camelize} = [];
-		  foreach(${$snake_model|camelize}Handler->gets() as ${$snake_model|camelize}_model)
-		  ${$plural_snake_model|camelize}[] = ${$snake_model|camelize}_model->arry();
+		  ${$pluralSnakeModel|camelize} = [];
+		  foreach(${$snakeModel|camelize}Handler->gets() as ${$snakeModel|camelize}Model)
+		  ${$pluralSnakeModel|camelize}[] = ${$snakeModel|camelize}Model->arry();
 
-		  if(${$model_id|camelize})
-		  $this->requireData("{$snake_model}",array_shift(${$plural_snake_model|camelize}));
+		  if(${$modelId|camelize})
+		  $this->requireData("{$snakeModel}",array_shift(${$pluralSnakeModel|camelize}));
 		  else
-		  $this->data("{$plural_snake_model|camelize}",array_values(${$plural_snake_model|camelize}));
+		  $this->data("{$pluralSnakeModel|camelize}",array_values(${$pluralSnakeModel|camelize}));
 
 		  }{/if}{if in_array("post",$methods) || in_array("put",$methods) || in_array("delete",$methods)} else {
 
-		  ${$snake_model|camelize}_model = {$pascal_model}Model::create();
+		  ${$snakeModel|camelize}Model = {$pascalModel}Model::create();
 
 		  if($this->isPut() || $this->isDelete()) {
-		  ${$snake_model|camelize}_model = $this->acl()->write({$pascal_model}Handler::create(false){if $parent_model}
+		  ${$snakeModel|camelize}Model = $this->acl()->write({$pascalModel}Handler::create(false){if $parentModel}
 
-		  ->set{$parent_model|pascalize}_id(${$parent_model|camelize}id){/if}
+		  ->set{$parentModel|pascalize}Id(${$parentModel|camelize}id){/if}
 
-		  ->set{$model_id|pascalize}(${$model_id|camelize}));
+		  ->set{$modelId|pascalize}(${$modelId|camelize}));
 		  }
 
-		  {if $parent_model}
+		  {if $parentModel}
 		  if($this->isPost()) {
-		  ${$snake_model|camelize}_model->set{$parent_model|pascalize}Id(${$parent_model|pascalize}Model->get{$parent_model|pascalize}Id());
+		  ${$snakeModel|camelize}Model->set{$parentModel|pascalize}Id(${$parentModel|pascalize}Model->get{$parentModel|pascalize}Id());
 		  }
 		  {/if}
-		  //${$snake_model|camelize}_model->startAudit($this->getSession()->getAccountId());
+		  //${$snakeModel|camelize}Model->startAudit($this->getSession()->getAccountId());
 
 		  if($this->isPost() || $this->isPut()) {
 
-		  ${$snake_model|camelize}_model
-		  ->fill($this->posts(),["{'", "'|implode:$accessible_fields}"])
+		  ${$snakeModel|camelize}Model
+		  ->fill($this->posts(),["{'", "'|implode:$accessibleFields}"])
 		  ->validate()
 		  ->save();
 
-		  $this->data("{$snake_model}",${$snake_model|camelize}_model->arry());
+		  $this->data("{$snakeModel}",${$snakeModel|camelize}Model->arry());
 
 		  }{/if}{if in_array("delete",$methods)} elseif($this->isDelete()) {
 
-		  ${$snake_model|camelize}_model->delete();
+		  ${$snakeModel|camelize}Model->delete();
 
-		  $this->data("{$snake_model}",${$snake_model|camelize}_model->arry());
+		  $this->data("{$snakeModel}",${$snakeModel|camelize}Model->arry());
 		  }
 		  {/if}
-		  //${$snake_model|camelize}_model->end_audit();
+		  //${$snakeModel|camelize}Model->endAudit();
 		  }
 		  }
 		  {if in_array("order",$options)}
@@ -102,10 +102,10 @@
 
 		  if($this->isPut()) {
 
-		  $handler = $this->acl()->apply({$pascal_model}Handler::create(false));
-		  $ids = is_array($this->post("{$model_id}s")) ? $this->post("{$model_id}s") : explode(",",$this->post("{$model_id}s"));
+		  $handler = $this->acl()->apply({$pascalModel}Handler::create(false));
+		  $ids = is_array($this->post("{$modelId}s")) ? $this->post("{$modelId}s") : explode(",",$this->post("{$modelId}s"));
 
-		  OrderingModel::create($handler,"{$model_id}")
+		  OrderingModel::create($handler,"{$modelId}")
 		  ->reorder($ids,$this->post("page") * $this->post("limit"));
 		  }
 		  }

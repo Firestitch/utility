@@ -1,24 +1,24 @@
 <?php
 namespace Backend\Model;
 
-{if !$primary_object_id}
+{if !$primaryObjectId}
 use Framework\Core\Model;
-{/if}use Backend\Dbo\{$pascal_model}Dbo;
-{if $primary_object_id}
+{/if}use Backend\Dbo\{$pascalModel}Dbo;
+{if $primaryObjectId}
 use Framework\Db\DB;
 use Framework\Exception\SystemException;{/if}
-{if $has_guid}
+{if $hasGuid}
 use Framework\Util\MiscUtil;
 
 {/if}
 
 
 
-class {$pascal_model}Model extends {if $primary_object_id}ObjectBaseModel{else}Model{/if} {
+class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Model{/if} {
 
-  use Traits\{$pascal_model}Trait;
+  use Traits\{$pascalModel}Trait;
 
-{if $has_state}
+{if $hasState}
 	const STATE_ACTIVE	= "active";
 	const STATE_DELETED	= "deleted";
 
@@ -26,13 +26,13 @@ class {$pascal_model}Model extends {if $primary_object_id}ObjectBaseModel{else}M
 {/if}
 
 	public function __construct() {
-		parent::__construct({$pascal_model}Dbo::create());
+		parent::__construct({$pascalModel}Dbo::create());
   }
 {foreach $consts as $const}{if $const!="state"}
   public function is{$const.const|pascalize}()	{ return $this->get{$const.field|pascalize}()==self::{$const.const}; }
 {/if}
 {/foreach}
-{if $has_state}		public function getStateName()	{ return value(self::getStates(),$this->getState()); }
+{if $hasState}		public function getStateName()	{ return value(self::getStates(),$this->getState()); }
   public function delete()			{ return $this->setState(self::STATE_DELETED)->save(); }
 
   public function isStateDelete()	{ return $this->getState()==self::STATE_DELETED; }
@@ -41,34 +41,34 @@ class {$pascal_model}Model extends {if $primary_object_id}ObjectBaseModel{else}M
 {/if}
 
 	public function save() {
-{if $has_multiple_keys}
-		$this->set{$pascal_model}Id({$pascal_model}Dbq::create()
+{if $hasMultipleKeys}
+		$this->set{$pascalModel}Id({$pascalModel}Dbq::create()
 {foreach $keys as $key}
 								->where("{$key}","=",$this->get_{$key}())
 {/foreach}
-								->one("{$lower_model}_id"));
+								->one("{$lowerModel}_id"));
 {/if}
-{if $primary_object_id}
+{if $primaryObjectId}
 
-			if($this->get{$primary_key|pascalize}()) {
-				$this->dbo("{$lower_model}")->update();
+			if($this->get{$primaryKey|pascalize}()) {
+				$this->dbo("{$lowerModel}")->update();
 			} else {
         DB::transaction(function () {
-{if $has_state}
+{if $hasState}
           if(!$this->getState())
             $this->setState(self::STATE_ACTIVE);
 
-{/if}{if $has_guid}
+{/if}{if $hasGuid}
           if(!$this->getGuid())
             $this->setGuid(MiscUtil::guid());
 
-{/if}{if $has_create_date}
+{/if}{if $hasCreateDate}
           if(!$this->getCreateDate())
             $this->setCreateDate(time());
 
 {/if}
           $this->createObject();
-          $this->dbo("{$lower_model}")->insert();
+          $this->dbo("{$lowerModel}")->insert();
         });
 			}
 
@@ -76,7 +76,7 @@ class {$pascal_model}Model extends {if $primary_object_id}ObjectBaseModel{else}M
 			->setName($this->getName())
 			->setPrimaryKeyword($this->getName())
 			->setSecondaryKeyword($this->getName())
-			->setModifyDate(DB::getDateTime()){if $has_state}
+			->setModifyDate(DB::getDateTime()){if $hasState}
 
 			->setActive(!$this->isStateDelete())
 {/if}
@@ -84,23 +84,23 @@ class {$pascal_model}Model extends {if $primary_object_id}ObjectBaseModel{else}M
 
 {else}
 
-		if($this->get{$primary_key|pascalize}()) {
-			$this->dbo("{$lower_model}")->update();
+		if($this->get{$primaryKey|pascalize}()) {
+			$this->dbo("{$lowerModel}")->update();
 		} else {
-{if $has_state}
+{if $hasState}
       if(!$this->getState())
         $this->setState(self::STATE_ACTIVE);
 
-{/if}{if $has_guid}
+{/if}{if $hasGuid}
       if(!$this->getGuid())
         $this->setGuid(MiscUtil::guid());
 
-{/if}{if $has_create_date}
+{/if}{if $hasCreateDate}
       if(!$this->getCreateDate())
         $this->setCreateDate(time());
 
 {/if}
-			$this->dbo("{$lower_model}")->insert();
+			$this->dbo("{$lowerModel}")->insert();
 		}
 {/if}
 		return $this;
@@ -109,7 +109,7 @@ class {$pascal_model}Model extends {if $primary_object_id}ObjectBaseModel{else}M
 	public function describe() {
 		return [
 {foreach from=$columns key=name item=column name=columns}
-				"{$name}"=> [{if $column->isPrimary() || $column->isDataTypeDatetime() || $column->isDataTypeDate()}
+				"{$name|camelize}"=> [{if $column->isPrimary() || $column->isDataTypeDatetime() || $column->isDataTypeDate()}
 {if $column->isDataTypeDatetime() || $column->isDataTypeDate()}
 
 					"type"=>"{$column->getDataType()}",
@@ -128,14 +128,14 @@ class {$pascal_model}Model extends {if $primary_object_id}ObjectBaseModel{else}M
 {/if}{/foreach}
 			];
 	}
-{if $primary_object_id}
+{if $primaryObjectId}
 
 	public function getObjectIdValue() {
-		return $this->get_{$primary_key}();
+		return $this->get_{$primaryKey}();
 	}
 
 	public function setObjectIdValue($value) {
-		$this->set_{$primary_key}($value);
+		$this->set_{$primaryKey}($value);
 	}
 
 	public function getObjectClass() {
