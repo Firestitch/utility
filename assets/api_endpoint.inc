@@ -7,8 +7,9 @@
 		${$parentModel|pascalize}Model = {$pascalParentModel}Handler::create()
 		->require(${$parentModel|camelize}Id);
 		{/if}{if in_array("get",$methods)}
-		if($this->isGet()) {
 
+
+		if($this->isGet()) {
 		${$snakeModel|camelize}Handler = {$pascalModel}Handler::create(false){if $parentModel}
 
 		->set{$parentModel|pascalize}Id(${$parentModel|camelize}Id){/if};
@@ -21,7 +22,6 @@
 		if(!is_null($value=$this->get("keyword")))
 		${$snakeModel|camelize}Handler->likeKeyword(["{$keywords[0].tablename}.{$keywords[0].name}"],$value);
 		{/if}
-
 		{/if}{foreach $dbos as $dbo}{foreach $dbo->getColumns() as $name=>$column}{if in_array($name,$accessibleFields)}{if $name=="state"}
 
 		if(!is_null($value=$this->get("state")))
@@ -44,25 +44,28 @@
 		  ${$snakeModel|camelize}Handler->load{$load|pascalize}();
 
 		  {/foreach}
+
 		  $this->acl()->apply(${$snakeModel|camelize}Handler);
 
 		  if(!${$modelId|camelize})
 		  $this->handler(${$snakeModel|camelize}Handler{if $orderBy},"{$orderBy}"{/if});
 
-		  ${$pluralSnakeModel|camelize} = [];
-		  foreach(${$snakeModel|camelize}Handler->gets() as ${$snakeModel|camelize}Model)
-		  ${$pluralSnakeModel|camelize}[] = ${$snakeModel|camelize}Model->arry();
+		  ${$snakeModel|camelize}Arry = Arry::create(${$snakeModel|camelize}Handler->gets())
+		  ->map("arry");
 
-		  if(${$modelId|camelize})
-		  $this->requireData("{$snakeModel}",array_shift(${$pluralSnakeModel|camelize}));
+		  if (${$snakeModel|camelize}Id)
+		  $this->requireData("{$snakeModel}", ${$snakeModel|camelize}Arry->first());
 		  else
-		  $this->data("{$pluralSnakeModel|camelize}",array_values(${$pluralSnakeModel|camelize}));
+		  $this->data("{$pluralSnakeModel|camelize}", ${$snakeModel|camelize}Arry->values());
 
 		  }{/if}{if in_array("post",$methods) || in_array("put",$methods) || in_array("delete",$methods)} else {
 
 		  ${$snakeModel|camelize}Model = {$pascalModel}Model::create();
 
 		  if($this->isPut() || $this->isDelete()) {
+		  /**
+		  * @var {$pascalModel}Model
+		  */
 		  ${$snakeModel|camelize}Model = $this->acl()->write({$pascalModel}Handler::create(false){if $parentModel}
 
 		  ->set{$parentModel|pascalize}Id(${$parentModel|camelize}id){/if}
@@ -80,7 +83,7 @@
 		  if($this->isPost() || $this->isPut()) {
 
 		  ${$snakeModel|camelize}Model
-		  ->fill($this->posts(),["{'", "'|implode:$accessibleFields}"])
+		  ->fill($this->posts(),["{'", "'|implode:$fillFields}"])
 		  ->validate()
 		  ->save();
 

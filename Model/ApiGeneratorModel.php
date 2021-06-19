@@ -3,6 +3,7 @@
 namespace Utility\Model;
 
 use Exception;
+use Framework\Arry\Arry;
 use Framework\Util\FileUtil;
 use Framework\Util\HtmlUtil;
 use Framework\Util\LangUtil;
@@ -90,6 +91,13 @@ class ApiGeneratorModel extends GeneratorModel {
     $accessibleFields = array_values(array_filter(array_keys($fields), function ($v) {
       return !preg_match("/(" . $this->_snakeModel . "_id\$|guid|create_date|configs|_time|order|meta\$)/", $v);
     }));
+
+    $fillFields = Arry::create($accessibleFields)
+      ->filter(function ($field) {
+        return !preg_match("/_id$/", $field);
+      })
+      ->get();
+
     $pascalModel = StringUtil::pascalize($this->_model);
     $pascalParentModel = StringUtil::pascalize($this->_parentModel);
 
@@ -114,6 +122,7 @@ class ApiGeneratorModel extends GeneratorModel {
       ->assign("apiSingular", rtrim($this->_api, "s"))
       ->assign("dbos", $cmodel->getDbos())
       ->assign("accessibleFields", $accessibleFields)
+      ->assign("fillFields", $fillFields)
       ->assign("hasState", in_array("state", array_keys($fields)))
       ->assign("hasGuid", in_array("guid", array_keys($fields)))
       ->assign("createDate", in_array("create_date", array_keys($fields)))
