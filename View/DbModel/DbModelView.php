@@ -3,35 +3,42 @@
 namespace Utility\View\DbModel;
 
 use Exception;
+use Framework\Api\ApiResponse;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
 use Framework\Db\DB;
 use Framework\Model\PathModel;
-use Framework\Api\ApiResponse;
 use Framework\Util\ArrayUtil;
 use Utility\Model\DbGeneratorModel;
 use Utility\Model\ModelGeneratorModel;
 use Utility\Model\ModelTraitGeneratorModel;
 
+
 class DbModelView extends View {
+
   private $_classname = "";
   private $_tablename = "";
   private $_states = "";
   private $_createDbq = false;
   private $_createDbo = true;
   private $_override = true;
+
   public function __construct() {
     $this->setTemplate("./DbModelTemplate.php");
     $this->disableAuthorization();
     $this->_classname = $this->get("model");
     $this->_tablename = $this->get("table");
   }
+
   public function init() {
     $this->processPost();
-    $dbUtility = Db::getInstance()->getUtility();
+    $dbUtility = Db::getInstance()
+      ->getUtility();
     $tablenameList = $dbUtility->getTableNames();
-    $sql = "SELECT `table_name` FROM `information_schema`.`columns` WHERE `table_schema` = '" . Db::getInstance()->getDbName() . "' AND `column_name` = 'state'";
-    $stateColumnTables = ArrayUtil::getListFromArray(Db::getInstance()->select($sql), "table_name");
+    $sql = "SELECT `table_name` FROM `information_schema`.`columns` WHERE `table_schema` = '" . Db::getInstance()
+        ->getDbName() . "' AND `column_name` = 'state'";
+    $stateColumnTables = ArrayUtil::getListFromArray(Db::getInstance()
+      ->select($sql), "table_name");
     $this->setVar("tablenameList", $tablenameList);
     $this->setVar("classname", $this->_classname);
     $this->setVar("tablename", $this->_tablename);
@@ -41,6 +48,7 @@ class DbModelView extends View {
     $this->setVar("override", $this->_override);
     $this->setVar("stateColumnTables", $stateColumnTables);
   }
+
   public function processPost() {
     if ($this->isPost()) {
       try {
@@ -49,7 +57,7 @@ class DbModelView extends View {
         $name = $this->post("name");
         $primaryObjectId = $this->post("primary_object_id");
         $override = $this->post("override");
-        $objects = (array) $this->post("objects");
+        $objects = (array)$this->post("objects");
         $dir = PathModel::getBackendDir();
         $appDir = WebApplication::getMainApplicationDirectory();
         $messages = $warnings = [];
@@ -104,9 +112,12 @@ class DbModelView extends View {
         WebApplication::addError($e->getMessage());
         $response->data("errors", WebApplication::getErrorMessages());
       }
-      $response->data("warnings", WebApplication::getWarningMessages())->data("messages", WebApplication::getNotifyMessages())->render();
+      $response->data("warnings", WebApplication::getWarningMessages())
+        ->data("messages", WebApplication::getNotifyMessages())
+        ->render();
     }
   }
+
   public function isFormValid($tablename, $name) {
     if (!$tablename) {
       throw new Exception("Invalid tablename");
@@ -117,4 +128,5 @@ class DbModelView extends View {
 
     return true;
   }
+
 }

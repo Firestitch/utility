@@ -3,31 +3,23 @@
 namespace Utility\Model;
 
 use Exception;
-use Framework\Util\ArrayUtil;
 use Framework\Util\FileUtil;
 use Framework\Util\HtmlUtil;
-use Framework\Util\LangUtil;
-use Framework\Util\StringUtil;
 use ReflectionClass;
 use ReflectionMethod;
 
+
 class WsdlGeneratorModel extends GeneratorModel {
+
   protected $_dir = "";
   protected $_options = [];
+
   public function __construct($dir, $api, $options = []) {
     parent::__construct($dir);
     $this->_options = $options;
     $this->_api = $api;
   }
-  public function getViewFile() {
-    return $this->getInstanceDir() . "View/Api/" . str_replace("_", "", $this->_api) . "View.php";
-  }
-  public function getWsdlFile() {
-    return $this->getInstanceDir() . "View/Api/Wsdl/" . str_replace("_", "", $this->_api) . "Wsdl.php";
-  }
-  public function getRouteMangerFile() {
-    return $this->getInstanceDir() . "Manager/RouteManager.php";
-  }
+
   public function generate($override, &$messages = []) {
     if (!is_file($this->getWsdlFile())) {
       $this->assign("api", $this->_api);
@@ -164,7 +156,9 @@ class WsdlGeneratorModel extends GeneratorModel {
         }
         $endpoints[] = $endpoint;
       }
-      $functionCode = $this->assign("method", $method)->assign("endpoints", implode("      ,\n", $endpoints))->fetch(PathModel::getAssetsDirectory() . "wsdl_endpoint.inc");
+      $functionCode = $this->assign("method", $method)
+        ->assign("endpoints", implode("      ,\n", $endpoints))
+        ->fetch(PathModel::getAssetsDirectory() . "wsdl_endpoint.inc");
       //add function to end of wsdl class
       $pos = strrpos($wsdlCode, "}");
       if ($pos === false) {
@@ -183,6 +177,15 @@ class WsdlGeneratorModel extends GeneratorModel {
 
     return true;
   }
+
+  public function getWsdlFile() {
+    return $this->getInstanceDir() . "View/Api/Wsdl/" . str_replace("_", "", $this->_api) . "Wsdl.php";
+  }
+
+  public function getViewFile() {
+    return $this->getInstanceDir() . "View/Api/" . str_replace("_", "", $this->_api) . "View.php";
+  }
+
   private function getParamList($params, $modelName, $includeTypes = true) {
     $list = "[";
     foreach ($params as $idx => $param) {
@@ -207,4 +210,9 @@ class WsdlGeneratorModel extends GeneratorModel {
 
     return $list;
   }
+
+  public function getRouteMangerFile() {
+    return $this->getInstanceDir() . "Manager/RouteManager.php";
+  }
+
 }

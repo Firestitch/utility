@@ -3,32 +3,31 @@
 namespace Utility\View\MapModel;
 
 use Exception;
+use Framework\Api\ApiResponse;
+use Framework\Arry\Arry;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
 use Framework\Db\DB;
-use Framework\Api\ApiResponse;
-use Framework\Arry\Arry;
 use Framework\Util\FileUtil;
 use Framework\Util\LangUtil;
 use Framework\Util\StringUtil;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\Assign;
-use PhpParser\Node\Expr\Variable;
-use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
-use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\Return_;
 use Utility\Model\GeneratorModel;
 use Utility\Model\ModelGeneratorModel;
 
 
 class MapModelView extends View {
+
   protected $_referenceModel = "";
   protected $_joiner = "";
   protected $_model = null;
   protected $_sourceModelColumn = "";
+
   public function __construct() {
     $this->setTemplate("./MapModelTemplate.php");
     $this->setForm("javascript:;", false, "form-relation");
@@ -40,7 +39,9 @@ class MapModelView extends View {
     $application = strtolower($this->request("application"));
     $appDir = $application ? DIR_INSTANCE . $application . "/" : WebApplication::getMainApplicationDirectory();
     $modelList = ModelGeneratorModel::getCmodels($appDir);
-    $joinerList = Db::getInstance()->getUtility()->getTableNames();
+    $joinerList = Db::getInstance()
+      ->getUtility()
+      ->getTableNames();
     $this->setVar("joiner", $this->_joiner);
     $this->setVar("referenceModel", $this->_referenceModel);
     $this->setVar("modelList", $modelList);
@@ -72,7 +73,7 @@ class MapModelView extends View {
       $referenceModelColumn = $this->request("reference_model_column");
       $referenceModel = strtolower($this->request("reference_model"));
       $referenceModelPlual = LangUtil::plural($referenceModel);
-      $joiners = (array) $this->request("joiners");
+      $joiners = (array)$this->request("joiners");
       $mapChild = $this->request("relationship") == "child";
       $application = $this->request("application");
       $sourceModelHandler = ModelGeneratorModel::getHandlerClass($sourceModel);
@@ -129,8 +130,9 @@ class MapModelView extends View {
       $function = $mapChild ? "mapChild" : "mapChildren";
       $parentObjectFunction = "set" . StringUtil::pascalize($mapChild ? $referenceName : $referenceNamePlual);
       $childReferenceColumn = LangUtil::plural($referenceModel) . "." . $referenceModelColumn;
-      foreach (array_reverse($joiners) as $joiner)
+      foreach (array_reverse($joiners) as $joiner) {
         $childReferenceColumn = $joiner["table"] . "." . $joiner["source_column"];
+      }
 
       $modelParser = new ModelParser($handlerFile);
       $arrayVariable = "models";
@@ -182,30 +184,29 @@ class MapModelView extends View {
 
     $response
       ->data("warnings", WebApplication::getWarningMessages())
-      ->data("messages", WebApplication::getNotifyMessages())->render();
-  }
-  public function hasCode($content, $code) {
-    $content = preg_replace("/\\s/", "", $content);
-    $code = preg_replace("/\\s/", "", $code);
-
-    return strpos($content, $code);
+      ->data("messages", WebApplication::getNotifyMessages())
+      ->render();
   }
 
   private function _saveModel($modelFile, $referenceNameSetFunction, $referenceNameGetFunction, $referenceNameSet, $referenceNameGet) {
     $modelParser = new ModelParser($modelFile);
 
     $index = Arry::create($modelParser->getClass()->stmts)
-      ->indexOf(function ($item) {
-        return $item instanceof ClassMethod && $item->name->name === "__construct";
-      }) + 1;
+        ->indexOf(function ($item) {
+          return $item instanceof ClassMethod && $item->name->name === "__construct";
+        }) + 1;
 
-    if (!$modelParser->getClass()->getMethod($referenceNameSetFunction)) {
-      $node = (new BuilderFactory())->property("referenceNameSetFunction")->getNode();
+    if (!$modelParser->getClass()
+      ->getMethod($referenceNameSetFunction)) {
+      $node = (new BuilderFactory())->property("referenceNameSetFunction")
+        ->getNode();
       array_splice($modelParser->getClass()->stmts, $index, 0, [$node]);
     }
 
-    if (!$modelParser->getClass()->getMethod($referenceNameGetFunction)) {
-      $node = (new BuilderFactory())->property("referenceNameGetFunction")->getNode();
+    if (!$modelParser->getClass()
+      ->getMethod($referenceNameGetFunction)) {
+      $node = (new BuilderFactory())->property("referenceNameGetFunction")
+        ->getNode();
       array_splice($modelParser->getClass()->stmts, $index, 0, [$node]);
     }
 
@@ -221,13 +222,17 @@ class MapModelView extends View {
 
     $modelParser = new ModelParser($handlerFile);
 
-    if (!$modelParser->getClass()->getMethod($loadFunctionName)) {
-      $node = (new BuilderFactory())->property("loadFunctionName")->getNode();
+    if (!$modelParser->getClass()
+      ->getMethod($loadFunctionName)) {
+      $node = (new BuilderFactory())->property("loadFunctionName")
+        ->getNode();
       $modelParser->getClass()->stmts[] = $node;
     }
 
-    if (!$modelParser->getClass()->getMethod($createFunctionName)) {
-      $node = (new BuilderFactory())->property("createFunctionName")->getNode();
+    if (!$modelParser->getClass()
+      ->getMethod($createFunctionName)) {
+      $node = (new BuilderFactory())->property("createFunctionName")
+        ->getNode();
       $modelParser->getClass()->stmts[] = $node;
     }
 
@@ -251,4 +256,12 @@ class MapModelView extends View {
 
     FileUtil::put($handlerFile, $code);
   }
+
+  public function hasCode($content, $code) {
+    $content = preg_replace("/\\s/", "", $content);
+    $code = preg_replace("/\\s/", "", $code);
+
+    return strpos($content, $code);
+  }
+
 }

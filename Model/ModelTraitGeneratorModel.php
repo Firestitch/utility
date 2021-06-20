@@ -8,14 +8,19 @@ use Framework\Db\DB;
 use Framework\Util\FileUtil;
 use Framework\Util\StringUtil;
 
+
 class ModelTraitGeneratorModel {
+
+  public static $baseNamespace = "Backend";
   protected $_appDir = null;
   protected $_dbUtility;
-  public static $baseNamespace = "Backend";
+
   public function __construct($appDir = null) {
     $this->_appDir = $appDir ? $appDir : WebApplication::getMainApplicationDirectory();
-    $this->_dbUtility = Db::getInstance()->getUtility();
+    $this->_dbUtility = Db::getInstance()
+      ->getUtility();
   }
+
   public function createTrait($tablenames, $name, $override = false) {
     $tablenames = is_array($tablenames) ? $tablenames : [$tablenames];
     $classname = basename(self::getTraitName(strtolower($name)));
@@ -33,7 +38,8 @@ class ModelTraitGeneratorModel {
             $fieldNames[] = $field["Field"];
           }
         } catch (Exception $e) {
-          WebApplication::instance()->addWarning("The tablename `" . $tablename . "` doest not exists");
+          WebApplication::instance()
+            ->addWarning("The tablename `" . $tablename . "` doest not exists");
 
           continue;
         }
@@ -54,11 +60,31 @@ class ModelTraitGeneratorModel {
       $str .= "}";
       $hasSuccess = $this->writeFile($traitFile, $str);
     } else {
-      WebApplication::instance()->addWarning("The Trait `" . $classname . "` already exists");
+      WebApplication::instance()
+        ->addWarning("The Trait `" . $classname . "` already exists");
     }
 
     return $hasSuccess;
   }
+
+  public static function getTraitName($basename) {
+    return self::$baseNamespace . "\\Model\\Traits\\" . StringUtil::pascalize(strtolower($basename)) . "Trait";
+  }
+
+  public static function getTraitFile($classname, $appDir) {
+    return FileUtil::sanitizeFile($appDir . "/Model/Traits/" . $classname . ".php");
+  }
+
+  public function writeFile($file, $string) {
+    $errorMessage = "";
+    $hasSuccess = FileUtil::putFileContents($file, $string, $errorMessage);
+    if (!$hasSuccess) {
+      throw new Exception($errorMessage);
+    }
+
+    return $hasSuccess;
+  }
+
   public function appendModelTrait($modelName, $traitName = null) {
     $modelClassname = basename(self::getModelClassname($modelName));
     $modelFile = self::getModelFile($modelClassname, $this->_appDir);
@@ -73,25 +99,13 @@ class ModelTraitGeneratorModel {
 
     return $this;
   }
-  public function writeFile($file, $string) {
-    $errorMessage = "";
-    $hasSuccess = FileUtil::putFileContents($file, $string, $errorMessage);
-    if (!$hasSuccess) {
-      throw new Exception($errorMessage);
-    }
 
-    return $hasSuccess;
-  }
-  public static function getTraitName($basename) {
-    return self::$baseNamespace . "\\Model\\Traits\\" . StringUtil::pascalize(strtolower($basename)) . "Trait";
-  }
-  public static function getTraitFile($classname, $appDir) {
-    return FileUtil::sanitizeFile($appDir . "/Model/Traits/" . $classname . ".php");
-  }
   public static function getModelClassname($basename) {
     return self::$baseNamespace . "\\Model\\" . StringUtil::pascalize(strtolower($basename)) . "Model";
   }
+
   public static function getModelFile($classname, $appDir) {
     return FileUtil::sanitizeFile($appDir . "/Model/" . $classname . ".php");
   }
+
 }

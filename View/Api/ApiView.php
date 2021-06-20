@@ -3,19 +3,22 @@
 namespace Utility\View\Api;
 
 use Exception;
+use Framework\Api\ApiResponse;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
-use Framework\Api\ApiResponse;
 use Framework\Util\FileUtil;
 use Utility\Model\ApiGeneratorModel;
 use Utility\Model\ModelGeneratorModel;
 
+
 class ApiView extends View {
+
   public function __construct() {
     $this->disableAuthorization();
     $this->setTemplate("./ApiTemplate.php");
     $this->setForm("javascript:;", false, "form-api");
   }
+
   public function init() {
     $this->processPost();
     $views = FileUtil::getDirectoryListing(WebApplication::getMainApplicationDirectory() . "View/api/");
@@ -28,6 +31,7 @@ class ApiView extends View {
     $this->setVar("models", ModelGeneratorModel::getCmodels());
     $this->setVar("apis", $apis);
   }
+
   public function processPost() {
     if ($this->isPost()) {
       try {
@@ -36,8 +40,8 @@ class ApiView extends View {
         $model = $this->post("model");
         $api = $this->post("api");
         $modelPlural = $this->post("model-plural");
-        $options = (array) $this->post("options");
-        $methods = (array) $this->post("methods");
+        $options = (array)$this->post("options");
+        $methods = (array)$this->post("methods");
         $method = $this->post("method");
         if (!$model) {
           throw new Exception("Invalid model");
@@ -58,7 +62,10 @@ class ApiView extends View {
         WebApplication::addError($e->getMessage());
         $response->data("errors", WebApplication::getErrorMessages());
       }
-      $response->data("warnings", WebApplication::getWarningMessages())->data("messages", WebApplication::getNotifyMessages())->render();
+      $response->data("warnings", WebApplication::getWarningMessages())
+        ->data("messages", WebApplication::getNotifyMessages())
+        ->render();
     }
   }
+
 }

@@ -3,18 +3,21 @@
 namespace Utility\View\Wsdl;
 
 use Exception;
+use Framework\Api\ApiResponse;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
-use Framework\Api\ApiResponse;
 use Framework\Util\FileUtil;
 use Utility\Model\WsdlGeneratorModel;
 
+
 class WsdlView extends View {
+
   public function __construct() {
     $this->disableAuthorization();
     $this->setTemplate("./WsdlTemplate.php");
     $this->setForm("javascript:;", false, "form-api");
   }
+
   public function init() {
     $this->processPost();
     $views = FileUtil::getDirectoryListing(WebApplication::getMainApplicationDirectory() . "View/api/");
@@ -31,6 +34,7 @@ class WsdlView extends View {
     // $this->set_var("models", ModelGeneratorModel::get_cmodels());
     $this->setVar("apis", $apis);
   }
+
   public function processPost() {
     if ($this->isPost()) {
       try {
@@ -39,7 +43,7 @@ class WsdlView extends View {
         //$model       = $this->post("model");
         $api = $this->post("api");
         // $model_plural  = $this->post("model-plural");
-        $options = (array) $this->post("options");
+        $options = (array)$this->post("options");
         // $methods    = (array)$this->post("methods");
         // $method     = $this->post("method");
         // if (!$model)
@@ -51,12 +55,12 @@ class WsdlView extends View {
           (new WsdlGeneratorModel($dir, $api, $options))->generate($messages);
         } else {
           // (new WsdlGeneratorModel(
-                    //   $dir,
-                    //   $model_plural,
-                    //   "",
-                    //   $options
-                    // ))
-                    //   ->generate(in_array("override", $options), $messages);
+          //   $dir,
+          //   $model_plural,
+          //   "",
+          //   $options
+          // ))
+          //   ->generate(in_array("override", $options), $messages);
         }
         $response->success();
         WebApplication::addNotify("Successfully generated WSDL");
@@ -64,7 +68,10 @@ class WsdlView extends View {
         WebApplication::addError($e->getMessage());
         $response->data("errors", WebApplication::getErrorMessages());
       }
-      $response->data("warnings", WebApplication::getWarningMessages())->data("messages", WebApplication::getNotifyMessages())->render();
+      $response->data("warnings", WebApplication::getWarningMessages())
+        ->data("messages", WebApplication::getNotifyMessages())
+        ->render();
     }
   }
+
 }

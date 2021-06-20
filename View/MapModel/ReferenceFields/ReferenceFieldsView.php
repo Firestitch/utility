@@ -6,14 +6,18 @@ use Framework\Core\View;
 use Framework\Util\DebugUtil;
 use Utility\Model\DbGeneratorModel;
 
+
 class ReferenceFieldsView extends View {
+
   protected $_referenceModel = "";
   protected $_referenceModelColumn = "";
   protected $_referenceColumns = [];
+
   public function __construct() {
     $this->setTemplate("./ReferenceFieldsTemplate.php");
     $this->disableAuthorization();
   }
+
   public function init() {
     DebugUtil::enableFormatHtml();
     $referenceModel = $this->post("reference_model");
@@ -21,7 +25,8 @@ class ReferenceFieldsView extends View {
       $this->_referenceModel = $referenceModel;
     }
     if ($this->_referenceModel) {
-      $this->_referenceColumns = DbGeneratorModel::getDbo($this->_referenceModel)->getColumns();
+      $this->_referenceColumns = DbGeneratorModel::getDbo($this->_referenceModel)
+        ->getColumns();
     }
     $referenceModelColumnList = [];
     foreach ($this->_referenceColumns as $name => $column) {
@@ -32,4 +37,5 @@ class ReferenceFieldsView extends View {
     $this->setVar("referenceModelColumnList", $referenceModelColumnList);
     $this->setVar("referenceModelColumn", $this->_referenceModelColumn);
   }
+
 }

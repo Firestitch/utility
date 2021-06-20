@@ -1,6 +1,6 @@
-  public function {$method}() {
-    return [
+public function {$method}() {
+return [
 {$endpoints}
-    ];
-  }
+];
+}
 

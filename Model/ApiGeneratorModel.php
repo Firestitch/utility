@@ -9,11 +9,14 @@ use Framework\Util\HtmlUtil;
 use Framework\Util\LangUtil;
 use Framework\Util\StringUtil;
 
+
 class ApiGeneratorModel extends GeneratorModel {
+
   protected $_dir = "";
   protected $_model = "";
   protected $_modelPlural = "";
   protected $_options = [];
+
   public function __construct($dir, $api, $model, $modelPlural, $methods = [], $parentModel = null, $options = []) {
     parent::__construct($dir);
     $this->_snakeModel = StringUtil::snakeize($model);
@@ -26,10 +29,6 @@ class ApiGeneratorModel extends GeneratorModel {
     $this->_methods = $methods;
     $this->_method = value($this->_options, "method", str_replace("_", "", $this->_modelPlural));
     $this->_dir = $this->getInstanceDir() . "View/Api/";
-  }
-
-  public function getFile() {
-    return $this->_dir . str_replace("_", "", $this->_api) . "View.php";
   }
 
   public function append(&$messages = []) {
@@ -53,20 +52,9 @@ class ApiGeneratorModel extends GeneratorModel {
     FileUtil::put($file, $code);
     $messages = ["Successfully updated the file " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($file), FileUtil::sanitizeFile($file))];
   }
-  public function generate($override, &$messages = []) {
-    $file = $this->getFile();
-    if (!$override && is_file($file)) {
-      throw new Exception("The file " . $file . " already exists");
-    }
 
-    $this->assign("parent_method", $this->_parentModel ? $this->_api . "/" : "")->assign("endpoint", $this->getEndpoint());
-    if (!$this->writeTemplate(PathModel::getAssetsDirectory() . "api.inc", $file)) {
-      throw new Exception("Failed to generate " . $file);
-    }
-
-    $messages = ["Successfully added the file " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($file), FileUtil::sanitizeFile($file))];
-
-    return true;
+  public function getFile() {
+    return $this->_dir . str_replace("_", "", $this->_api) . "View.php";
   }
 
   public function getEndpoint() {
@@ -108,7 +96,7 @@ class ApiGeneratorModel extends GeneratorModel {
       ->assign("modelUpper", strtoupper($this->_model))
       ->assign("pascalModel", $pascalModel)
       ->assign("method", strtolower($this->_method))
-      ->assign("loads", (array) value($this->_options, "loads"))
+      ->assign("loads", (array)value($this->_options, "loads"))
       ->assign("modelPluralUpper", strtoupper($this->_modelPlural))
       ->assign("modelPluralUpperTrim", strtoupper(str_replace("_", "", $this->_modelPlural)))
       ->assign("modelPluralProper", ucwords($this->_modelPlural))
@@ -130,6 +118,25 @@ class ApiGeneratorModel extends GeneratorModel {
       ->assign("modelId", $this->_snakeModel . "_id")
       ->assign("modelPlural", $this->_modelPlural)
       ->assign("parentModel", $this->_parentModel)
-      ->assign("pascalParentModel", $pascalParentModel)->fetch($template);
+      ->assign("pascalParentModel", $pascalParentModel)
+      ->fetch($template);
   }
+
+  public function generate($override, &$messages = []) {
+    $file = $this->getFile();
+    if (!$override && is_file($file)) {
+      throw new Exception("The file " . $file . " already exists");
+    }
+
+    $this->assign("parent_method", $this->_parentModel ? $this->_api . "/" : "")
+      ->assign("endpoint", $this->getEndpoint());
+    if (!$this->writeTemplate(PathModel::getAssetsDirectory() . "api.inc", $file)) {
+      throw new Exception("Failed to generate " . $file);
+    }
+
+    $messages = ["Successfully added the file " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($file), FileUtil::sanitizeFile($file))];
+
+    return true;
+  }
+
 }

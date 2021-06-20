@@ -8,12 +8,43 @@ use Framework\Db\DB;
 use Framework\Util\FileUtil;
 use Framework\Util\StringUtil;
 
+
 class DbGeneratorModel {
+
   protected $_appDir = null;
+
   public function __construct($appDir = null) {
     $this->_appDir = $appDir ? $appDir : WebApplication::getMainApplicationDirectory();
-    $this->_dbUtility = Db::getInstance()->getUtility();
+    $this->_dbUtility = Db::getInstance()
+      ->getUtility();
   }
+
+  public static function getDbqTablename($basename, $appDir) {
+    $dbq = self::getDbq($basename, $appDir);
+
+    return $dbq ? $dbq->getTablename() : "";
+  }
+
+  public static function getDbq($basename) {
+    $class = self::getDbqClass($basename);
+
+    return new $class();
+  }
+
+  public static function getDbqClass($basename) {
+    return "Backend\\Dbq\\" . self::getDbqClassname($basename);
+  }
+
+  public static function getDbo($basename) {
+    $class = self::getDboClass($basename);
+
+    return new $class();
+  }
+
+  public static function getDboClass($basename) {
+    return "Backend\\Dbo\\" . self::getDboClassname($basename);
+  }
+
   public function createDbo($tablename, $name, $override = false) {
     $classname = self::getDboClassname(strtolower($name));
     $dboFile = self::getDboFile($classname, $this->_appDir);
@@ -48,11 +79,31 @@ class DbGeneratorModel {
       $str .= "}";
       $hasSuccess = $this->writeFile($dboFile, $str);
     } else {
-      WebApplication::instance()->addWarning("The class `" . $classname . "` already exists");
+      WebApplication::instance()
+        ->addWarning("The class `" . $classname . "` already exists");
     }
 
     return $hasSuccess;
   }
+
+  public static function getDboClassname($basename) {
+    return StringUtil::pascalize($basename) . "Dbo";
+  }
+
+  public static function getDboFile($classname, $appDir) {
+    return FileUtil::sanitizeFile($appDir . "Dbo/" . $classname . ".php");
+  }
+
+  public function writeFile($file, $string) {
+    $errorMessage = "";
+    $hasSuccess = FileUtil::putFileContents($file, $string, $errorMessage);
+    if (!$hasSuccess) {
+      throw new Exception($errorMessage);
+    }
+
+    return $hasSuccess;
+  }
+
   public function createDbq($tablename, $name, $override = false) {
     $classname = self::getDbqClassname(strtolower($name));
     $dbqFile = self::getDbqFile($classname, $this->_appDir);
@@ -74,11 +125,21 @@ class DbGeneratorModel {
       $str .= "  public function __construct() {\n" . "    parent::__construct(\"" . $tablename . "\", " . $primaryKey . ");\n" . "  }\n" . "}";
       $hasSuccess = $this->writeFile($dbqFile, $str);
     } else {
-      WebApplication::instance()->addWarning("The DBQ class `" . $classname . "` already exists");
+      WebApplication::instance()
+        ->addWarning("The DBQ class `" . $classname . "` already exists");
     }
 
     return $hasSuccess;
   }
+
+  public static function getDbqClassname($basename) {
+    return StringUtil::pascalize($basename) . "Dbq";
+  }
+
+  public static function getDbqFile($classname, $appDir) {
+    return FileUtil::sanitizeFile($appDir . "Dbq/" . $classname . ".php");
+  }
+
   public function getKeyCount($tablename) {
     $fields = $this->_dbUtility->getTableFields($tablename);
     $count = 0;
@@ -90,46 +151,5 @@ class DbGeneratorModel {
 
     return $count;
   }
-  public function writeFile($file, $string) {
-    $errorMessage = "";
-    $hasSuccess = FileUtil::putFileContents($file, $string, $errorMessage);
-    if (!$hasSuccess) {
-      throw new Exception($errorMessage);
-    }
 
-    return $hasSuccess;
-  }
-  public static function getDboFile($classname, $appDir) {
-    return FileUtil::sanitizeFile($appDir . "Dbo/" . $classname . ".php");
-  }
-  public static function getDbqFile($classname, $appDir) {
-    return FileUtil::sanitizeFile($appDir . "Dbq/" . $classname . ".php");
-  }
-  public static function getDbqTablename($basename, $appDir) {
-    $dbq = self::getDbq($basename, $appDir);
-
-    return $dbq ? $dbq->getTablename() : "";
-  }
-  public static function getDbqClass($basename) {
-    return "Backend\\Dbq\\" . self::getDbqClassname($basename);
-  }
-  public static function getDboClass($basename) {
-    return "Backend\\Dbo\\" . self::getDboClassname($basename);
-  }
-  public static function getDbqClassname($basename) {
-    return StringUtil::pascalize($basename) . "Dbq";
-  }
-  public static function getDboClassname($basename) {
-    return StringUtil::pascalize($basename) . "Dbo";
-  }
-  public static function getDbo($basename) {
-    $class = self::getDboClass($basename);
-
-    return new $class();
-  }
-  public static function getDbq($basename) {
-    $class = self::getDbqClass($basename);
-
-    return new $class();
-  }
 }
