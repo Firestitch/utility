@@ -2,22 +2,14 @@
 
 namespace Backend\View\Api;
 
-use Backend\Handler\{};
-use Backend\Model\{};
+use Backend\Model\{$pascalModel}Model;
+use Backend\Handler\{$pascalModel}Handler;
+use Framework\Model\TimeModel;
+use Backend\View\Api\BaseView;
+use Framework\Arry\Arry;
 
 
-$pascalModel}Model;
-$pascalModel}Handler;
+class {$pluralPascalModel}View extends BaseView {
 
-
-class {
-
-$pluralPascalModel
-
-}View extends BaseView {
-
-  {
-    {
-      $endpoint}
-  }
-}
+{{$endpoint}}
+	}

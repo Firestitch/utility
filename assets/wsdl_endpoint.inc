@@ -1,6 +1,5 @@
-public function {$method}() {
-return [
-{$endpoints}
-];
-}
-
+  public function {$method}() {
+  return [
+  {$endpoints}
+  ];
+  }
