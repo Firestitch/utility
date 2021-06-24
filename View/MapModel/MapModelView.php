@@ -56,28 +56,17 @@ class MapModelView extends View {
       return;
     }
 
-    $sourceModel = strtolower($this->request("source_model"));
-    $sourceModelColumn = $this->request("source_model_column");
-    $referenceModelColumn = $this->request("reference_model_column");
-    $referenceModel = strtolower($this->request("reference_model"));
-    $application = $this->request("application");
-
-    $dir = $application ? DIR_INSTANCE . $application . "/" : WebApplication::getMainApplicationDirectory();
-    $modelFile = $dir . "Model/" . ModelGeneratorModel::getModelClass($sourceModel) . ".php";
-
     try {
       $response = new ApiResponse();
-      $debug = false;
       $sourceModel = strtolower($this->request("source_model"));
       $sourceModelColumn = $this->request("source_model_column");
       $referenceModelColumn = $this->request("reference_model_column");
-      $referenceModel = strtolower($this->request("reference_model"));
+      $referenceModel = $this->request("reference_model");
       $referenceModelPlual = LangUtil::plural($referenceModel);
       $joiners = (array)$this->request("joiners");
-      $mapChild = $this->request("relationship") == "child";
-      $application = $this->request("application");
+      $mapChild = $this->request("relationship") === "child";
       $sourceModelHandler = ModelGeneratorModel::getHandlerClass($sourceModel);
-      $dir = $application ? DIR_INSTANCE . $application . "/" : WebApplication::getMainApplicationDirectory();
+      $dir = WebApplication::getMainApplicationDirectory();
       $modelFile = $dir . "Model/" . ModelGeneratorModel::getModelClass($sourceModel) . ".php";
       $handlerFile = $dir . "Handler/" . $sourceModelHandler . ".php";
       $referenceName = $this->post("object_name_custom");
@@ -85,7 +74,7 @@ class MapModelView extends View {
       if (!$sourceModelColumn) {
         throw new Exception("Invalid sourse column");
       }
-      if ($this->post("object_name") == "source" || $this->post("object_name") == "reference") {
+      if ($this->post("object_name") === "source" || $this->post("object_name") === "reference") {
         $referenceName = preg_replace("/_id\$/", "", $this->post("object_name") == "source" ? $sourceModelColumn : $referenceModel);
       }
 
@@ -104,16 +93,22 @@ class MapModelView extends View {
       $camelizeReferenceKey = StringUtil::camelize($referenceKey);
       $setFunctionType = $mapChild ? "?" . GeneratorModel::getModelClassname($referenceModel) . " \$value" : "\$value";
 
-      $referenceNameSet = "public function {$referenceNameSetFunction}({$setFunctionType}) { return \$this->data(\"{$referenceKey}\",\$value); }
-";
-      $whereColumn = $referenceModelPlual . "." . $referenceModelColumn;
+      $referenceNameSet = "public function {$referenceNameSetFunction}({$setFunctionType}) { return \$this->data(\"{$camelizeReferenceKey}\",\$value); }";
+      $whereColumn = StringUtil::snakeize($referenceModelPlual) . "." . $referenceModelColumn;
 
       if ($joiner = value($joiners, 0)) {
         $whereColumn = $joiner["table"] . "." . $joiner["source_column"];
       }
 
       $getFunctionType = $mapChild ? ": ?" . GeneratorModel::getModelClassname($referenceModel) : "";
-      $referenceNameGet = "
+      $referenceNameGet = "";
+
+      if (!$mapChild)
+        $referenceNameGet = "  /**
+   * @return " . GeneratorModel::getModelClassname($referenceModel) . "[]
+   */";
+
+      $referenceNameGet .= "
   public function {$referenceNameGetFunction}(\$handler = false){$getFunctionType} {
     if(\$handler && !\$this->hasData(\"{$camelizeReferenceKey}\") && \$this->get{$pascalSourceModelColumn}())
       \$this->data(
@@ -124,12 +119,13 @@ class MapModelView extends View {
         );
 
     return " . ($mapChild ? "" : "(array)") . "\$this->data(\"{$camelizeReferenceKey}\");
-  }";
+  }
+  ";
       $this->_saveModel($modelFile, $referenceNameSetFunction, $referenceNameGetFunction, $referenceNameSet, $referenceNameGet);
 
       $function = $mapChild ? "mapChild" : "mapChildren";
       $parentObjectFunction = "set" . StringUtil::pascalize($mapChild ? $referenceName : $referenceNamePlual);
-      $childReferenceColumn = LangUtil::plural($referenceModel) . "." . $referenceModelColumn;
+      $childReferenceColumn = LangUtil::plural(StringUtil::snakeize($referenceModel)) . "." . $referenceModelColumn;
       foreach (array_reverse($joiners) as $joiner) {
         $childReferenceColumn = $joiner["table"] . "." . $joiner["source_column"];
       }
@@ -192,9 +188,9 @@ class MapModelView extends View {
     $modelParser = new ModelParser($modelFile);
 
     $index = Arry::create($modelParser->getClass()->stmts)
-        ->indexOf(function ($item) {
-          return $item instanceof ClassMethod && $item->name->name === "__construct";
-        }) + 1;
+      ->indexOf(function ($item) {
+        return $item instanceof ClassMethod && $item->name->name === "__construct";
+      }) + 1;
 
     if (!$modelParser->getClass()
       ->getMethod($referenceNameSetFunction)) {
@@ -263,5 +259,4 @@ class MapModelView extends View {
 
     return strpos($content, $code);
   }
-
 }
