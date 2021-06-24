@@ -10,6 +10,8 @@ use PhpParser\Node\Stmt\Class_;
 
 class ModelParser {
 
+  private $_file;
+
   public function __construct($file) {
     $lexer = new Lexer\Emulative([
       'usedAttributes' => [
@@ -26,6 +28,7 @@ class ModelParser {
     $traverser = new NodeTraverser();
     $traverser->addVisitor(new NodeVisitor\CloningVisitor());
 
+    $this->_file = $file;
     $this->_oldStmts = $parser->parse(FileUtil::get($file));
     $this->_oldTokens = $lexer->getTokens();
     $this->_newStmts = $traverser->traverse($this->_oldStmts);
@@ -46,6 +49,10 @@ class ModelParser {
     }
 
     throw new Exception("Failed to locate class");
+  }
+
+  public function saveCode() {
+    FileUtil::put($this->_file, $this->getCode());
   }
 
   public function getCode() {

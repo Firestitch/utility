@@ -18,6 +18,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Return_;
 use Utility\Model\GeneratorModel;
+use Utility\Model\ModelDescribeGeneratorModel;
 use Utility\Model\ModelGeneratorModel;
 
 
@@ -121,7 +122,7 @@ class MapModelView extends View {
     return " . ($mapChild ? "" : "(array)") . "\$this->data(\"{$camelizeReferenceKey}\");
   }
   ";
-      $this->_saveModel($modelFile, $referenceNameSetFunction, $referenceNameGetFunction, $referenceNameSet, $referenceNameGet);
+      $this->_saveModel($camelizeReferenceKey, $modelFile, $referenceNameSetFunction, $referenceNameGetFunction, $referenceNameSet, $referenceNameGet);
 
       $function = $mapChild ? "mapChild" : "mapChildren";
       $parentObjectFunction = "set" . StringUtil::pascalize($mapChild ? $referenceName : $referenceNamePlual);
@@ -184,73 +185,75 @@ class MapModelView extends View {
       ->render();
   }
 
-  private function _saveModel($modelFile, $referenceNameSetFunction, $referenceNameGetFunction, $referenceNameSet, $referenceNameGet) {
+  private function _saveModel($name, $modelFile, $referenceNameSetFunction, $referenceNameGetFunction, $referenceNameSet, $referenceNameGet) {
     $modelParser = new ModelParser($modelFile);
 
-    $index = Arry::create($modelParser->getClass()->stmts)
-      ->indexOf(function ($item) {
-        return $item instanceof ClassMethod && $item->name->name === "__construct";
-      }) + 1;
+    $setExists = $modelParser->getClass()->getMethod($referenceNameSetFunction);
+    $getExists = $modelParser->getClass()->getMethod($referenceNameGetFunction);
 
-    if (!$modelParser->getClass()
-      ->getMethod($referenceNameSetFunction)) {
+    if (!$getExists && !$setExists) {
+      $index = Arry::create($modelParser->getClass()->stmts)
+        ->indexOf(function ($item) {
+          return $item instanceof ClassMethod && $item->name->name === "__construct";
+        }) + 1;
+
       $node = (new BuilderFactory())->property("referenceNameSetFunction")
         ->getNode();
       array_splice($modelParser->getClass()->stmts, $index, 0, [$node]);
-    }
 
-    if (!$modelParser->getClass()
-      ->getMethod($referenceNameGetFunction)) {
       $node = (new BuilderFactory())->property("referenceNameGetFunction")
         ->getNode();
       array_splice($modelParser->getClass()->stmts, $index, 0, [$node]);
+
+      $code = $modelParser->getCode();
+
+      $code = str_replace('public $referenceNameSetFunction;', $referenceNameSet, $code);
+      $code = str_replace('public $referenceNameGetFunction;', $referenceNameGet, $code);
+
+      FileUtil::put($modelFile, $code);
+
+      (new ModelDescribeGeneratorModel($modelFile))
+        ->appendDescribe($name, "data")
+        ->saveCode();
     }
-
-    $code = $modelParser->getCode();
-
-    $code = str_replace('public $referenceNameSetFunction;', $referenceNameSet, $code);
-    $code = str_replace('public $referenceNameGetFunction;', $referenceNameGet, $code);
-
-    FileUtil::put($modelFile, $code);
   }
 
   private function _saveHandler($handlerFile, $loadFunctionName, $createFunctionName, $getsCode, $loadFunctionCode, $createFunctionCode) {
 
     $modelParser = new ModelParser($handlerFile);
 
-    if (!$modelParser->getClass()
-      ->getMethod($loadFunctionName)) {
+    $loadExists = $modelParser->getClass()->getMethod($loadFunctionName);
+    $createExists = $modelParser->getClass()->getMethod($createFunctionName);
+
+    if (!$loadExists && !$createExists) {
       $node = (new BuilderFactory())->property("loadFunctionName")
         ->getNode();
       $modelParser->getClass()->stmts[] = $node;
-    }
 
-    if (!$modelParser->getClass()
-      ->getMethod($createFunctionName)) {
       $node = (new BuilderFactory())->property("createFunctionName")
         ->getNode();
       $modelParser->getClass()->stmts[] = $node;
-    }
 
-    foreach ($modelParser->getClass()->stmts as $stmt) {
-      if ($stmt instanceof ClassMethod && $stmt->name->name === "gets") {
-        $index = Arry::create($stmt->stmts)
-          ->indexOf(function ($item) {
-            return $item instanceof Return_;
-          });
+      foreach ($modelParser->getClass()->stmts as $stmt) {
+        if ($stmt instanceof ClassMethod && $stmt->name->name === "gets") {
+          $index = Arry::create($stmt->stmts)
+            ->indexOf(function ($item) {
+              return $item instanceof Return_;
+            });
 
-        $node = (new BuilderFactory())->var("getsCode");
+          $node = (new BuilderFactory())->var("getsCode");
 
-        array_splice($stmt->stmts, $index, 0, [$node]);
+          array_splice($stmt->stmts, $index, 0, [$node]);
+        }
       }
+
+      $code = $modelParser->getCode();
+      $code = str_replace('$getsCode', $getsCode, $code);
+      $code = str_replace('public $loadFunctionName;', $loadFunctionCode, $code);
+      $code = str_replace('public $createFunctionName;', $createFunctionCode, $code);
+
+      FileUtil::put($handlerFile, $code);
     }
-
-    $code = $modelParser->getCode();
-    $code = str_replace('$getsCode', $getsCode, $code);
-    $code = str_replace('public $loadFunctionName;', $loadFunctionCode, $code);
-    $code = str_replace('public $createFunctionName;', $createFunctionCode, $code);
-
-    FileUtil::put($handlerFile, $code);
   }
 
   public function hasCode($content, $code) {

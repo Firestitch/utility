@@ -4,9 +4,7 @@ namespace Utility\Model;
 
 use Exception;
 use Framework\Arry\Arry;
-use Framework\Core\WebApplication;
 use Framework\Db\DB;
-use Framework\Util\FileUtil;
 use Framework\Util\StringUtil;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Array_;
@@ -17,93 +15,93 @@ use Utility\View\MapModel\ModelParser;
 
 class ModelDescribeGeneratorModel {
 
-  public static $baseNamespace = "Backend";
-  protected $_appDir = null;
-  protected $_dbUtility;
+  /**
+   * @var ModelParser
+   */
+  private $_modelParser;
 
-  public function __construct($appDir = null) {
-    $this->_appDir = $appDir ? $appDir : WebApplication::getMainApplicationDirectory();
-    $this->_dbUtility = Db::getInstance()
-      ->getUtility();
+  public function __construct($modelFile) {
+    $this->_modelParser = new ModelParser($modelFile);
   }
 
-  public function update($tablenames, $name) {
-
-    $modelClassname = basename(self::getModelClassname($name));
-    $modelFile = self::getModelFile($modelClassname, $this->_appDir);
-
-    $modelParser = new ModelParser($modelFile);
-
-    /**
-     * @var ClassMethod
-     */
-    $describe = Arry::create($modelParser->getClass()->stmts)
+  public function getDescribeMethod(): ?ClassMethod {
+    $describe = Arry::create($this->_modelParser->getClass()->stmts)
       ->find(function ($item) {
         return $item instanceof ClassMethod && $item->name->name === "describe";
       });
 
-    if (!$describe)
+    if (!$describe) {
       throw new Exception("Failed to locate describe");
+    }
 
-    $return = value($describe->stmts, 0);
+    return $describe;
+  }
 
-    if ($return instanceof Return_) {
-      if ($return->expr instanceof Array_) {
-        foreach ((array)$tablenames as $tablename) {
-          foreach ($this->_dbUtility->getTableFields($tablename) as $field) {
-            $name = StringUtil::camelize(strtolower(value($field, "Field")));
-            $exists = Arry::create($return->expr->items)
-              ->exists(function (ArrayItem $item) use ($name) {
-                return $item->key->value === $name;
-              });
+  public function update($tablenames) {
 
-            if (!$exists) {
+    $dbUtility = Db::getInstance()
+      ->getUtility();
 
-              $key = new String_($name, ["kind" => String_::KIND_DOUBLE_QUOTED]);
+    $array_ = $this->getDescribeArray();
 
-              /**
-               * @var ArrayItem[]
-               */
-              $items = [];
+    foreach ((array)$tablenames as $tablename) {
+      foreach ($dbUtility->getTableFields($tablename) as $field) {
+        $name = StringUtil::camelize(strtolower(value($field, "Field")));
+        $exists = Arry::create($array_->items)
+          ->exists(function (ArrayItem $item) use ($name) {
+            return $item->key->value === $name;
+          });
 
-              $type = value($field, "Type");
+        if (!$exists) {
+          $type = "";
+          if (preg_match("/^date/", value($field, "Type")))
+            $type = value($field, "Type");
 
-              if ($type === "date" || $type === "datetime") {
-                $typeKey = new String_("type", ["kind" => String_::KIND_DOUBLE_QUOTED]);
-                $typeValue = new String_($type, ["kind" => String_::KIND_DOUBLE_QUOTED]);
-                $items[] = new ArrayItem($typeValue, $typeKey);
-              }
-
-              $value = new Array_($items);
-              $describeArrayItem = new ArrayItem($value, $key);
-
-              $return->expr->items[] = $describeArrayItem;
-            }
-          }
+          $this->appendDescribe($name, $type);
         }
       }
     }
 
-    $code = $modelParser->getCode();
+    $this->saveCode();
 
-    FileUtil::put($modelFile, $code);
+    return $this;
   }
 
-  public function writeFile($file, $string) {
-    $errorMessage = "";
-    $hasSuccess = FileUtil::putFileContents($file, $string, $errorMessage);
-    if (!$hasSuccess) {
-      throw new Exception($errorMessage);
+  public function saveCode() {
+    $this->_modelParser->saveCode();
+  }
+
+  public function getDescribeArray(): Array_ {
+    $describe = $this->getDescribeMethod();
+    $return = value($describe->stmts, 0);
+    if ($return instanceof Return_) {
+      if ($return->expr instanceof Array_) {
+        return $return->expr;
+      }
     }
 
-    return $hasSuccess;
+    throw new Exception("Failed to locate describe() Array");
   }
 
-  public static function getModelClassname($basename) {
-    return self::$baseNamespace . "\\Model\\" . StringUtil::pascalize(strtolower($basename)) . "Model";
-  }
+  public function appendDescribe($name, $type) {
+    $key = new String_($name, ["kind" => String_::KIND_DOUBLE_QUOTED]);
 
-  public static function getModelFile($classname, $appDir) {
-    return FileUtil::sanitizeFile($appDir . "/Model/" . $classname . ".php");
+    /**
+     * @var ArrayItem[]
+     */
+    $items = [];
+
+    if ($type) {
+      $typeKey = new String_("type", ["kind" => String_::KIND_DOUBLE_QUOTED]);
+      $typeValue = new String_($type, ["kind" => String_::KIND_DOUBLE_QUOTED]);
+      $items[] = new ArrayItem($typeValue, $typeKey);
+    }
+
+    $value = new Array_($items);
+    $describeArrayItem = new ArrayItem($value, $key);
+
+    $array_ = $this->getDescribeArray();
+    $array_->items[] = $describeArrayItem;
+    return $this;
   }
 }

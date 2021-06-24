@@ -2,6 +2,7 @@
 
 namespace Utility\Model;
 
+use Framework\Core\WebApplication;
 use Framework\Model\SmartyModel;
 use Framework\Util\FileUtil;
 use Framework\Util\StringUtil;
@@ -20,6 +21,10 @@ class GeneratorModel {
 
     $this->_smartyModel->registerModifierPlugin("pascalize", [StringUtil::class, "pascalize"]);
     $this->_smartyModel->registerModifierPlugin("camelize", [StringUtil::class, "camelize"]);
+  }
+
+  public static function getModelFile($classname) {
+    return FileUtil::sanitizeFile(WebApplication::getMainApplicationDirectory() . "/Model/" . self::getModelClassname($classname) . ".php");
   }
 
   public static function getModelClass($basename) {
@@ -70,5 +75,4 @@ class GeneratorModel {
 
     return $cmodelClass::create();
   }
-
 }

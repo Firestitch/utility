@@ -10,6 +10,7 @@ use Framework\Db\DB;
 use Framework\Model\PathModel;
 use Framework\Util\ArrayUtil;
 use Utility\Model\DbGeneratorModel;
+use Utility\Model\GeneratorModel;
 use Utility\Model\ModelDescribeGeneratorModel;
 use Utility\Model\ModelGeneratorModel;
 use Utility\Model\ModelTraitGeneratorModel;
@@ -92,8 +93,9 @@ class DbModelView extends View {
             $classname = $modelTraitGeneratorComplexCmoddel::getTraitName($name);
             WebApplication::addNotify('Successfully created ' . $classname);
 
-            $modelDescribeGeneratorModel = new ModelDescribeGeneratorModel($appDir);
-            $modelDescribeGeneratorModel->update($tablename, $name);
+            $modelFile = GeneratorModel::getModelFile(strtolower($name));
+            $modelDescribeGeneratorModel = new ModelDescribeGeneratorModel($modelFile);
+            $modelDescribeGeneratorModel->update($tablename);
             WebApplication::addNotify('Successfully updated describe()');
           }
 
