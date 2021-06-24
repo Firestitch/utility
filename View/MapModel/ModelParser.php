@@ -49,9 +49,8 @@ class ModelParser {
   }
 
   public function getCode() {
-    $printer = new PrettyPrinter\Standard();
+    $printer = new PrettyPrinter\Standard(["shortArraySyntax" => true]);
 
     return $printer->printFormatPreserving($this->_newStmts, $this->_oldStmts, $this->_oldTokens);
   }
-
 }

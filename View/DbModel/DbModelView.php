@@ -10,6 +10,7 @@ use Framework\Db\DB;
 use Framework\Model\PathModel;
 use Framework\Util\ArrayUtil;
 use Utility\Model\DbGeneratorModel;
+use Utility\Model\ModelDescribeGeneratorModel;
 use Utility\Model\ModelGeneratorModel;
 use Utility\Model\ModelTraitGeneratorModel;
 
@@ -36,7 +37,7 @@ class DbModelView extends View {
       ->getUtility();
     $tablenameList = $dbUtility->getTableNames();
     $sql = "SELECT `table_name` FROM `information_schema`.`columns` WHERE `table_schema` = '" . Db::getInstance()
-        ->getDbName() . "' AND `column_name` = 'state'";
+      ->getDbName() . "' AND `column_name` = 'state'";
     $stateColumnTables = ArrayUtil::getListFromArray(Db::getInstance()
       ->select($sql), "table_name");
     $this->setVar("tablenameList", $tablenameList);
@@ -60,13 +61,15 @@ class DbModelView extends View {
         $objects = (array)$this->post("objects");
         $dir = PathModel::getBackendDir();
         $appDir = WebApplication::getMainApplicationDirectory();
-        $messages = $warnings = [];
+
         if ($this->isFormValid($tablename, $name)) {
           $dbGeneratorModel = new DbGeneratorModel($dir);
           $keyCount = $dbGeneratorModel->getKeyCount($tablename);
+
           if (!$keyCount) {
-            $warnings[] = "There are no key columns for this table. If this is the intended design, please disregard this warning.";
+            WebApplication::addWarning("There are no key columns for this table. If this is the intended design, please disregard this warning");
           }
+
           if (in_array("dbq", $objects)) {
             $hasSuccess = $dbGeneratorModel->createDbq($tablename, $name, $override);
             $classname = DbGeneratorModel::getDbqClass($tablename);
@@ -74,6 +77,7 @@ class DbModelView extends View {
               WebApplication::addNotify('Successfully created ' . $classname);
             }
           }
+
           if (in_array("dbo", $objects)) {
             $hasSuccess = $dbGeneratorModel->createDbo($tablename, $name, $override);
             $classname = DbGeneratorModel::getDboClass($tablename);
@@ -81,29 +85,34 @@ class DbModelView extends View {
               WebApplication::addNotify('Successfully created ' . $classname);
             }
           }
+
           if (in_array("trait", $objects)) {
             $modelTraitGeneratorComplexCmoddel = new ModelTraitGeneratorModel($appDir);
-            $hasSuccess = $modelTraitGeneratorComplexCmoddel->createTrait($tablename, $name, $override);
+            $modelTraitGeneratorComplexCmoddel->createTrait($tablename, $name, $override);
             $classname = $modelTraitGeneratorComplexCmoddel::getTraitName($name);
-            if ($hasSuccess) {
-              WebApplication::addNotify('Successfully created ' . $classname);
-            }
+            WebApplication::addNotify('Successfully created ' . $classname);
+
+            $modelDescribeGeneratorModel = new ModelDescribeGeneratorModel($appDir);
+            $modelDescribeGeneratorModel->update($tablename, $name);
+            WebApplication::addNotify('Successfully updated describe()');
           }
+
           $modelGeneratorComplexCmoddel = new ModelGeneratorModel($name, $appDir, false, false, ["primary_object_id" => $primaryObjectId]);
           if (in_array("cmodel", $objects)) {
             if (!is_file($modelGeneratorComplexCmoddel->getComplexModelFile()) || $override) {
               $modelGeneratorComplexCmoddel->generateComplexModel();
-              $messages[] = 'Successfully created Model' . strtoupper($name);
+              WebApplication::addNotify('Successfully created Model' . strtoupper($name));
             } else {
-              $warnings[] = "The complex model " . $modelGeneratorComplexCmoddel->getComplexModelFile() . " already exists";
+              WebApplication::addWarning("The model " . $modelGeneratorComplexCmoddel->getComplexModelFile() . " already exists");
             }
           }
+
           if (in_array("hmodel", $objects)) {
             if (!is_file($modelGeneratorComplexCmoddel->getHandlerModelFile()) || $override) {
               $modelGeneratorComplexCmoddel->generateHandlerModel();
-              $messages[] = 'Successfully created Handler' . strtoupper($name);
+              WebApplication::addNotify('Successfully created Handler' . strtoupper($name));
             } else {
-              $warnings[] = "The handler model " . $modelGeneratorComplexCmoddel->getHandlerModelFile() . " already exists";
+              WebApplication::addWarning("The handler " . $modelGeneratorComplexCmoddel->getHandlerModelFile() . " already exists");
             }
           }
         }
@@ -112,7 +121,8 @@ class DbModelView extends View {
         WebApplication::addError($e->getMessage());
         $response->data("errors", WebApplication::getErrorMessages());
       }
-      $response->data("warnings", WebApplication::getWarningMessages())
+      $response
+        ->data("warnings", WebApplication::getWarningMessages())
         ->data("messages", WebApplication::getNotifyMessages())
         ->render();
     }
@@ -128,5 +138,4 @@ class DbModelView extends View {
 
     return true;
   }
-
 }

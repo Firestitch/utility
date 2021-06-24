@@ -25,10 +25,11 @@ class ModelTraitGeneratorModel {
     $tablenames = is_array($tablenames) ? $tablenames : [$tablenames];
     $classname = basename(self::getTraitName(strtolower($name)));
     $traitFile = self::getTraitFile($classname, $this->_appDir);
-    $hasSuccess = false;
+
     if (!is_dir($this->_appDir . "/Model/Traits/")) {
       FileUtil::mkdir($this->_appDir . "/Model/Traits/");
     }
+
     if (!is_file($traitFile) || $override) {
       $str = "<?php\n\nnamespace " . self::$baseNamespace . "\\Model\\Traits;\n\ntrait {$classname} {\n\n";
       $fieldNames = [];
@@ -58,13 +59,13 @@ class ModelTraitGeneratorModel {
   }' . "\n\n";
       }
       $str .= "}";
-      $hasSuccess = $this->writeFile($traitFile, $str);
+      $this->writeFile($traitFile, $str);
     } else {
       WebApplication::instance()
         ->addWarning("The Trait `" . $classname . "` already exists");
     }
 
-    return $hasSuccess;
+    return $this;
   }
 
   public static function getTraitName($basename) {
@@ -107,5 +108,4 @@ class ModelTraitGeneratorModel {
   public static function getModelFile($classname, $appDir) {
     return FileUtil::sanitizeFile($appDir . "/Model/" . $classname . ".php");
   }
-
 }
