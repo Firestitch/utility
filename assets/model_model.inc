@@ -143,7 +143,7 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Mode
 	}
 
   public function __toString() {
-    return $this->getName();
+    return (string)$this->getName();
   }
 {/if}
 }
