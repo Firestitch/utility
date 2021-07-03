@@ -4,7 +4,7 @@ namespace Utility\Model;
 
 use Exception;
 use Framework\Arry\Arry;
-use Framework\Db\DB;
+use Framework\Db\Db;
 use Framework\Util\StringUtil;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Array_;

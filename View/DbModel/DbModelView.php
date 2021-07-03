@@ -6,7 +6,7 @@ use Exception;
 use Framework\Api\ApiResponse;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
-use Framework\Db\DB;
+use Framework\Db\Db;
 use Framework\Model\PathModel;
 use Framework\Util\ArrayUtil;
 use Utility\Model\DbGeneratorModel;

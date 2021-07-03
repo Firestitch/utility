@@ -4,7 +4,7 @@ namespace Utility\Model;
 
 use Exception;
 use Framework\Core\WebApplication;
-use Framework\Db\DB;
+use Framework\Db\Db;
 use Framework\Util\FileUtil;
 use Framework\Util\StringUtil;
 
@@ -151,5 +151,4 @@ class DbGeneratorModel {
 
     return $count;
   }
-
 }

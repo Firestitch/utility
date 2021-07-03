@@ -3,7 +3,7 @@
 namespace Utility\View\MapModel\JoinerFields;
 
 use Framework\Core\View;
-use Framework\Db\DB;
+use Framework\Db\Db;
 use Framework\Util\DebugUtil;
 
 
@@ -33,5 +33,4 @@ class JoinerFieldsView extends View {
     $this->setVar("joinerSourceColumn", $this->_joinerSourceColumn);
     $this->setVar("joinerReferenceColumn", $this->_joinerReferenceColumn);
   }
-
 }

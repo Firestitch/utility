@@ -7,7 +7,7 @@ use Framework\Api\ApiResponse;
 use Framework\Arry\Arry;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
-use Framework\Db\DB;
+use Framework\Db\Db;
 use Framework\Util\FileUtil;
 use Framework\Util\LangUtil;
 use Framework\Util\StringUtil;
