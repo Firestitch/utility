@@ -134,9 +134,8 @@ class ApiGeneratorModel extends GeneratorModel {
       throw new Exception("Failed to generate " . $file);
     }
 
-    $messages = ["Successfully added the file " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($file), FileUtil::sanitizeFile($file))];
+    $messages = ["Successfully added the file " . basename($file)];
 
     return true;
   }
-
 }

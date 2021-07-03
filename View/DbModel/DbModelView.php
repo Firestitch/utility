@@ -28,19 +28,22 @@ class DbModelView extends View {
   public function __construct() {
     $this->setTemplate("./DbModelTemplate.php");
     $this->disableAuthorization();
-    $this->_classname = $this->get("model");
-    $this->_tablename = $this->get("table");
   }
 
   public function init() {
+    $this->_classname = $this->get("model");
+    $this->_tablename = $this->get("table");
+
     $this->processPost();
-    $dbUtility = Db::getInstance()
-      ->getUtility();
+    $dbUtility = Db::getInstance()->getUtility();
+
     $tablenameList = $dbUtility->getTableNames();
     $sql = "SELECT `table_name` FROM `information_schema`.`columns` WHERE `table_schema` = '" . Db::getInstance()
       ->getDbName() . "' AND `column_name` = 'state'";
+
     $stateColumnTables = ArrayUtil::getListFromArray(Db::getInstance()
       ->select($sql), "table_name");
+
     $this->setVar("tablenameList", $tablenameList);
     $this->setVar("classname", $this->_classname);
     $this->setVar("tablename", $this->_tablename);
@@ -56,7 +59,7 @@ class DbModelView extends View {
       try {
         $response = new ApiResponse();
         $tablename = strtolower($this->post("tablename"));
-        $name = $this->post("name");
+        $name = strtolower($this->post("name"));
         $primaryObjectId = $this->post("primary_object_id");
         $override = $this->post("override");
         $objects = (array)$this->post("objects");
@@ -64,6 +67,7 @@ class DbModelView extends View {
         $appDir = WebApplication::getMainApplicationDirectory();
 
         if ($this->isFormValid($tablename, $name)) {
+
           $dbGeneratorModel = new DbGeneratorModel($dir);
           $keyCount = $dbGeneratorModel->getKeyCount($tablename);
 
@@ -92,18 +96,13 @@ class DbModelView extends View {
             $modelTraitGeneratorComplexCmoddel->createTrait($tablename, $name, $override);
             $classname = $modelTraitGeneratorComplexCmoddel::getTraitName($name);
             WebApplication::addNotify('Successfully created ' . $classname);
-
-            $modelFile = GeneratorModel::getModelFile(strtolower($name));
-            $modelDescribeGeneratorModel = new ModelDescribeGeneratorModel($modelFile);
-            $modelDescribeGeneratorModel->update($tablename);
-            WebApplication::addNotify('Successfully updated describe()');
           }
 
           $modelGeneratorComplexCmoddel = new ModelGeneratorModel($name, $appDir, false, false, ["primary_object_id" => $primaryObjectId]);
           if (in_array("cmodel", $objects)) {
             if (!is_file($modelGeneratorComplexCmoddel->getComplexModelFile()) || $override) {
               $modelGeneratorComplexCmoddel->generateComplexModel();
-              WebApplication::addNotify('Successfully created Model' . strtoupper($name));
+              WebApplication::addNotify('Successfully created Model ' . GeneratorModel::getModelClassname($name));
             } else {
               WebApplication::addWarning("The model " . $modelGeneratorComplexCmoddel->getComplexModelFile() . " already exists");
             }
@@ -112,17 +111,27 @@ class DbModelView extends View {
           if (in_array("hmodel", $objects)) {
             if (!is_file($modelGeneratorComplexCmoddel->getHandlerModelFile()) || $override) {
               $modelGeneratorComplexCmoddel->generateHandlerModel();
-              WebApplication::addNotify('Successfully created Handler' . strtoupper($name));
+              WebApplication::addNotify('Successfully created Handler ' . GeneratorModel::getHandlerClassname($name));
             } else {
               WebApplication::addWarning("The handler " . $modelGeneratorComplexCmoddel->getHandlerModelFile() . " already exists");
             }
           }
+
+          if (in_array("trait", $objects)) {
+            $modelFile = GeneratorModel::getModelFile(strtolower($name));
+            $modelDescribeGeneratorModel = new ModelDescribeGeneratorModel($modelFile);
+            $modelDescribeGeneratorModel->update($tablename);
+            WebApplication::addNotify('Successfully updated describe()');
+          }
         }
+
         $response->success();
       } catch (Exception $e) {
         WebApplication::addError($e->getMessage());
         $response->data("errors", WebApplication::getErrorMessages());
+        $response->exception($e);
       }
+
       $response
         ->data("warnings", WebApplication::getWarningMessages())
         ->data("messages", WebApplication::getNotifyMessages())

@@ -132,7 +132,7 @@ class ModelGeneratorModel {
 
   public function writeFile($file, $string) {
     FileUtil::put($file, $string);
-    WebApplication::addNotify('Successfully added the file <a href="' . $file . '">' . $file . '</a>');
+    WebApplication::addNotify('Successfully added the file ' . basename($file));
 
     return true;
   }
@@ -192,5 +192,4 @@ class ModelGeneratorModel {
   public function getModelDirectory($modelType) {
     return $this->_appDir . "Model";
   }
-
 }
