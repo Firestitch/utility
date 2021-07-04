@@ -37,8 +37,7 @@ class MapModelView extends View {
 
   public function init() {
     $this->processPost();
-    $application = strtolower($this->request("application"));
-    $appDir = $application ? DIR_INSTANCE . $application . "/" : WebApplication::getMainApplicationDirectory();
+    $appDir = WebApplication::getMainApplicationDirectory();
     $modelList = ModelGeneratorModel::getCmodels($appDir);
     $joinerList = Db::getInstance()
       ->getUtility()

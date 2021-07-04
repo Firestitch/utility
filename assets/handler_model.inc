@@ -54,8 +54,4 @@ class {$pascalModel}Handler extends Handler {
 {/if}
     return $hmodel;
   }
-
-  public function acl() {
-    return [];
-  }
 }
