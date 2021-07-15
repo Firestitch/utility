@@ -27,7 +27,7 @@ class ApiGeneratorModel extends GeneratorModel {
     $this->_modelPlural = $modelPlural;
     $this->_pluralSnakeModel = StringUtil::snakeize($modelPlural);
     $this->_methods = $methods;
-    $this->_method = value($this->_options, "method", str_replace("_", "", $this->_modelPlural));
+    $this->_method = value($this->_options, "method", $this->_modelPlural);
     $this->_dir = $this->getInstanceDir() . "View/Api/";
   }
 
@@ -84,18 +84,22 @@ class ApiGeneratorModel extends GeneratorModel {
       ->filter(function ($field) {
         return !preg_match("/_id$/", $field);
       })
+      ->map(function ($field) {
+        return StringUtil::camelize($field);
+      })
       ->get();
 
     $pascalModel = StringUtil::pascalize($this->_model);
     $pascalParentModel = StringUtil::pascalize($this->_parentModel);
 
-    return $this->assign("options", $this->_options)
+    return $this
+      ->assign("options", $this->_options)
       ->assign("orderBy", $orderBy)
       ->assign("snakeModel", $this->_snakeModel)
       ->assign("pluralSnakeModel", $this->_pluralSnakeModel)
       ->assign("modelUpper", strtoupper($this->_model))
       ->assign("pascalModel", $pascalModel)
-      ->assign("method", strtolower($this->_method))
+      ->assign("method", $this->_method)
       ->assign("loads", (array)value($this->_options, "loads"))
       ->assign("modelPluralUpper", strtoupper($this->_modelPlural))
       ->assign("modelPluralUpperTrim", strtoupper(str_replace("_", "", $this->_modelPlural)))

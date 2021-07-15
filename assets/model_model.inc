@@ -5,8 +5,7 @@ namespace Backend\Model;
 use Framework\Core\Model;
 {/if}use Backend\Dbo\{$pascalModel}Dbo;
 {if $primaryObjectId}
-use Framework\Db\Db;
-use Framework\Exception\SystemException;{/if}
+use Framework\Db\Db;{/if}
 {if $hasGuid}
 use Framework\Util\MiscUtil;
 

@@ -1,4 +1,4 @@
-		public function {$method}($params,$data) {
+		public function {$method|camelize}($params,$data) {
 
 		${$modelId|camelize} = value($params,"{$modelId}");{if $parentModel}
 
@@ -54,9 +54,9 @@
 		  ->map("arry");
 
 		  if (${$snakeModel|camelize}Id)
-		  $this->requireData("{$snakeModel}", ${$snakeModel|camelize}Arry->first());
+		  $this->requireData("{$model|camelize}", ${$snakeModel|camelize}Arry->first());
 		  else
-		  $this->data("{$pluralSnakeModel|camelize}", ${$snakeModel|camelize}Arry->values());
+		  $this->data("{$modelPlural|camelize}", ${$snakeModel|camelize}Arry->values());
 
 		  }{/if}{if in_array("post",$methods) || in_array("put",$methods) || in_array("delete",$methods)} else {
 
@@ -87,13 +87,13 @@
 		  ->validate()
 		  ->save();
 
-		  $this->data("{$snakeModel}",${$snakeModel|camelize}Model->arry());
+		  $this->data("{$model|camelize}",${$snakeModel|camelize}Model->arry());
 
 		  }{/if}{if in_array("delete",$methods)} elseif($this->isDelete()) {
 
 		  ${$snakeModel|camelize}Model->delete();
 
-		  $this->data("{$snakeModel}",${$snakeModel|camelize}Model->arry());
+		  $this->data("{$model|camelize}",${$snakeModel|camelize}Model->arry());
 		  }
 		  {/if}
 		  //${$snakeModel|camelize}Model->endAudit();

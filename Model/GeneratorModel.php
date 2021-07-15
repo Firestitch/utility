@@ -21,6 +21,7 @@ class GeneratorModel {
 
     $this->_smartyModel->registerModifierPlugin("pascalize", [StringUtil::class, "pascalize"]);
     $this->_smartyModel->registerModifierPlugin("camelize", [StringUtil::class, "camelize"]);
+    $this->_smartyModel->registerModifierPlugin("snakeize", [StringUtil::class, "snakeize"]);
   }
 
   public static function getModelFile($classname) {
