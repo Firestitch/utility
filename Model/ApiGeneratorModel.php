@@ -8,6 +8,18 @@ use Framework\Util\FileUtil;
 use Framework\Util\HtmlUtil;
 use Framework\Util\LangUtil;
 use Framework\Util\StringUtil;
+use Utility\View\MapModel\ModelParser;
+use Framework\Core\ApplicationBase;
+use ReflectionClass;
+use Backend\Manager\RouteManager;
+use PhpParser\Node\Stmt\Return_;
+use PhpParser\Node\Expr\ArrayItem;
+use PhpParser\Node\Stmt;
+use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Identifier;
 
 
 class ApiGeneratorModel extends GeneratorModel {
@@ -16,10 +28,12 @@ class ApiGeneratorModel extends GeneratorModel {
   protected $_model = "";
   protected $_modelPlural = "";
   protected $_options = [];
+  protected $_modelId;
 
   public function __construct($dir, $api, $model, $modelPlural, $methods = [], $parentModel = null, $options = []) {
     parent::__construct($dir);
     $this->_snakeModel = StringUtil::snakeize($model);
+    $this->_modelId = $this->_snakeModel . "_id";
     $this->_model = $model;
     $this->_options = $options;
     $this->_api = $api;
@@ -33,13 +47,16 @@ class ApiGeneratorModel extends GeneratorModel {
 
   public function append(&$messages = []) {
     $file = $this->getFile();
+
     if (!is_file($file)) {
       throw new Exception("API not found");
     }
+
     $code = FileUtil::get($this->getFile());
     $this->assign("parent_method", $this->_api . "/" . $this->_parentModel . "_id/");
     $endpoint = ltrim($this->getEndpoint());
     $regex = "/(public\\s+function\\s+wsdl\\(\\).*)/is";
+
     if (preg_match($regex, $code, $matches)) {
       $code = str_replace($matches[0], $endpoint . $matches[0], $code);
     } else {
@@ -47,8 +64,10 @@ class ApiGeneratorModel extends GeneratorModel {
       if ($pos === false) {
         throw new Exception("There was a problem trying to located the end of the class");
       }
+
       $code = substr_replace($code, $endpoint, $pos, 0);
     }
+
     FileUtil::put($file, $code);
     $messages = ["Successfully updated the file " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($file), FileUtil::sanitizeFile($file))];
   }
@@ -119,7 +138,7 @@ class ApiGeneratorModel extends GeneratorModel {
       ->assign("hasGuid", in_array("guid", array_keys($fields)))
       ->assign("createDate", in_array("create_date", array_keys($fields)))
       ->assign("fields", array_keys($fields))
-      ->assign("modelId", $this->_snakeModel . "_id")
+      ->assign("modelId", $this->_modelId)
       ->assign("modelPlural", $this->_modelPlural)
       ->assign("parentModel", $this->_parentModel)
       ->assign("pascalParentModel", $pascalParentModel)
@@ -132,14 +151,107 @@ class ApiGeneratorModel extends GeneratorModel {
       throw new Exception("The file " . $file . " already exists");
     }
 
-    $this->assign("parent_method", $this->_parentModel ? $this->_api . "/" : "")
+
+    $this
+      ->assign("parent_method", $this->_parentModel ? $this->_api . "/" : "")
       ->assign("endpoint", $this->getEndpoint());
+
     if (!$this->writeTemplate(PathModel::getAssetsDirectory() . "api.inc", $file)) {
       throw new Exception("Failed to generate " . $file);
     }
 
+    $this->_updateRouteManager();
+
     $messages = ["Successfully added the file " . basename($file)];
 
     return true;
+  }
+
+  private function _updateRouteManager() {
+    $reflector = new ReflectionClass(RouteManager::class);
+
+    $modelParser = new ModelParser($reflector->getFileName());
+    /**
+     * @var Return_
+     */
+    $return = value($modelParser->getMethod("getRoutes")->stmts, 0);
+
+    if ($return instanceof Return_) {
+      /**
+       * @var Array_
+       */
+      $route = $this->_findApiRoute($return->expr, null);
+
+      if ($route) {
+        $class = "Backend\View\Api\\" . StringUtil::pascalize($this->_modelPlural) . "View";
+        $method = StringUtil::camelize($this->_method);
+
+        /**
+         * @var ArrayItem
+         */
+        $apiChildren = Arry::create($route->items)
+          ->find(function (ArrayItem $item) {
+            return $item->key->value === "children";
+          });
+
+        if ($apiChildren) {
+          $exists = Arry::create($apiChildren->value->items)
+            ->exists(function (ArrayItem $item) use ($method) {
+              return Arry::create($item->value->items)
+                ->exists(function ($item) use ($method) {
+                  return $item->key->value === "path" && $item->value instanceof String_ && $item->value->value === $method;
+                });
+            });
+
+          if (!$exists) {
+            $id = StringUtil::camelize($this->_modelId);
+            $arrayItem = [
+              new ArrayItem(ModelParser::createString(strtolower($method)), ModelParser::createString("path")),
+              new ArrayItem(new ClassConstFetch(new FullyQualified($class), new Identifier("class")), ModelParser::createString("class")),
+              new ArrayItem(
+                new Array_([
+                  new ArrayItem(
+                    new Array_([
+                      new ArrayItem(ModelParser::createString(":{$id}?"), ModelParser::createString("path")),
+                      new ArrayItem(ModelParser::createString($method), ModelParser::createString("function")),
+                    ])
+                  )
+                ]),
+                ModelParser::createString("children")
+              )
+            ];
+
+            array_unshift($apiChildren->value->items, new Array_($arrayItem));
+
+            $modelParser->saveCode();
+          }
+        }
+      }
+    }
+  }
+
+  private function _findApiRoute($stmt, $parent) {
+    if ($stmt instanceof Array_) {
+      foreach ($stmt->items as $item) {
+        $route = $this->_findApiRoute($item, $stmt);
+        if ($route) {
+          return $route;
+        }
+      }
+    } elseif ($stmt instanceof ArrayItem) {
+
+      if ($stmt->value instanceof Array_) {
+        $route = $this->_findApiRoute($stmt->value, $stmt);
+        if ($route) {
+          return $route;
+        }
+      } elseif ($stmt->value instanceof String_) {
+        if ($stmt->key && $stmt->key->value === "path" && $stmt->value->value === "api") {
+          return $parent;
+        }
+      }
+    }
+
+    return null;
   }
 }

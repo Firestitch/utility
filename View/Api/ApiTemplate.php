@@ -9,7 +9,7 @@ use Framework\Util\FormUtil;
 
 <?php
 FormUtil::create()
-  ->dropdown("api", "API", ["" => "Create new API", "Existing API" => $apis], "", ["class" => "w400 api-name"])
+  ->dropdown("api", "API", ["" => "Create new API", "Existing API" => $apis], "", false, ["class" => "w400 api-name"])
   ->dropdown("model", "Model", $models, "", ["placeholder" => "ie. account", "class" => "w400"])
   ->input("model-plural", "Plural Model Name", "", false, null, null, 1, ["placeholder" => "ie. accounts", "class" => "w400"])
   ->input("method", "Namespace", "", false, null, null, 1, [
@@ -22,15 +22,12 @@ FormUtil::create()
     "post",
     "delete"
   ])
-  ->checkboxes("loads", "Load", [], "", [], ["row" => ["class" => "api-loads"]])
   ->checkboxes("options", "Options", ["order" => "Add ordering method", "override" => "Override existing files"])
   ->button("generate", "Generate", ["type" => "button", "id" => "generate", "class" => "btn-primary"])
   ->render();
 ?>
 <script>
   $(function() {
-
-    var apiLoads = $(".api-loads").hide();
 
     $("select[name='api']").change(function() {
 
@@ -51,9 +48,9 @@ FormUtil::create()
 
       if ($(this).val()) {
         $("input[name='model-plural']").val($(this).val().plural());
+
         var method = $("input[name='model-plural']").val()
-          .replace(get_singular($(".api-name").val()) + '_', '')
-          .replace('_', '');
+          .replace(get_singular($(".api-name").val()) + '_', '');
         $("input[name='method']").val(method);
       }
 

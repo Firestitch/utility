@@ -52,9 +52,11 @@ class ApiView extends View {
         $messages = [];
         if ($api) {
           $options["method"] = $method;
-          (new ApiGeneratorModel($dir, $api, $model, $modelPlural, $methods, rtrim($api, "s"), $options))->append($messages);
+          (new ApiGeneratorModel($dir, $api, $model, $modelPlural, $methods, rtrim($api, "s"), $options))
+            ->append($messages);
         } else {
-          (new ApiGeneratorModel($dir, $modelPlural, $model, $modelPlural, $methods, "", $options))->generate(in_array("override", $options), $messages);
+          (new ApiGeneratorModel($dir, $modelPlural, $model, $modelPlural, $methods, "", $options))
+            ->generate(in_array("override", $options), $messages);
         }
         $response->success();
         WebApplication::addNotify("Successfully generated API");
@@ -67,5 +69,4 @@ class ApiView extends View {
         ->render();
     }
   }
-
 }

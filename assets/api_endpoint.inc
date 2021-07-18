@@ -1,8 +1,8 @@
 		public function {$method|camelize}($params,$data) {
 
-		${$modelId|camelize} = value($params,"{$modelId}");{if $parentModel}
+		${$modelId|camelize} = value($params,"{$modelId|camelize}");{if $parentModel}
 
-		${$parentModel|camelize}Id = value($params,"{$parentModel}Id");
+		${$parentModel|camelize}Id = value($params,"{$parentModel|camelize}Id");
 
 		${$parentModel|pascalize}Model = {$pascalParentModel}Handler::create()
 		->require(${$parentModel|camelize}Id);
@@ -30,14 +30,14 @@
 		${$snakeModel|camelize}Handler->setState({$pascalModel}Model::STATE_ACTIVE);
 		{elseif preg_match("/(name|description)/",$name)}{continue}{elseif $column->isDataType("date") || $column->isDataType("datetime")}
 
-		if(!is_null($value=$this->get("{$name}")))
+		if(!is_null($value=$this->get("{$name|camelize}")))
 		${$snakeModel|camelize}Handler->where("{$dbo->getTablename()}.{$name}",">",TimeModel::create($value)->db());
 
-		if(!is_null($value=$this->get("{$name}")))
+		if(!is_null($value=$this->get("{$name|camelize}")))
 		${$snakeModel|camelize}Handler->where("{$dbo->getTablename()}.{$name}","<",TimeModel::create($value)->db());
 		  {else}
 
-		  if(!is_null($value=$this->get("{$name}")))
+		  if(!is_null($value=$this->get("{$name|camelize}")))
 		  ${$snakeModel|camelize}Handler->where("{$dbo->getTablename()}.{$name}","=",$value);
 		  {/if}{/if}{/foreach}{/foreach}
 		  {foreach $loads as $load} if(!is_null($this->get("{$load}")))
@@ -106,7 +106,7 @@
 		  if($this->isPut()) {
 
 		  $handler = $this->acl()->apply({$pascalModel}Handler::create(false));
-		  $ids = is_array($this->post("{$modelId}s")) ? $this->post("{$modelId}s") : explode(",",$this->post("{$modelId}s"));
+		  $ids = is_array($this->post("{$modelId|camelize}s")) ? $this->post("{$modelId|camelize}s") : explode(",",$this->post("{$modelId|camelize}s"));
 
 		  OrderingModel::create($handler,"{$modelId}")
 		  ->reorder($ids,$this->post("page") * $this->post("limit"));

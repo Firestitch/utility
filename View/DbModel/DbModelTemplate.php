@@ -22,7 +22,7 @@ use Framework\Util\HtmlUtil;
   $data[] = ["Name:", HtmlUtil::input("name", "", ["class" => "w300"])];
   $data[] = [
     "",
-    HtmlUtil::checkbox("primary_object_id", "1", false, ["class" => ""], "CMODEL has primary key object_id")
+    HtmlUtil::checkbox("primary_object_id", "1", false, ["class" => ""], "Model extends Object")
   ];
   $data[] = ["", HtmlUtil::checkbox("override", "1", $override, ["class" => "override"], "Override existing files")];
   $data[] = ["", HtmlUtil::link("javascript:;", "Generate", ["id" => "generate", "class" => "btn btn-primary"])];
@@ -46,35 +46,35 @@ use Framework\Util\HtmlUtil;
 </form>
 
 <script>
-    function update_class_name(obj) {
-        value = $(obj).val();
+  function update_class_name(obj) {
+    value = $(obj).val();
 
-        $("#name").val(get_singular(value).toUpperCase());
+    $("#name").val(get_singular(value).toUpperCase());
 
-        update_links(value, get_singular(value));
-    }
+    update_links(value, get_singular(value));
+  }
 
-    $(".objects").on("change", function () {
-        $(".override").attr("checked", false);
-    })
+  $(".objects").on("change", function() {
+    $(".override").attr("checked", false);
+  })
 
-    $("#name").on("input", function () {
-        update_links("", $(this).val());
-    })
+  $("#name").on("input", function() {
+    update_links("", $(this).val());
+  })
 
-    $("#generate").click(function () {
-        $.post("/dbmodel", $("#form-db").serializeArray(), function (response) {
+  $("#generate").click(function() {
+    $.post("/dbmodel", $("#form-db").serializeArray(), function(response) {
 
-            FF.msg.clear();
+      FF.msg.clear();
 
-            if (response.data.messages.length)
-                FF.msg.success(response.data.messages);
+      if (response.data.messages.length)
+        FF.msg.success(response.data.messages);
 
-            if (response.data.warnings.length)
-                FF.msg.warning(response.data.warnings);
+      if (response.data.warnings.length)
+        FF.msg.warning(response.data.warnings);
 
-            if (response.data.errors.length)
-                FF.msg.error(response.data.errors);
-        });
+      if (response.data.errors.length)
+        FF.msg.error(response.data.errors);
     });
+  });
 </script>
