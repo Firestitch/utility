@@ -40,13 +40,17 @@ class {$pascalModel}Handler extends Handler {
   }
 
 {if $hasState}  public function whereStateActive() { return $this->setState({$pascalModel}Model::STATE_ACTIVE); }
+
 {/if}
   public function set{$pascalModel}Ids($values)	{ return $this->where("{$tablename}.{$lowerModel}_id","IN",$values); }
-  public function set{$pascalModel}Id($value)	{ return $this->where("{$tablename}.{$lowerModel}_id","=",$value); }
-{foreach $fields as $name=>$field}  public function set{$name|pascalize}($value) { return $this->where("{$field}","=",$value); }
-  public function set{$name|pascalize}s($values) { return $this->where("{$field}","IN",$values); }
-{/foreach}
 
+  public function set{$pascalModel}Id($value)	{ return $this->where("{$tablename}.{$lowerModel}_id","=",$value); }
+
+{foreach $fields as $name=>$field}  public function set{$name|pascalize}($value) { return $this->where("{$field}","=",$value); }
+
+  public function set{$name|pascalize}s($values) { return $this->where("{$field}","IN",$values); }
+
+{/foreach}
   public static function create($defaults=false) {
     $hmodel = parent::create();
 {if $hasState}    if($defaults)
