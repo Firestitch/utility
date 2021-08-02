@@ -52,7 +52,7 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Mode
 {if $primaryObjectId}
 
 			if($this->get{$primaryKey|pascalize}()) {
-				$this->dbo("{$lowerModel}")->update();
+				$this->getDbo("{$lowerModel}")->update();
 			} else {
         DB::transaction(function () {
 {if $hasState}
@@ -69,7 +69,7 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Mode
 
 {/if}
           $this->createObject();
-          $this->dbo("{$lowerModel}")->insert();
+          $this->getDbo("{$lowerModel}")->insert();
         });
 			}
 
@@ -86,7 +86,7 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Mode
 {else}
 
 		if($this->get{$primaryKey|pascalize}()) {
-			$this->dbo("{$lowerModel}")->update();
+			$this->getDbo("{$lowerModel}")->update();
 		} else {
 {if $hasState}
       if(!$this->getState())
@@ -101,7 +101,7 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Mode
         $this->setCreateDate(time());
 
 {/if}
-			$this->dbo("{$lowerModel}")->insert();
+			$this->getDbo("{$lowerModel}")->insert();
 		}
 {/if}
 		return $this;
@@ -122,6 +122,9 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Mode
 {/if}
 {/if}{if $name=="state"}						"validations"=>[
 						"key_exists"=>self::getStates()
+					],
+{/if}{if preg_match("/_id$/",$name) && !$column->isPrimary() && !$column->isNotNull()}						"validations"=>[
+						"required"=>true
 					],
 {/if}{if $column->isPrimary() || $name=="guid" || $name=="order" || $name=="modify_date" || $name=="create_date"}
 					"diff"=>false
