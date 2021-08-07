@@ -37,5 +37,4 @@ class RouteManager extends RouteManagerBase {
       ]
     ];
   }
-
 }
