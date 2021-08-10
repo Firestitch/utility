@@ -131,10 +131,14 @@ class MapModelView extends View {
       }
 
       $modelParser = new ModelParser($handlerFile);
+      $methodGets = $modelParser->getMethod("gets");
       $arrayVariable = "models";
-      foreach ($modelParser->getMethod("gets")->stmts as $stmt) {
-        if ($stmt instanceof Expression && $stmt->expr instanceof Assign && $stmt->expr->expr instanceof Array_) {
-          $arrayVariable = $stmt->expr->var->name;
+
+      if ($methodGets) {
+        foreach ($methodGets->stmts as $stmt) {
+          if ($stmt instanceof Expression && $stmt->expr instanceof Assign && $stmt->expr->expr instanceof Array_) {
+            $arrayVariable = $stmt->expr->var->name;
+          }
         }
       }
 
@@ -211,9 +215,13 @@ class MapModelView extends View {
 
       FileUtil::put($modelFile, $code);
 
-      (new ModelDescribeGeneratorModel($modelFile))
-        ->appendDescribe($name, "data")
-        ->saveCode();
+      try {
+        (new ModelDescribeGeneratorModel($modelFile))
+          ->appendDescribe($name, "data")
+          ->saveCode();
+      } catch (Exception $e) {
+        WebApplication::addWarning($e->getMessage());
+      }
     }
   }
 
