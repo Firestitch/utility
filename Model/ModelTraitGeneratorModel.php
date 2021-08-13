@@ -23,7 +23,9 @@ class ModelTraitGeneratorModel {
 
   public function createTrait($tablenames, $name, $override = false) {
     $tablenames = is_array($tablenames) ? $tablenames : [$tablenames];
-    $classname = basename(self::getTraitName(strtolower($name)));
+
+    $classname = self::getBaseName(self::getTraitName(strtolower($name)));
+
     $traitFile = self::getTraitFile($classname, $this->_appDir);
 
     if (!is_dir($this->_appDir . "/Model/Traits/")) {
@@ -77,8 +79,10 @@ class ModelTraitGeneratorModel {
   }
 
   public function writeFile($file, $string) {
+
     $errorMessage = "";
     $hasSuccess = FileUtil::putFileContents($file, $string, $errorMessage);
+
     if (!$hasSuccess) {
       throw new Exception($errorMessage);
     }
@@ -87,7 +91,7 @@ class ModelTraitGeneratorModel {
   }
 
   public function appendModelTrait($modelName, $traitName = null) {
-    $modelClassname = basename(self::getModelClassname($modelName));
+    $modelClassname = self::getBaseName($modelName);
     $modelFile = self::getModelFile($modelClassname, $this->_appDir);
     $traitName = $traitName ? $traitName : basename(self::getTraitName(strtolower($modelName)));
     $code = FileUtil::get($modelFile);
@@ -103,6 +107,10 @@ class ModelTraitGeneratorModel {
 
   public static function getModelClassname($basename) {
     return self::$baseNamespace . "\\Model\\" . StringUtil::pascalize(strtolower($basename)) . "Model";
+  }
+
+  public static function getBaseName($modelName) {
+    return basename(str_replace("\\", "/", $modelName));
   }
 
   public static function getModelFile($classname, $appDir) {
