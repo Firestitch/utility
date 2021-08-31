@@ -1,16 +1,14 @@
 <?php
-namespace Backend\Model;
+namespace {$namespace}\Model;
 
 {if !$primaryObjectId}
 use Framework\Core\Model;
-{/if}use Backend\Dbo\{$pascalModel}Dbo;
+{/if}use {$namespace}\Dbo\{$pascalModel}Dbo;
 {if $primaryObjectId}
 use Framework\Db\Db;{/if}
 {if $hasGuid}
 use Framework\Util\MiscUtil;
-
 {/if}
-
 
 
 class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Model{/if} {

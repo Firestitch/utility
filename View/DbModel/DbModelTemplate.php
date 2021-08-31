@@ -10,39 +10,72 @@ use Framework\Util\HtmlUtil;
 <form id="form-db">
   <?php
   $data[] = [
-    "Generate:",
-    HtmlUtil::checkboxes("objects", [
-      "dbo" => "Ddo",
-      "dbq" => "Dbq",
-      "trait" => "Trait",
-      "cmodel" => "Model",
-      "hmodel" => "Handler"
-    ], ["dbo", "dbq", "trait"], ["class" => "objects"])
+    "",
+
   ];
-  $data[] = ["Name:", HtmlUtil::input("name", "", ["class" => "w300"])];
+
+  $data[] = ["Name:",];
   $data[] = [
     "",
     HtmlUtil::checkbox("primary_object_id", "1", false, ["class" => ""], "Model extends Object")
   ];
+
   $data[] = ["", HtmlUtil::checkbox("override", "1", $override, ["class" => "override"], "Override existing files")];
   $data[] = ["", HtmlUtil::link("javascript:;", "Generate", ["id" => "generate", "class" => "btn btn-primary"])];
   $dbTable = HtmlTableUtil::create()
     ->setData($data)
     ->setClass("")
     ->setPadding(3);
+
   $tablenameDd = HtmlUtil::dropdown("tablename", $tablenameList, $tablename, [
     "onKeyUp" => "update_class_name(this)",
     "onChange" => "update_class_name(this)",
     "size" => 30
   ], 50);
-
-  HtmlTableUtil::create()
-    ->setData([["Table Name: ", $tablenameDd, $dbTable->getHtml()]])
-    ->setDefaultColumnAttribute("class", "vat")
-    ->setClass("")
-    ->setPadding(3)
-    ->render();
   ?>
+
+  <table>
+    <tr>
+      <td>
+        <div class="lbl">Table</div>
+        <?php echo $tablenameDd ?>
+      </td>
+      <td>
+        <div class="form-field">
+          <div class="lbl">Generate Classes</div>
+          <?php echo HtmlUtil::checkboxes("objects", [
+            "dbo" => "Ddo",
+            "dbq" => "Dbq",
+            "trait" => "Trait",
+            "cmodel" => "Model",
+            "hmodel" => "Handler"
+          ], ["dbo", "dbq", "trait"], ["class" => "objects"]) ?>
+        </div>
+
+        <div class="form-field">
+          <div class="lbl">Options</div>
+          <div>
+            <?php echo HtmlUtil::checkbox("override", "1", $override, ["class" => "override"], "Override existing files") ?>
+          </div>
+          <div>
+            <?php echo HtmlUtil::checkbox("primary_object_id", "1", false, ["class" => ""], "Model extends Object") ?>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <div class="lbl">Name</div>
+          <?php echo HtmlUtil::input("name", "", ["class" => "w300"]) ?>
+        </div>
+
+        <div class="form-field">
+          <div class="lbl">Namespace</div>
+          <?php echo HtmlUtil::input("namespace", "Backend", ["class" => "w300"]) ?>
+        </div>
+
+        <?php echo HtmlUtil::link("javascript:;", "Generate", ["id" => "generate", "class" => "generate btn btn-primary"]) ?>
+      </td>
+    </tr>
+  </table>
 </form>
 
 <script>

@@ -45,37 +45,55 @@ class DbGeneratorModel {
     return "Backend\\Dbo\\" . self::getDboClassname($basename);
   }
 
-  public function createDbo($tablename, $name, $override = false) {
+  public function createDbo(string $tablename, string $namespace, string $name, $override = false) {
     $classname = self::getDboClassname(strtolower($name));
     $dboFile = self::getDboFile($classname, $this->_appDir);
     $hasSuccess = false;
+
     if (!is_file($dboFile) || $override) {
       $result = $this->_dbUtility->getTableFields($tablename);
+
       $columns = [];
       foreach ($result as $row) {
         $type = str_replace("unsigned", "", strtolower($row["Type"]));
         $dataType = preg_replace("/[^a-z]+/", "\$1", $type);
         $size = preg_replace("/[a-z]+\\((\\d+)\\)/", "\$1", $type);
         $size = is_numeric($size) ? $size : "null";
-        $notNull = $row["Null"] == "YES" ? "true" : "false";
-        $primary = $row["Key"] == "PRI" ? "true" : "false";
+        $null = $row["Null"] === "YES";
+        $notNull = $null ? "true" : "false";
+        $primary = $row["Key"] === "PRI" ? "true" : "false";
         $name = $row["Field"];
         $columns[] = "\$this->_columns[\"" . $name . "\"] = new Column(\"" . $dataType . "\"," . $size . "," . $notNull . "," . $primary . ");";
       }
-      $str = "<?php\n\nnamespace Backend\\Dbo;\n\nuse Framework\\Db\\Dbo\\Dbo;\nuse Framework\\Db\\Dbo\\Column;\n\nclass " . $classname . " extends Dbo {\n\n";
+
+      $str = "<?php\n\nnamespace {$namespace}\\Dbo;\n\nuse Framework\\Db\\Dbo\\Dbo;\nuse Framework\\Db\\Dbo\\Column;\n\nclass " . $classname . " extends Dbo {\n\n";
       $str .= "  function __construct() {\n" . "    \$this->_tablename = \"" . $tablename . "\";\n";
       foreach ($columns as $column) {
         $str .= "    " . $column . "\n";
       }
       $str .= "  }\n\n";
       foreach ($result as $row) {
-        $str .= '  public function set' . StringUtil::pascalize($row["Field"]) . '($value) {
-    return $this->setColumnValue("' . $row["Field"] . '", $value);
-  }' . "\n\n";
-        $str .= '  public function get' . StringUtil::pascalize($row["Field"]) . '() {
-    return $this->getColumnValue("' . $row["Field"] . '");
-  }' . "\n\n";
+        $type = self::getPhpType($row["Type"]);
+        $null = $row["Null"] === "YES";
+        $str .= "
+  /**
+   * @param {$type} \$value
+   * @return static
+   */
+  public function set" . StringUtil::pascalize($row["Field"]) . "(\$value) {
+    return \$this->setColumnValue(\"" . $row["Field"] . "\", \$value);
+  }
+
+  /**
+   * @return {$type}
+   */
+  public function get" . StringUtil::pascalize($row["Field"]) . "() {
+    return \$this->getColumnValue(\"" . $row["Field"] . "\");
+  }
+  
+  ";
       }
+
       $str .= "}";
       $hasSuccess = $this->writeFile($dboFile, $str);
     } else {
@@ -84,6 +102,30 @@ class DbGeneratorModel {
     }
 
     return $hasSuccess;
+  }
+
+  public static function getPhpType($type) {
+    if (preg_match("/int/i", $type)) {
+      return "int";
+    }
+
+    if (preg_match("/(char|blob|text)/i", $type)) {
+      return "string";
+    }
+
+    if (preg_match("/(float|double|decimal|real)/i", $type)) {
+      return "float";
+    }
+
+    if (preg_match("/(date|time)/i", $type)) {
+      return "string|\\Framework\\Model\\TimeModel";
+    }
+
+    if (preg_match("/bool/i", $type)) {
+      return "bool";
+    }
+
+    return "string";
   }
 
   public static function getDboClassname($basename) {
@@ -95,6 +137,7 @@ class DbGeneratorModel {
   }
 
   public function writeFile($file, $string) {
+    FileUtil::mkdir(dirname($file));
     $errorMessage = "";
     $hasSuccess = FileUtil::putFileContents($file, $string, $errorMessage);
     if (!$hasSuccess) {
@@ -104,12 +147,12 @@ class DbGeneratorModel {
     return $hasSuccess;
   }
 
-  public function createDbq($tablename, $name, $override = false) {
+  public function createDbq(string $tablename, string $namespace, string $name, $override = false) {
     $classname = self::getDbqClassname(strtolower($name));
     $dbqFile = self::getDbqFile($classname, $this->_appDir);
     $hasSuccess = false;
     if (!is_file($dbqFile) || $override) {
-      $str = "<?php\n\nnamespace Backend\\Dbq;\n\nuse Framework\\Db\\Dbq\\Dbq;\n\nclass " . $classname . " extends Dbq {\n\n";
+      $str = "<?php\n\nnamespace {$namespace}\\Dbq;\n\nuse Framework\\Db\\Dbq\\Dbq;\n\nclass " . $classname . " extends Dbq {\n\n";
       $fields = $this->_dbUtility->getTableFields($tablename);
       $primaryKeys = [];
       foreach ($fields as $field) {
@@ -121,6 +164,7 @@ class DbGeneratorModel {
           $primaryKeys[] = '"' . $name . '"';
         }
       }
+
       $primaryKey = count($primaryKeys) == 1 ? implode(",", $primaryKeys) : "array(" . implode(",", $primaryKeys) . ")";
       $str .= "  public function __construct() {\n" . "    parent::__construct(\"" . $tablename . "\", " . $primaryKey . ");\n" . "  }\n" . "}";
       $hasSuccess = $this->writeFile($dbqFile, $str);

@@ -1,13 +1,14 @@
 <?php
-namespace Backend\Handler;
+namespace {$namespace}\Handler;
 
 use Framework\Core\Handler;
-use Backend\Model\{$pascalModel}Model;
-use Backend\Dbq\{$pascalModel}Dbq;
+use {$namespace}\Model\{$pascalModel}Model;
+use {$namespace}\Dbq\{$pascalModel}Dbq;
 
 /**
  * @method {$pascalModel}Model get($id = null)
  * @method {$pascalModel}Model require($id = null)
+ * @method {$pascalModel}Model[] gets()
  * @method {$pascalModel}Model[] page($limit = 25)
  */
 class {$pascalModel}Handler extends Handler {
@@ -15,14 +16,11 @@ class {$pascalModel}Handler extends Handler {
   protected $_selectFields = [{$selectFields}];
 
   public function __construct() {
-{if $extends}    parent::__construct({$pascalModel}Dbq::create()->inner("{$extendTablename}","{$extendPrimaryId}"));
+{if $extendPrimaryId}    parent::__construct({$pascalModel}Dbq::create()->inner("{$extendTablename}","{$extendPrimaryId}"));
 {else}    parent::__construct({$pascalModel}Dbq::create());
 {/if}
   }
 
-  /**
-   * @return {$pascalModel}Model[]
-   */
   public function gets() {
     ${$lowerModel|camelize|plural} = $this->getDbq()->select($this->_selectFields);
 

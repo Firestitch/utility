@@ -14,9 +14,11 @@ use Utility\Model\ModelGeneratorModel;
 class ApiView extends View {
 
   public function __construct() {
-    $this->disableAuthorization();
-    $this->setTemplate("./ApiTemplate.php");
-    $this->setForm("javascript:;", false, "form-api");
+    $this
+      ->setTemplate("./ApiTemplate.php")
+      ->setStyle("./Api.scss")
+      ->disableAuthorization()
+      ->setForm("javascript:;", false, "form-api");
   }
 
   public function init() {

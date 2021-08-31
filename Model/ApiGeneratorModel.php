@@ -9,12 +9,10 @@ use Framework\Util\HtmlUtil;
 use Framework\Util\LangUtil;
 use Framework\Util\StringUtil;
 use Utility\View\MapModel\ModelParser;
-use Framework\Core\ApplicationBase;
 use ReflectionClass;
 use Backend\Manager\RouteManager;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\Node\Expr\ArrayItem;
-use PhpParser\Node\Stmt;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Expr\ClassConstFetch;
@@ -81,7 +79,7 @@ class ApiGeneratorModel extends GeneratorModel {
   }
 
   public function get($template) {
-    $cmodel = ModelGeneratorModel::getModel($this->_model);
+    $cmodel = ModelGeneratorModel::getModel("Backend", $this->_model);
     $orderBy = "";
     $keywords = $accessibleFields = $fields = [];
     foreach ($cmodel->getDbos() as $dbo) {

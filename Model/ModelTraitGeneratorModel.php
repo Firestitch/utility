@@ -11,20 +11,17 @@ use Framework\Util\StringUtil;
 
 class ModelTraitGeneratorModel {
 
-  public static $baseNamespace = "Backend";
   protected $_appDir = null;
   protected $_dbUtility;
 
-  public function __construct($appDir = null) {
-    $this->_appDir = $appDir ? $appDir : WebApplication::getMainApplicationDirectory();
-    $this->_dbUtility = Db::getInstance()
-      ->getUtility();
+  public function __construct($appDir) {
+    $this->_appDir = $appDir;
+    $this->_dbUtility = Db::getInstance()->getUtility();
   }
 
-  public function createTrait($tablenames, $name, $override = false) {
+  public function createTrait($tablenames, $namespace, $name, $override = false) {
     $tablenames = is_array($tablenames) ? $tablenames : [$tablenames];
-
-    $classname = self::getBaseName(self::getTraitName(strtolower($name)));
+    $classname = self::getBaseName(self::getTraitName($namespace, strtolower($name)));
 
     $traitFile = self::getTraitFile($classname, $this->_appDir);
 
@@ -33,12 +30,12 @@ class ModelTraitGeneratorModel {
     }
 
     if (!is_file($traitFile) || $override) {
-      $str = "<?php\n\nnamespace " . self::$baseNamespace . "\\Model\\Traits;\n\ntrait {$classname} {\n\n";
-      $fieldNames = [];
+      $str = "<?php\n\nnamespace " . $namespace . "\\Model\\Traits;\n\ntrait {$classname} {\n\n";
+      $fields = [];
       foreach ($tablenames as $tablename) {
         try {
           foreach ($this->_dbUtility->getTableFields($tablename) as $field) {
-            $fieldNames[] = $field["Field"];
+            $fields[$field["Field"]] = $field;
           }
         } catch (Exception $e) {
           WebApplication::instance()
@@ -47,31 +44,41 @@ class ModelTraitGeneratorModel {
           continue;
         }
       }
-      $fieldNames = array_unique($fieldNames);
-      foreach ($fieldNames as $fieldName) {
+
+      foreach ($fields as $field) {
+        $fieldName = $field["Field"];
+        $type = DbGeneratorModel::getPhpType($field["Type"]);
+        $null = $field["Null"] === "YES";
         $pascalFieldName = StringUtil::pascalize($fieldName);
-        $str .= '  /**
+        $str .= "  /**
    * @return static
+   * @param {$type} \$value
    */
-  public function set' . $pascalFieldName . '($value) {
-    return $this->setDboValue("' . $fieldName . '", $value);
-  }' . "\n\n";
-        $str .= '  public function get' . $pascalFieldName . '() {
-    return $this->getDboValue("' . $fieldName . '");
-  }' . "\n\n";
+  public function set{$pascalFieldName}(\$value) {
+    return \$this->setDboValue(\"{$fieldName}\", \$value);
+  }
+
+  /**
+   * @return {$type}
+   */
+  public function get{$pascalFieldName}() {
+    return \$this->getDboValue(\"{$fieldName}\");
+  }
+  
+";
       }
       $str .= "}";
       $this->writeFile($traitFile, $str);
     } else {
       WebApplication::instance()
-        ->addWarning("The Trait `" . $classname . "` already exists");
+        ->addWarning("The " . $classname . " Trait already exists");
     }
 
     return $this;
   }
 
-  public static function getTraitName($basename) {
-    return self::$baseNamespace . "\\Model\\Traits\\" . StringUtil::pascalize(strtolower($basename)) . "Trait";
+  public static function getTraitName($namespace, $basename) {
+    return $namespace . "\\Model\\Traits\\" . StringUtil::pascalize(strtolower($basename)) . "Trait";
   }
 
   public static function getTraitFile($classname, $appDir) {
@@ -90,10 +97,10 @@ class ModelTraitGeneratorModel {
     return $hasSuccess;
   }
 
-  public function appendModelTrait($modelName, $traitName = null) {
+  public function appendModelTrait($namespace, $modelName, $traitName = null) {
     $modelClassname = self::getBaseName($modelName);
     $modelFile = self::getModelFile($modelClassname, $this->_appDir);
-    $traitName = $traitName ? $traitName : basename(self::getTraitName(strtolower($modelName)));
+    $traitName = $traitName ? $traitName : basename(self::getTraitName($namespace, strtolower($modelName)));
     $code = FileUtil::get($modelFile);
     if (strpos($code, $traitName) === false) {
       $code = preg_replace_callback("/extends.+{/", function ($matches) use ($traitName) {
@@ -105,8 +112,8 @@ class ModelTraitGeneratorModel {
     return $this;
   }
 
-  public static function getModelClassname($basename) {
-    return self::$baseNamespace . "\\Model\\" . StringUtil::pascalize(strtolower($basename)) . "Model";
+  public static function getModelClassname($namespace, $basename) {
+    return $namespace . "\\Model\\" . StringUtil::pascalize(strtolower($basename)) . "Model";
   }
 
   public static function getBaseName($modelName) {

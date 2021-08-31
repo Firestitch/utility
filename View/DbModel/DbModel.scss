@@ -1,0 +1,9 @@
+table {
+  td {
+    vertical-align: top;
+
+    &:first-child {
+      padding-right: 40px;
+    }
+  }
+}

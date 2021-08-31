@@ -26,8 +26,10 @@ class DbModelView extends View {
   private $_override = true;
 
   public function __construct() {
-    $this->setTemplate("./DbModelTemplate.php");
-    $this->disableAuthorization();
+    $this
+      ->setTemplate("./DbModelTemplate.php")
+      ->setStyle("./DbModel.scss")
+      ->disableAuthorization();
   }
 
   public function init() {
@@ -59,15 +61,14 @@ class DbModelView extends View {
       try {
         $response = new ApiResponse();
         $tablename = strtolower($this->post("tablename"));
+        $namespace = trim($this->post("namespace"), "\\");
         $name = strtolower($this->post("name"));
         $primaryObjectId = $this->post("primary_object_id");
         $override = $this->post("override");
         $objects = (array)$this->post("objects");
-        $dir = PathModel::getBackendDir();
-        $appDir = WebApplication::getMainApplicationDirectory();
+        $dir = $this->_getDir(trim($namespace, "\\"));
 
         if ($this->isFormValid($tablename, $name)) {
-
           $dbGeneratorModel = new DbGeneratorModel($dir);
           $keyCount = $dbGeneratorModel->getKeyCount($tablename);
 
@@ -76,7 +77,7 @@ class DbModelView extends View {
           }
 
           if (in_array("dbq", $objects)) {
-            $hasSuccess = $dbGeneratorModel->createDbq($tablename, $name, $override);
+            $hasSuccess = $dbGeneratorModel->createDbq($tablename, $namespace, $name, $override);
             $classname = DbGeneratorModel::getDbqClass($tablename);
             if ($hasSuccess) {
               WebApplication::addNotify('Successfully created ' . $classname);
@@ -84,7 +85,7 @@ class DbModelView extends View {
           }
 
           if (in_array("dbo", $objects)) {
-            $hasSuccess = $dbGeneratorModel->createDbo($tablename, $name, $override);
+            $hasSuccess = $dbGeneratorModel->createDbo($tablename, $namespace, $name, $override);
             $classname = DbGeneratorModel::getDboClass($tablename);
             if ($hasSuccess) {
               WebApplication::addNotify('Successfully created ' . $classname);
@@ -92,13 +93,13 @@ class DbModelView extends View {
           }
 
           if (in_array("trait", $objects)) {
-            $modelTraitGeneratorComplexCmoddel = new ModelTraitGeneratorModel($appDir);
-            $modelTraitGeneratorComplexCmoddel->createTrait($tablename, $name, $override);
-            $classname = $modelTraitGeneratorComplexCmoddel::getTraitName($name);
+            $modelTraitGeneratorModel = new ModelTraitGeneratorModel($dir);
+            $modelTraitGeneratorModel->createTrait($tablename, $namespace, $name, $override);
+            $classname = $modelTraitGeneratorModel::getTraitName($namespace, $name);
             WebApplication::addNotify('Successfully created ' . $classname);
           }
 
-          $modelGeneratorComplexCmoddel = new ModelGeneratorModel($name, $appDir, false, false, ["primary_object_id" => $primaryObjectId]);
+          $modelGeneratorComplexCmoddel = new ModelGeneratorModel($namespace, $name, $dir, ["primary_object_id" => $primaryObjectId]);
           if (in_array("cmodel", $objects)) {
             if (!is_file($modelGeneratorComplexCmoddel->getComplexModelFile()) || $override) {
               $modelGeneratorComplexCmoddel->generateComplexModel();
@@ -148,5 +149,36 @@ class DbModelView extends View {
     }
 
     return true;
+  }
+
+  private function _getDir($namespace) {
+    $path = "";
+    $dir = "";
+
+    if (preg_match('/^Backend(?:$|\\\)(.*)/', $namespace, $matches)) {
+      $path = value($matches, 1);
+      $dir = PathModel::getBackendDir();
+    }
+
+    if (preg_match("/^Framework(?:$|\\\)(.*)/", $namespace, $matches)) {
+      $path = value($matches, 1);
+      $dir = PathModel::getFrameworkDir();
+    }
+
+    if (preg_match("/^Utility(?:$|\\\)(.*)/", $namespace, $matches)) {
+      $path = value($matches, 1);
+      $dir = PathModel::getInstanceDir();
+    }
+
+    if (!$dir) {
+      throw new Exception("Invalid namespace");
+    }
+
+    $path = trim($path, "\\");
+    if ($path) {
+      $dir .= str_replace("\\", "/", "/" . $path);
+    }
+
+    return $dir . "/";
   }
 }
