@@ -1,45 +1,34 @@
 <?php
 
-use DBlackborough\Quill\Parser\Html;
-use Framework\Util\FormUtil;
 use Framework\Util\HtmlUtil;
 
 ?>
 
 <h1>API Generation</h1>
 
-<?php
-
-// ->dropdown("model", "Model", $models, "", ["placeholder" => "ie. account", "class" => "w400"])
-// ->input("model-plural", "Plural Model Name", "", false, null, null, 1, ["placeholder" => "ie. accounts", "class" => "w400"])
-// ->input("method", "Namespace", "", false, null, null, 1, [
-//   "placeholder" => "ie. users",
-//   "class" => "w400 api-existing"
-// ])
-// ->checkboxes("options", "Options", ["order" => "Add ordering method", "override" => "Override existing files"])
-// ->button("generate", "Generate", ["type" => "button", "id" => "generate", "class" => "btn-primary"])
-// ->render();
-?>
-
+<div class="form-field">
+  <div class="lbl">Namespace</div>
+  <?php echo HtmlUtil::input("namespace", "Backend", ["class" => "namespace"]) ?>
+</div>
 
 <div class="form-field">
   <div class="lbl">API</div>
-  <?php echo HtmlUtil::dropdown("api", ["" => "Create new API", "Existing API" => $apis], "", ["class" => "w400 api-name"]) ?>
+  <div id="apis"></div>
 </div>
 
 <div class="form-field">
   <div class="lbl">Model</div>
-  <?php echo HtmlUtil::dropdown("model", $models, "", ["class" => "w400"]) ?>
+  <div id="models"></div>
 </div>
 
 <div class="form-field">
   <div class="lbl">Plural Model Name</div>
-  <?php echo HtmlUtil::input("model-plural", "", ["placeholder" => "ie. accounts", "class" => "w400"]) ?>
+  <?php echo HtmlUtil::input("model-plural", "", ["placeholder" => "ie. accounts"]) ?>
 </div>
 
 <div class="form-field">
   <div class="lbl">Enpoint Name</div>
-  <?php echo HtmlUtil::input("method", "", ["placeholder" => "ie. accounts", "class" => "w400"]) ?>
+  <?php echo HtmlUtil::input("method", "", ["placeholder" => "ie. accounts"]) ?>
 </div>
 
 <div class="form-field">
@@ -69,33 +58,44 @@ use Framework\Util\HtmlUtil;
 <script>
   $(function() {
 
-    $("select[name='api']").change(function() {
+    $(".namespace").on("keyup", function() {
+      $("#apis").load("/api/apis", {
+        namespace: $('.namespace').val(),
+      }, function() {
+        $("select[name='api']").change(function() {
+          updateNamespaceExample();
 
-      updateNamespaceExample();
+          var existing = $(".api-existing").parents("tr");
+          if ($(this).val()) {
+            existing.show();
+          } else {
+            existing.hide();
+          }
+        }).trigger("change");
+      });
 
-      var existing = $(".api-existing").parents("tr");
-      if ($(this).val()) {
-        existing.show();
-      } else {
-        existing.hide();
-      }
+      $("#models").load("/model/list", {
+        namespace: $('.namespace').val(),
+        name: 'model'
+      }, function() {
 
-    }).trigger("change");
+        $("select[name='model']").on("change click", function() {
+
+          if ($(this).val()) {
+            $("input[name='model-plural']").val($(this).val().plural());
+
+            var method = $("input[name='model-plural']").val()
+              .replace(get_singular($(".api-name").val()) + '_', '');
+            $("input[name='method']").val(method);
+          }
+
+          updateNamespaceExample();
+        });
+
+      });
+    }).trigger('keyup');
 
     $("input[name='method']").keydown(updateNamespaceExample);
-
-    $("select[name='model']").change(function() {
-
-      if ($(this).val()) {
-        $("input[name='model-plural']").val($(this).val().plural());
-
-        var method = $("input[name='model-plural']").val()
-          .replace(get_singular($(".api-name").val()) + '_', '');
-        $("input[name='method']").val(method);
-      }
-
-      updateNamespaceExample();
-    });
 
     $("#generate").click(function() {
       $.post("/api", $("#form-api").serializeArray(), function(response) {

@@ -1,0 +1,53 @@
+
+.row-container {
+  overflow: auto;  
+}
+
+
+.col {
+  margin-right: 30px;
+}
+
+.row {
+  display: flex;
+  margin: 0;
+}
+
+
+.joiner {
+  display: inline-block;
+  margin-right: 30px;
+  vertical-align: top;
+}
+
+.add-joiner {
+  display: flex;
+  flex-direction: column;
+  padding-top: 230px;
+  padding-right: 30px;
+
+  button {
+    border-radius: 100%;
+  }
+}
+
+.object-name-custom {
+  display: inline-block;
+  margin-bottom: 4px;
+  width: 200px;
+}
+
+#joiners {
+  display: flex;
+  padding-top: 67px;
+}
+
+select {
+  min-width: 200px;
+}
+
+.relationship {
+  label {
+    padding-right: 15px;
+  }
+}

@@ -25,24 +25,24 @@ class DbGeneratorModel {
     return $dbq ? $dbq->getTablename() : "";
   }
 
-  public static function getDbq($basename) {
-    $class = self::getDbqClass($basename);
+  public static function getDbq($namespace, $basename) {
+    $class = self::getDbqClass($namespace, $basename);
 
     return new $class();
   }
 
-  public static function getDbqClass($basename) {
-    return "Backend\\Dbq\\" . self::getDbqClassname($basename);
+  public static function getDbqClass($namespace, $basename) {
+    return "{$namespace}\\Dbq\\" . self::getDbqClassname($basename);
   }
 
-  public static function getDbo($basename) {
-    $class = self::getDboClass($basename);
+  public static function getDbo($namespace, $basename) {
+    $class = self::getDboClass($namespace, $basename);
 
     return new $class();
   }
 
-  public static function getDboClass($basename) {
-    return "Backend\\Dbo\\" . self::getDboClassname($basename);
+  public static function getDboClass($namespace, $basename) {
+    return "{$namespace}\\Dbo\\" . self::getDboClassname($basename);
   }
 
   public function createDbo(string $tablename, string $namespace, string $name, $override = false) {

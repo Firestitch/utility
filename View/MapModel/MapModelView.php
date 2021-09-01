@@ -30,21 +30,22 @@ class MapModelView extends View {
   protected $_sourceModelColumn = "";
 
   public function __construct() {
-    $this->setTemplate("./MapModelTemplate.php");
-    $this->setForm("javascript:;", false, "form-relation");
-    $this->disableAuthorization();
+    $this
+      ->setTemplate("./MapModelTemplate.php")
+      ->setStyle("./MapModel.scss")
+      ->setForm("javascript:;", false, "form-relation")
+      ->disableAuthorization();
   }
 
   public function init() {
     $this->processPost();
-    $appDir = WebApplication::getMainApplicationDirectory();
-    $modelList = ModelGeneratorModel::getCmodels($appDir);
+
     $joinerList = Db::getInstance()
       ->getUtility()
       ->getTableNames();
+
     $this->setVar("joiner", $this->_joiner);
     $this->setVar("referenceModel", $this->_referenceModel);
-    $this->setVar("modelList", $modelList);
     $this->setVar("joinerList", $joinerList);
     $this->setVar("sourceModelColumn", $this->_sourceModelColumn);
     $this->setVar("model", $this->_model);
@@ -64,22 +65,16 @@ class MapModelView extends View {
       $referenceModel = $this->request("reference_model");
       $referenceModelPlual = LangUtil::plural($referenceModel);
       $joiners = (array)$this->request("joiners");
+      $sourceNamespace = $this->request("source-namespace");
       $mapChild = $this->request("relationship") === "child";
       $sourceModelHandler = ModelGeneratorModel::getHandlerClass($sourceModel);
-      $dir = WebApplication::getMainApplicationDirectory();
+      $dir = ModelGeneratorModel::getNamespaceDir($sourceNamespace);
       $modelFile = $dir . "Model/" . ModelGeneratorModel::getModelClass($sourceModel) . ".php";
       $handlerFile = $dir . "Handler/" . $sourceModelHandler . ".php";
-      $referenceName = $this->post("object_name_custom");
-
-      if (!$sourceModelColumn) {
-        throw new Exception("Invalid sourse column");
-      }
-      if ($this->post("object_name") === "source" || $this->post("object_name") === "reference") {
-        $referenceName = preg_replace("/_id\$/", "", $this->post("object_name") == "source" ? $sourceModelColumn : $referenceModel);
-      }
+      $referenceName = $this->post("object_name");
 
       if (!$referenceName) {
-        throw new Exception("Invalid reference name");
+        throw new Exception("Invalid object name");
       }
 
       $pascalSourceModelColumn = StringUtil::pascalize($sourceModelColumn);
@@ -178,6 +173,7 @@ class MapModelView extends View {
 
       $response->success();
     } catch (Exception $e) {
+      $response->success(false);
       WebApplication::addError($e->getMessage());
       $response->data("errors", WebApplication::getErrorMessages());
     }

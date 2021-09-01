@@ -99,7 +99,7 @@ class ModelTraitGeneratorModel {
 
   public function appendModelTrait($namespace, $modelName, $traitName = null) {
     $modelClassname = self::getBaseName($modelName);
-    $modelFile = self::getModelFile($modelClassname, $this->_appDir);
+    $modelFile = GeneratorModel::getModelFile($modelClassname, $this->_appDir);
     $traitName = $traitName ? $traitName : basename(self::getTraitName($namespace, strtolower($modelName)));
     $code = FileUtil::get($modelFile);
     if (strpos($code, $traitName) === false) {
@@ -118,9 +118,5 @@ class ModelTraitGeneratorModel {
 
   public static function getBaseName($modelName) {
     return basename(str_replace("\\", "/", $modelName));
-  }
-
-  public static function getModelFile($classname, $appDir) {
-    return FileUtil::sanitizeFile($appDir . "/Model/" . $classname . ".php");
   }
 }

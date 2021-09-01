@@ -1,9 +1,9 @@
 <?php
 
-namespace Backend\View\Api;
+namespace {$namespace}\View\Api;
 
-use Backend\Model\{$pascalModel}Model;
-use Backend\Handler\{$pascalModel}Handler;
+use {$namespace}\Model\{$pascalModel}Model;
+use {$namespace}\Handler\{$pascalModel}Handler;
 use Framework\Model\TimeModel;
 use Backend\View\Api\BaseView;
 use Framework\Arry\Arry;

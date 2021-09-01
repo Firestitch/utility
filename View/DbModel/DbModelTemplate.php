@@ -63,13 +63,13 @@ use Framework\Util\HtmlUtil;
         </div>
 
         <div class="form-field">
-          <div class="lbl">Name</div>
-          <?php echo HtmlUtil::input("name", "", ["class" => "w300"]) ?>
+          <div class="lbl">Namespace</div>
+          <?php echo HtmlUtil::input("namespace", "Backend", ["class" => "w300"]) ?>
         </div>
 
         <div class="form-field">
-          <div class="lbl">Namespace</div>
-          <?php echo HtmlUtil::input("namespace", "Backend", ["class" => "w300"]) ?>
+          <div class="lbl">Name</div>
+          <?php echo HtmlUtil::input("name", "", ["class" => "w300"]) ?>
         </div>
 
         <?php echo HtmlUtil::link("javascript:;", "Generate", ["id" => "generate", "class" => "generate btn btn-primary"]) ?>

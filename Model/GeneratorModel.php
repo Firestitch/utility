@@ -2,7 +2,6 @@
 
 namespace Utility\Model;
 
-use Framework\Core\WebApplication;
 use Framework\Model\SmartyModel;
 use Framework\Util\FileUtil;
 use Framework\Util\StringUtil;
@@ -24,8 +23,8 @@ class GeneratorModel {
     $this->_smartyModel->registerModifierPlugin("snakeize", [StringUtil::class, "snakeize"]);
   }
 
-  public static function getModelFile($classname) {
-    return FileUtil::sanitizeFile(WebApplication::getMainApplicationDirectory() . "/Model/" . self::getModelClassname($classname) . ".php");
+  public static function getModelFile($classname, $dir) {
+    return FileUtil::sanitizeFile($dir . "/Model/" . self::getModelClassname($classname) . ".php");
   }
 
   public static function getModelClass($basename) {
@@ -49,6 +48,7 @@ class GeneratorModel {
   }
 
   public function writeTemplate($template, $file) {
+    FileUtil::mkdir(dirname($file));
     $content = $this->_smartyModel->fetch($template);
     $this->write($file, $content);
 

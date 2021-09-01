@@ -9,7 +9,6 @@ use Framework\Util\HtmlUtil;
 use Framework\Util\LangUtil;
 use Framework\Util\StringUtil;
 use Utility\View\MapModel\ModelParser;
-use ReflectionClass;
 use Backend\Manager\RouteManager;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\Node\Expr\ArrayItem;
@@ -18,6 +17,7 @@ use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Identifier;
+use ReflectionClass;
 
 
 class ApiGeneratorModel extends GeneratorModel {
@@ -27,12 +27,16 @@ class ApiGeneratorModel extends GeneratorModel {
   protected $_modelPlural = "";
   protected $_options = [];
   protected $_modelId;
+  protected $_namespace;
 
-  public function __construct($dir, $api, $model, $modelPlural, $methods = [], $parentModel = null, $options = []) {
+  public function __construct($namespace, $api, $model, $modelPlural, $methods = [], $parentModel = null, $options = []) {
+    $namespace = trim($namespace, "\\");
+    $dir = ModelGeneratorModel::getNamespaceDir($namespace);
     parent::__construct($dir);
     $this->_snakeModel = StringUtil::snakeize($model);
     $this->_modelId = $this->_snakeModel . "_id";
     $this->_model = $model;
+    $this->_namespace = $namespace;
     $this->_options = $options;
     $this->_api = $api;
     $this->_parentModel = StringUtil::snakeize($parentModel);
@@ -79,7 +83,7 @@ class ApiGeneratorModel extends GeneratorModel {
   }
 
   public function get($template) {
-    $cmodel = ModelGeneratorModel::getModel("Backend", $this->_model);
+    $cmodel = ModelGeneratorModel::getModel($this->_namespace, $this->_model);
     $orderBy = "";
     $keywords = $accessibleFields = $fields = [];
     foreach ($cmodel->getDbos() as $dbo) {
@@ -138,6 +142,7 @@ class ApiGeneratorModel extends GeneratorModel {
       ->assign("fields", array_keys($fields))
       ->assign("modelId", $this->_modelId)
       ->assign("modelPlural", $this->_modelPlural)
+      ->assign("namespace", $this->_namespace)
       ->assign("parentModel", $this->_parentModel)
       ->assign("pascalParentModel", $pascalParentModel)
       ->fetch($template);
@@ -148,7 +153,6 @@ class ApiGeneratorModel extends GeneratorModel {
     if (!$override && is_file($file)) {
       throw new Exception("The file " . $file . " already exists");
     }
-
 
     $this
       ->assign("parent_method", $this->_parentModel ? $this->_api . "/" : "")
@@ -181,7 +185,7 @@ class ApiGeneratorModel extends GeneratorModel {
       $route = $this->_findApiRoute($return->expr, null);
 
       if ($route) {
-        $class = "Backend\View\Api\\" . StringUtil::pascalize($this->_modelPlural) . "View";
+        $class = "{$this->_namespace}\View\Api\\" . StringUtil::pascalize($this->_modelPlural) . "View";
         $method = StringUtil::camelize($this->_method);
 
         /**

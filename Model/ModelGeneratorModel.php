@@ -45,28 +45,31 @@ class ModelGeneratorModel {
     return StringUtil::pascalize($basename) . "Handler";
   }
 
-  public static function getCmodels() {
-    $files = FileUtil::getDirectoryListing(WebApplication::getMainApplicationDirectory() . "Model");
-    $cmodels = ["" => ""];
+  public static function getModels($dir) {
+    $files = FileUtil::getDirectoryListing($dir . "/Model");
+
+    $models = [];
     foreach ($files as $file) {
       if (preg_match("/(.*)Model\\.php/", $file, $matches)) {
-        $cmodels[$matches[1]] = $matches[1];
+        if ($matches[1]) {
+          $models[$matches[1]] = $matches[1];
+        }
       }
     }
 
-    return $cmodels;
+    return $models;
   }
 
   public function generateComplexModel() {
     $this->init();
-    $dbo = DbGeneratorModel::getDbo($this->_lowerModel);
+    $dbo = $this->getDbo($this->_lowerModel);
+
     $columns = [];
     foreach ($dbo->getColumns() as $name => $column) {
       $columns[$name] = $column;
     }
 
-    $dbq = DbGeneratorModel::getDbq($this->_lowerModel);
-    $refl = new ReflectionClass($dbq);
+    $refl = new ReflectionClass($this->getDbq());
     $objectConsts = array_keys($refl->getConstants());
     $refl = new ReflectionClass(dbq::class);
     $dbqConsts = array_keys($refl->getConstants());
@@ -95,12 +98,16 @@ class ModelGeneratorModel {
   }
 
   public function init() {
-    $dbo = $this->getDbo($this->_lowerModel);
+    $dbo = $this->getDbo();
     $this->_smarty->assign("columns", $dbo->getColumns());
   }
 
-  public function getDbo($model) {
-    return DbGeneratorModel::getDbo($model);
+  public function getDbo() {
+    return DbGeneratorModel::getDbo($this->_namespace, $this->_lowerModel);
+  }
+
+  public function getDbq() {
+    return DbGeneratorModel::getDbq($this->_namespace, $this->_lowerModel);
   }
 
   public static function getAbr($field) {
@@ -134,8 +141,7 @@ class ModelGeneratorModel {
   public function generateHandlerModel() {
     $this->init();
     $cmodel = self::getModel($this->_namespace, $this->_lowerModel);
-    $dbos = array_values($cmodel::create()
-      ->getDbos());
+    $dbos = array_values($cmodel::create()->getDbos());
     $extendPrimaryId = null;
     $fields = [];
     foreach ($dbos as $index => $dbo) {
@@ -179,5 +185,10 @@ class ModelGeneratorModel {
 
   public function getModelDirectory($modelType) {
     return $this->_appDir . "Model";
+  }
+
+  public static function getNamespaceDir($namespace) {
+    $namespace = lcfirst($namespace);
+    return FileUtil::sanitize(WebApplication::getInstanceDirectory() . $namespace . "/");
   }
 }

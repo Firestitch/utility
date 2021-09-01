@@ -5,12 +5,13 @@ namespace Utility\Manager;
 use Backend\View\Api\WsdlView;
 use Framework\Manager\RouteManagerBase;
 use Utility\View\Api\ApiView;
+use Utility\View\Api\Apis\ApisView;
 use Utility\View\Application\Body\BodyView;
 use Utility\View\DbModel\DbModelView;
 use Utility\View\MapModel\JoinerFields\JoinerFieldsView;
 use Utility\View\MapModel\MapModelView;
-use Utility\View\MapModel\ReferenceFields\ReferenceFieldsView;
-use Utility\View\MapModel\SourceFields\SourceFieldsView;
+use Utility\View\Model\ModelList\ModelListView;
+use Utility\View\Model\ModelFields\ModelFieldsView;
 
 
 class RouteManager extends RouteManagerBase {
@@ -20,15 +21,32 @@ class RouteManager extends RouteManagerBase {
       [
         "bodyClass" => BodyView::class,
         "children" => [
+          [
+            "path" => "model", "bodyClass" => null,
+            "children" => [
+              ["path" => "list", "class" => ModelListView::class],
+              ["path" => "fields", "class" => ModelFieldsView::class]
+            ]
+          ],
           ["path" => "dbmodel", "class" => DbModelView::class],
-          ["path" => "api", "class" => ApiView::class],
+          [
+            "path" => "api",
+            "children" => [
+              [
+                "path" => "",
+                "bodyClass" => null,
+                "children" => [
+                  ["path" => "apis", "class" => ApisView::class],
+                ]
+              ],
+              ["path" => "", "class" => ApiView::class],
+            ]
+          ],
           ["path" => "wsdl", "class" => WsdlView::class],
           [
             "path" => "mapmodel",
             "children" => [
               ["path" => "", "class" => MapModelView::class],
-              ["path" => "referencefields", "class" => ReferenceFieldsView::class, "bodyClass" => null],
-              ["path" => "sourcefields", "class" => SourceFieldsView::class, "bodyClass" => null],
               ["path" => "joinerfields", "class" => JoinerFieldsView::class, "bodyClass" => null]
             ]
           ],

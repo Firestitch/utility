@@ -7,86 +7,131 @@ use Framework\Util\JsonUtil;
 ?>
 <h1>Map Model</h1>
 
-<div class="mt15 mb20 cb">
-  <div class="fl mr50">
-    <div class="lbl">Relationship</div>
-    <?php
-    echo HtmlUtil::radiobuttons("relationship", ["child" => "Map Child", "children" => "Map Children"]);
-    ?>
-  </div>
-  <div class="fl mr50 dns" id="object_names">
-    <div class="lbl">Object Name</div>
-    <?php
-    echo HtmlUtil::radiobuttons("object_name", [
-      "source" => HtmlUtil::span("N/A", ["id" => "source_object_name"]),
-      "reference" => HtmlUtil::span("N/A", ["id" => "reference_object_name"]),
-      "custom" => HtmlUtil::span(HtmlUtil::input("object_name_custom", "", [
-        "class" => "object-name-custom",
-        "placeholder" => "Custom"
-      ]))
-    ]);
-    ?>
-  </div>
-  <div class="fl mr50">
-    <div class="lbl">Joiner Tables</div>
-    <?php
-    echo HtmlUtil::button("add-joiner", "Add Joiner Table", ["class" => "btn"]);
-    ?>
-  </div>
-
-  <div class="fl mr50">
-    <?php
-    echo HtmlUtil::button("generate", "Generate", ["class" => "btn-primary"]);
-    ?>
-  </div>
-</div>
-<div>
-  <div class="model">
-    <div class="lbl">Source Model</div>
-    <div class="dib">
-      <?php
-      echo HtmlUtil::dropdown("source_model", $modelList, $model, [""], 15);
-      ?>
+<div class="row row-container">
+  <div class="col">
+    <div class="form-field">
+      <div class="lbl">Source Namespace</div>
+      <?php echo HtmlUtil::input("source-namespace", "Backend", ["class" => "source-namespace"]) ?>
     </div>
 
-    <div class="mt10">
-      <div id="source_fields"></div>
+    <div class="form-field">
+      <div class="lbl">Source Model</div>
+      <div id="source_models"></div>
+    </div>
+
+    <div>
+      <div class="form-field">
+        <div class="lbl">Source Field</div>
+        <div id="source_fields">Source Model Not Selected</div>
+      </div>
     </div>
   </div>
 
-  <div class="model" id="joiners"></div>
+  <div>
+    <div class="row">
+      <div id="joiners"></div>
+      <div class="add-joiner">
+        <?php echo HtmlUtil::button("add-joiner", "+", ["class" => "btn"]) ?>
+      </div>
+    </div>
+  </div>
 
-  <div class="model">
-    <div class="lbl">Reference Model</div>
-    <div class="">
-      <?php
-      echo HtmlUtil::dropdown("reference_model", $modelList, $referenceModel, [], 15);
-      ?>
+
+  <div class="col">
+    <div class="form-field">
+      <div class="lbl">Reference Namespace</div>
+      <?php echo HtmlUtil::input("reference-namespace", "Backend", ["class" => "reference-namespace"]) ?>
+    </div>
+
+    <div class="form-field">
+      <div class="lbl">Reference Model</div>
+      <div id="reference_models"></div>
     </div>
 
     <div class=" mt10">
-      <div id="reference_fields"></div>
+      <div class="form-field">
+        <div class="lbl">Reference Field</div>
+        <div id="reference_fields">Reference Model Not Selected</div>
+      </div>
     </div>
   </div>
   <div class="cb"></div>
 </div>
 
-<?php
-echo HtmlUtil::hidden("joiner_tables", JsonUtil::encode($joinerList));
-?>
+<div class="form-field relationship">
+  <div class="lbl">Relationship</div>
+  <?php echo HtmlUtil::radiobuttons("relationship", ["child" => "Map Child", "children" => "Map Children"], "", [], true, "") ?>
+</div>
+<div class="form-field">
+  <div class="lbl">Object Name</div>
+  <?php echo HtmlUtil::input("object_name", "", ["class" => "object-name"]);
+  ?>
+</div>
+
+<div class="generate">
+  <?php echo HtmlUtil::button("generate", "Generate", ["class" => "btn-primary"]) ?>
+  <?php echo HtmlUtil::hidden("joiner_tables", JsonUtil::encode($joinerList)) ?>
+</div>
 
 <script>
-  $(function() {
+  function lowerlize(s) {
+    return s && s[0].toLowerCase() + s.slice(1);
+  }
 
-    $("select[name='source_model']").bind("click keyup", function() {
-      $("#source_fields").load("/mapmodel/sourcefields/", {
-        source_model: $(this).val(),
-        source_model_column: "<?php echo $sourceModelColumn ?>"
-      });
+  function camelize(s) {
+    return s.replace(/([-_][a-z])/ig, ($1) => {
+      return $1.toUpperCase()
+        .replace('-', '')
+        .replace('_', '');
     });
+  }
 
-    if ($("select[name='source_model'] option:selected").length)
-      $("select[name='source_model']").trigger("click");
+  $(function() {
+    $(".source-namespace").on("keyup", function() {
+      $("#source_models").load("/model/list", {
+        namespace: $('.source-namespace').val(),
+        name: 'source_model',
+        limit: 12
+      }, function() {
+        $("select[name='source_model']").bind("click keyup", function() {
+          $("#source_fields").load("/model/fields", {
+            model: $(this).val(),
+            namespace: $('.source-namespace').val(),
+            name: "source_model_column"
+          }, function() {
+            $("select[name='source_model_column']").on("click keyup", function() {
+              $(".object-name").val(camelize($(this).val().replace(/_id$/, '')));
+            });
+          });
+        });
+
+        if ($("select[name='source_model'] option:selected").length) {
+          $("select[name='source_model']").trigger("click");
+        }
+      });
+    }).trigger('keyup');
+
+    $(".reference-namespace").on("keyup", function() {
+      $("#reference_models").load("/model/list", {
+        namespace: $('.reference-namespace').val(),
+        name: 'reference_model',
+        limit: 12
+      }, function() {
+        $("select[name='reference_model']").bind("click keyup", function() {
+          $("#reference_fields").load("/model/fields", {
+            model: $(this).val(),
+            namespace: $('.reference-namespace').val(),
+            name: "reference_model_column"
+          }, function() {
+            $("#reference_model_column").find("option[value='" + $("#source_model_column").val() + "']").attr("selected", "selected");
+          });
+        });
+
+        if ($("select[name='reference_model'] option:selected").length) {
+          $("select[name='reference_model']").trigger("click");
+        }
+      });
+    }).trigger('keyup');
 
     $("#add-joiner").on("click", function() {
       var fields = $("<div>", {
@@ -113,31 +158,15 @@ echo HtmlUtil::hidden("joiner_tables", JsonUtil::encode($joinerList));
       });
 
       $("#joiners").append($("<div>", {
-          'class': 'joiner'
+          'class': 'joiner col'
         })
         .append('<div class="lbl">Joiner Table</div>')
         .append(select)
         .append(fields));
     });
 
-    $("#source_fields").on("click keyup", "select[name='source_model_column']", function() {
-      $("#source_object_name").text($(this).val().replace(/_id$/, ''));
-    });
-
-    $("select[name='reference_model']").bind("click keyup", function() {
-      $("#reference_object_name").text($(this).val());
-      $("#reference_fields").load("/mapmodel/referencefields/", {
-        reference_model: $(this).val()
-      }, function() {
-        $("#reference_model_column").find("option[value='" + $("#source_model_column").val() + "']").attr("selected", "selected");
-      });
-    });
-
-    if ($("select[name='reference_model'] option:selected").length)
-      $("select[name='reference_model']").trigger("click");
 
     $("#add-join").click(function() {
-
       if ($(this).is(":checked")) {
         $("#joiner").show();
       } else
@@ -147,13 +176,11 @@ echo HtmlUtil::hidden("joiner_tables", JsonUtil::encode($joinerList));
 
     $("#generate").click(function() {
       $.post("/mapmodel", $("#form-relation").serializeArray(), function(response) {
-
         FF.msg.clear();
-
         if (response.success) {
           FF.msg.success('Successfully generated');
         } else
-          FF.msg.error(response.errors);
+          FF.msg.error(response.data.errors);
 
         if (response.data.warnings.length)
           FF.msg.warning(response.data.warnings, {
@@ -164,25 +191,3 @@ echo HtmlUtil::hidden("joiner_tables", JsonUtil::encode($joinerList));
 
   });
 </script>
-
-<style>
-  .model {
-    float: left;
-    margin-right: 50px;
-  }
-
-  .joiner {
-    display: inline-block;
-    margin-right: 50px;
-    vertical-align: top;
-  }
-
-  .joiner:last-child {
-    margin-right: 0px;
-  }
-
-  .object-name-custom {
-    display: inline-block;
-    width: 200px;
-  }
-</style>
