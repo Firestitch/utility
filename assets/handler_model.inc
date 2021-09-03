@@ -10,6 +10,7 @@ use {$namespace}\Dbq\{$pascalModel}Dbq;
  * @method {$pascalModel}Model require($id = null)
  * @method {$pascalModel}Model[] gets()
  * @method {$pascalModel}Model[] page($limit = 25)
+ * @method {$pascalModel}Model[] chunk($primaryColumn, $primaryFunc = null, $limit = 25)
  */
 class {$pascalModel}Handler extends Handler {
 

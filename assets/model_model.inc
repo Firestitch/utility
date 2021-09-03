@@ -20,17 +20,18 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Mode
 	const STATE_DELETED	= "deleted";
 
 	public static function getStates()	{ return [self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"]; }
-{/if}
 
+{/if}
 	public function __construct() {
 		parent::__construct({$pascalModel}Dbo::create());
   }
-
 {foreach $consts as $const}{if $const!="state"}
   public function is{$const.const|pascalize}()	{ return $this->get{$const.field|pascalize}()==self::{$const.const}; }
+
 {/if}
 {/foreach}
-{if $hasState}		public function getStateName()	{ return value(self::getStates(),$this->getState()); }
+{if $hasState}		
+	public function getStateName()	{ return value(self::getStates(),$this->getState()); }
 
   public function delete()			{ return $this->setState(self::STATE_DELETED)->save(); }
 
@@ -39,8 +40,10 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Mode
 	public function isStateActive()	{ return $this->getState() === self::STATE_ACTIVE; }
 {/if}
 
-	public function save() {
-{if $hasMultipleKeys}
+	/**
+	 * @return static
+	 */
+	public function save() { {if $hasMultipleKeys}
 		$this->set{$pascalModel}Id({$pascalModel}Dbq::create()
 {foreach $keys as $key}
 								->where("{$key}","=",$this->get_{$key}())

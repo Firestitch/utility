@@ -88,6 +88,7 @@ use Framework\Util\JsonUtil;
 
   $(function() {
     $(".source-namespace").on("keyup", function() {
+      $("#source_fields").html("Source Model Not Selected");
       $("#source_models").load("/model/list", {
         namespace: $('.source-namespace').val(),
         name: 'source_model',
@@ -112,6 +113,7 @@ use Framework\Util\JsonUtil;
     }).trigger('keyup');
 
     $(".reference-namespace").on("keyup", function() {
+      $("#reference_fields").html("Reference Model Not Selected");
       $("#reference_models").load("/model/list", {
         namespace: $('.reference-namespace').val(),
         name: 'reference_model',
@@ -132,6 +134,15 @@ use Framework\Util\JsonUtil;
         }
       });
     }).trigger('keyup');
+
+    $(".reference-namespace,.source-namespace").on("blur", function() {
+      $(this).val($(this).val().sanitizeNamespace());
+    });
+
+    $(".source-namespace").on("blur", function() {
+      $(".reference-namespace").val($(this).val().sanitizeNamespace());
+      $(".reference-namespace").trigger("keyup");
+    });
 
     $("#add-joiner").on("click", function() {
       var fields = $("<div>", {

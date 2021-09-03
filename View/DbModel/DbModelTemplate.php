@@ -64,12 +64,12 @@ use Framework\Util\HtmlUtil;
 
         <div class="form-field">
           <div class="lbl">Namespace</div>
-          <?php echo HtmlUtil::input("namespace", "Backend", ["class" => "w300"]) ?>
+          <?php echo HtmlUtil::input("namespace", "Backend", ["class" => "namespace"]) ?>
         </div>
 
         <div class="form-field">
           <div class="lbl">Name</div>
-          <?php echo HtmlUtil::input("name", "", ["class" => "w300"]) ?>
+          <?php echo HtmlUtil::input("name", "") ?>
         </div>
 
         <?php echo HtmlUtil::link("javascript:;", "Generate", ["id" => "generate", "class" => "generate btn btn-primary"]) ?>
@@ -89,6 +89,10 @@ use Framework\Util\HtmlUtil;
 
   $(".objects").on("change", function() {
     $(".override").attr("checked", false);
+  })
+
+  $(".namespace").on("blur", function() {
+    $(this).val($(this).val().sanitizeNamespace());
   })
 
   $("#name").on("input", function() {

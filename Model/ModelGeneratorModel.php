@@ -20,10 +20,12 @@ class ModelGeneratorModel {
   protected $_tablename = null;
   protected $_smarty = null;
   protected $_namespace = null;
+  protected $_primaryObjectId = null;
 
   public function __construct($namespace, $model, $appDir = null, $options = []) {
     $this->_lowerModel = strtolower($model);
     $this->_upperModel = strtoupper($model);
+    $this->_primaryObjectId = value($options, "primary_object_id");
     $this->_pascalModel = StringUtil::pascalize($this->_lowerModel);
     $this->_namespace = $namespace;
     $this->_appDir = $appDir;
@@ -32,7 +34,7 @@ class ModelGeneratorModel {
     $this->_smarty->registerModifierPlugin("pascalize", [StringUtil::class, "pascalize"]);
     $this->_smarty->registerModifierPlugin("camelize", [StringUtil::class, "camelize"]);
     $this->_smarty->registerModifierPlugin("plural", [LangUtil::class, "plural"]);
-    $this->_smarty->assign("primaryObjectId", value($options, "primary_object_id"));
+    $this->_smarty->assign("primaryObjectId", $this->_primaryObjectId);
     $this->_smarty->assign("upperModel", $this->_upperModel);
     $this->_smarty->assign("pascalModel", $this->_pascalModel);
     $this->_smarty->assign("namespace", $namespace);
@@ -146,9 +148,10 @@ class ModelGeneratorModel {
     $fields = [];
     foreach ($dbos as $index => $dbo) {
       $tablenames[] = $dbo->getTablename();
-      if (!$index) {
+      if ($this->_primaryObjectId && !$index) {
         $extendPrimaryId = value(array_keys($dbo->getPrimaryKeys()), 0);
       }
+
       foreach ($dbo->getColumns() as $name => $column) {
         if (!$column->isPrimary() && preg_match("/(^state\$|_id\$|guid)/", $name)) {
           $fields[$name] = $dbo->getTablename() . "." . $name;

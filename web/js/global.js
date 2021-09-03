@@ -59,34 +59,6 @@
     })
 }(window.jQuery)
 
-
-$(document).ready(function () {
-
-    $("form").submit(function () {
-        $(this).append($("<input>", {'type': 'hidden', name: "application", value: $("#application").val()}));
-    });
-
-    var update_check = FF.cookie.get("update-check");
-
-    expires = new Date();
-    expires.setMinutes(expires.getMinutes() + 60);
-
-    FF.cookie.set("update-check", "1", {expires: expires});
-
-    $(".update-link").click(function () {
-        var url = $(this).data("url");
-
-        if (active_table)
-            url += "/table:" + active_table;
-
-        if (active_model)
-            url += "/model:" + active_model;
-
-        $(this).attr("href", url);
-    });
-});
-
-
 function get_singular(s) {
 
     if (s.match(/sses$/))
@@ -114,6 +86,13 @@ function update_links(table, model) {
         active_table = table;
 }
 
+String.prototype.sanitizeNamespace = function() {
+    return this
+    .replace(/(\\{1,})/g,"\\")
+    .replace(/(\\\w)/g, function (m, m1) {
+        return m1.toUpperCase();
+    });
+};
 
 String.prototype.capitalize = function () {
     return this.replace(/(^|\s)([a-z])/g, function (m, p1, p2) {

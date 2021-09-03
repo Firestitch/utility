@@ -161,6 +161,7 @@ class MapModelView extends View {
   }";
 
       $createFunctionCode = "
+      
   /**
    * @return {$referenceModelPasalize}Handler
    */
