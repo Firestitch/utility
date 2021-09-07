@@ -28,18 +28,21 @@ class WsdlGeneratorModel extends GeneratorModel {
       }
       $messages[] = "Successfully added the file " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($this->getWsdlFile()), FileUtil::sanitizeFile($this->getWsdlFile()));
     }
+
     $viewName = "\\Backend\\View\\Api\\" . $this->_api . "View";
     $class = new ReflectionClass($viewName);
-    $methods = [];
-    foreach ($class->getMethods(reflectionMethod::IS_PUBLIC) as $method) {
-      if ("\\" . $method->class == $viewName) {
-        $methods[] = $method->name;
-      }
-    }
     $wsdlCode = FileUtil::get($this->getWsdlFile());
     $classCode = FileUtil::get($this->getViewFile());
-    foreach ($methods as $method) {
-      if (preg_match("/function {$method}\\(/", $wsdlCode)) {
+
+    $functions = [];
+    foreach ($class->getMethods(reflectionMethod::IS_PUBLIC) as $function) {
+      if ("\\" . $function->class == $viewName) {
+        $functions[] = $function->name;
+      }
+    }
+
+    foreach ($functions as $function) {
+      if (preg_match("/function {$function}\\(/", $wsdlCode)) {
         //method already defined.. skip to next file.
         continue;
       }
@@ -48,7 +51,7 @@ class WsdlGeneratorModel extends GeneratorModel {
       $lines = explode("\n", $classCode);
       $functionCode = "";
       foreach ($lines as $lineNumber => $code) {
-        if (strpos($code, "function {$method}(") !== false) {
+        if (strpos($code, "function {$function}(") !== false) {
           $startLine = $lineNumber;
         }
         if ($startLine && $startLine != $lineNumber) {
@@ -66,16 +69,16 @@ class WsdlGeneratorModel extends GeneratorModel {
       //scrape some info from the function code
       //look for request type hints
       $requestTypes = [];
-      if (preg_match("/this->is_get\\(\\)/", $functionCode)) {
+      if (preg_match("/this->isGet\\(\\)/", $functionCode)) {
         $requestTypes[] = "get";
       }
-      if (preg_match("/this->is_post\\(\\)/", $functionCode)) {
+      if (preg_match("/this->isPost\\(\\)/", $functionCode)) {
         $requestTypes[] = "post";
       }
-      if (preg_match("/this->is_put\\(\\)/", $functionCode)) {
+      if (preg_match("/this->isPut\\(\\)/", $functionCode)) {
         $requestTypes[] = "put";
       }
-      if (preg_match("/this->is_delete\\(\\)/", $functionCode)) {
+      if (preg_match("/this->isDelete\\(\\)/", $functionCode)) {
         $requestTypes[] = "delete";
       }
       //if didnt fine any request type hints assume its a post
@@ -105,7 +108,7 @@ class WsdlGeneratorModel extends GeneratorModel {
       preg_match_all("/this->data\\(['\"]([^'\"]+)['\"]\\W*,/", $functionCode, $matches);
       $returns = array_unique(value($matches, 1, []));
       //start generating wsdl code
-      $endpoints = [];
+      $methods = [];
       foreach ($requestTypes as $type) {
         $params = $requestParams;
         if ($type == "get") {
@@ -128,14 +131,14 @@ class WsdlGeneratorModel extends GeneratorModel {
             }
           }
         }
-        $endpoint = "      Endpoint::create(\"{$type}\")\n";
+        $method = "      Method::create(\"{$type}\")\n";
         if ($type != "delete") {
           if ($params) {
-            $endpoint .= "        ->params(" . $this->getParamList($params, $modelName) . ")\n";
+            $method .= "        ->params(" . $this->getParamList($params, $modelName) . ")\n";
           }
           if (in_array($type, ["post", "put"]) && $paramGroups) {
             foreach ($paramGroups as $idx => $group) {
-              $endpoint .= "        ->param_group(\"group{$idx}\", " . $this->getParamList($group, $modelName, false) . ")\n";
+              $method .= "        ->paramGroup(\"group{$idx}\", " . $this->getParamList($group, $modelName, false) . ")\n";
             }
           }
         }
@@ -143,22 +146,22 @@ class WsdlGeneratorModel extends GeneratorModel {
           foreach ($returns as $return) {
             $type = "null";
             $singleReturn = substr($return, -1) == "s" ? substr($return, 0, -1) : $return;
-            $modelName = "Backend\\Model\\" . ucfirst($singleReturn) . "Model";
+            $modelName = "\\Backend\\Model\\" . ucfirst($singleReturn) . "Model";
             if (class_exists($modelName)) {
               $type = $modelName . "::class";
             }
             if (substr($return, -1) == "s") {
-              $endpoint .= "        ->return_array(\"{$return}\", {$type})\n";
+              $method .= "        ->returnArray(\"{$return}\", {$type})\n";
             } else {
-              $endpoint .= "        ->return(\"{$return}\", {$type})\n";
+              $method .= "        ->return(\"{$return}\", {$type})\n";
             }
           }
         }
-        $endpoints[] = $endpoint;
+        $methods[] = $method;
       }
-      $functionCode = $this->assign("method", $method)
-        ->assign("endpoints", implode("      ,\n", $endpoints))
-        ->fetch(PathModel::getAssetsDirectory() . "wsdl_endpoint.inc");
+      $functionCode = $this->assign("function", $function)
+        ->assign("methods", implode("      ,\n\n", $methods))
+        ->fetch(PathModel::getAssetsDirectory() . "wsdl_method.inc");
       //add function to end of wsdl class
       $pos = strrpos($wsdlCode, "}");
       if ($pos === false) {
@@ -167,7 +170,9 @@ class WsdlGeneratorModel extends GeneratorModel {
       $wsdlCode = substr_replace($wsdlCode, $functionCode, $pos, 0);
       $messages[] = "Added the {$method}() to " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($this->getWsdlFile()), FileUtil::sanitizeFile($this->getWsdlFile()));
     }
+
     FileUtil::put($this->getWsdlFile(), $wsdlCode);
+
     //update RouteManager with wsdl class if not already defined.
     $routeManagerCode = FileUtil::get($this->getRouteMangerFile());
     if (!preg_match("/{$this->_api}Wsdl::class/", $routeManagerCode)) {
@@ -214,5 +219,4 @@ class WsdlGeneratorModel extends GeneratorModel {
   public function getRouteMangerFile() {
     return $this->getInstanceDir() . "Manager/RouteManager.php";
   }
-
 }
