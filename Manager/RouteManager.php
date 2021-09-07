@@ -2,7 +2,7 @@
 
 namespace Utility\Manager;
 
-use Backend\View\Api\WsdlView;
+use Utility\View\Wsdl\WsdlView;
 use Framework\Manager\RouteManagerBase;
 use Utility\View\Api\ApiView;
 use Utility\View\Api\Apis\ApisView;
