@@ -17,9 +17,7 @@ class {$pascalModel}Handler extends Handler {
   protected $_selectFields = [{$selectFields}];
 
   public function __construct() {
-{if $extendPrimaryId}    parent::__construct({$pascalModel}Dbq::create()->inner("{$extendTablename}","{$extendPrimaryId}"));
-{else}    parent::__construct({$pascalModel}Dbq::create());
-{/if}
+    parent::__construct({$pascalModel}Dbq::create());
   }
 
   public function gets() {
