@@ -124,7 +124,7 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Mode
 {/if}{if $name=="state"}						"validations"=>[
 						"key_exists"=>self::getStates()
 					],
-{/if}{if preg_match("/_id$/",$name) && !$column->isPrimary() && !$column->isNotNull()}						"validations"=>[
+{/if}{if (preg_match("/_id$/",$name) && !$column->isPrimary() && !$column->isNotNull()) || $name === "name"}						"validations"=>[
 						"required"=>true
 					],
 {/if}{if $column->isPrimary() || $name=="guid" || $name=="order" || $name=="modify_date" || $name=="create_date"}
