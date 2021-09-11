@@ -5,27 +5,27 @@ namespace Utility\Model;
 use Exception;
 use Framework\Arry\Arry;
 use Framework\Db\Db;
+use Framework\PhpParser\PhpParser;
 use Framework\Util\StringUtil;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Return_;
-use Utility\View\MapModel\ModelParser;
 
 class ModelDescribeGeneratorModel {
 
   /**
-   * @var ModelParser
+   * @var PhpParser
    */
-  private $_modelParser;
+  private $_phpParser;
 
   public function __construct($modelFile) {
-    $this->_modelParser = new ModelParser($modelFile);
+    $this->_phpParser = new PhpParser($modelFile);
   }
 
   public function getDescribeMethod(): ?ClassMethod {
-    $describe = Arry::create($this->_modelParser->getClass()->stmts)
+    $describe = Arry::create($this->_phpParser->getClass()->stmts)
       ->find(function ($item) {
         return $item instanceof ClassMethod && $item->name->name === "describe";
       });
@@ -68,7 +68,7 @@ class ModelDescribeGeneratorModel {
   }
 
   public function saveCode() {
-    $this->_modelParser->saveCode();
+    $this->_phpParser->save();
   }
 
   public function getDescribeArray(): Array_ {

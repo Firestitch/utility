@@ -8,6 +8,7 @@ use Framework\Arry\Arry;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
 use Framework\Db\Db;
+use Framework\PhpParser\PhpParser;
 use Framework\Util\FileUtil;
 use Framework\Util\LangUtil;
 use Framework\Util\StringUtil;
@@ -125,8 +126,8 @@ class MapModelView extends View {
         $childReferenceColumn = $joiner["table"] . "." . $joiner["source_column"];
       }
 
-      $modelParser = new ModelParser($handlerFile);
-      $methodGets = $modelParser->getMethod("gets");
+      $phpParser = new PhpParser($handlerFile);
+      $methodGets = $phpParser->getMethod("gets");
       $arrayVariable = "models";
 
       if ($methodGets) {
@@ -186,26 +187,26 @@ class MapModelView extends View {
   }
 
   private function _saveModel($name, $modelFile, $referenceNameSetFunction, $referenceNameGetFunction, $referenceNameSet, $referenceNameGet) {
-    $modelParser = new ModelParser($modelFile);
+    $phpParser = new phpParser($modelFile);
 
-    $setExists = $modelParser->getClass()->getMethod($referenceNameSetFunction);
-    $getExists = $modelParser->getClass()->getMethod($referenceNameGetFunction);
+    $setExists = $phpParser->getClass()->getMethod($referenceNameSetFunction);
+    $getExists = $phpParser->getClass()->getMethod($referenceNameGetFunction);
 
     if (!$getExists && !$setExists) {
-      $index = Arry::create($modelParser->getClass()->stmts)
+      $index = Arry::create($phpParser->getClass()->stmts)
         ->indexOf(function ($item) {
           return $item instanceof ClassMethod && $item->name->name === "__construct";
         }) + 1;
 
       $node = (new BuilderFactory())->property("referenceNameSetFunction")
         ->getNode();
-      array_splice($modelParser->getClass()->stmts, $index, 0, [$node]);
+      array_splice($phpParser->getClass()->stmts, $index, 0, [$node]);
 
       $node = (new BuilderFactory())->property("referenceNameGetFunction")
         ->getNode();
-      array_splice($modelParser->getClass()->stmts, $index, 0, [$node]);
+      array_splice($phpParser->getClass()->stmts, $index, 0, [$node]);
 
-      $code = $modelParser->getCode();
+      $code = $phpParser->getCode();
 
       $code = str_replace('public $referenceNameSetFunction;', $referenceNameSet, $code);
       $code = str_replace('public $referenceNameGetFunction;', $referenceNameGet, $code);
@@ -224,21 +225,21 @@ class MapModelView extends View {
 
   private function _saveHandler($handlerFile, $loadFunctionName, $createFunctionName, $getsCode, $loadFunctionCode, $createFunctionCode) {
 
-    $modelParser = new ModelParser($handlerFile);
+    $phpParser = new PhpParser($handlerFile);
 
-    $loadExists = $modelParser->getClass()->getMethod($loadFunctionName);
-    $createExists = $modelParser->getClass()->getMethod($createFunctionName);
+    $loadExists = $phpParser->getClass()->getMethod($loadFunctionName);
+    $createExists = $phpParser->getClass()->getMethod($createFunctionName);
 
     if (!$loadExists && !$createExists) {
       $node = (new BuilderFactory())->property("loadFunctionName")
         ->getNode();
-      $modelParser->getClass()->stmts[] = $node;
+      $phpParser->getClass()->stmts[] = $node;
 
       $node = (new BuilderFactory())->property("createFunctionName")
         ->getNode();
-      $modelParser->getClass()->stmts[] = $node;
+      $phpParser->getClass()->stmts[] = $node;
 
-      foreach ($modelParser->getClass()->stmts as $stmt) {
+      foreach ($phpParser->getClass()->stmts as $stmt) {
         if ($stmt instanceof ClassMethod && $stmt->name->name === "gets") {
           $index = Arry::create($stmt->stmts)
             ->indexOf(function ($item) {
@@ -251,7 +252,7 @@ class MapModelView extends View {
         }
       }
 
-      $code = $modelParser->getCode();
+      $code = $phpParser->getCode();
       $code = str_replace('$getsCode', $getsCode, $code);
       $code = str_replace('public $loadFunctionName;', $loadFunctionCode, $code);
       $code = str_replace('public $createFunctionName;', $createFunctionCode, $code);

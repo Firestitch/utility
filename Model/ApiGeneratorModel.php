@@ -8,8 +8,8 @@ use Framework\Util\FileUtil;
 use Framework\Util\HtmlUtil;
 use Framework\Util\LangUtil;
 use Framework\Util\StringUtil;
-use Utility\View\MapModel\ModelParser;
 use Backend\Manager\RouteManager;
+use Framework\PhpParser\PhpParser;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Array_;
@@ -172,11 +172,11 @@ class ApiGeneratorModel extends GeneratorModel {
   private function _updateRouteManager() {
     $reflector = new ReflectionClass(RouteManager::class);
 
-    $modelParser = new ModelParser($reflector->getFileName());
+    $phpParser = new PhpParser($reflector->getFileName());
     /**
      * @var Return_
      */
-    $return = value($modelParser->getMethod("getRoutes")->stmts, 0);
+    $return = value($phpParser->getMethod("getRoutes")->stmts, 0);
 
     if ($return instanceof Return_) {
       /**
@@ -208,24 +208,24 @@ class ApiGeneratorModel extends GeneratorModel {
           if (!$exists) {
             $id = StringUtil::camelize($this->_modelId);
             $arrayItem = [
-              new ArrayItem(ModelParser::createString(strtolower($method)), ModelParser::createString("path")),
-              new ArrayItem(new ClassConstFetch(new FullyQualified($class), new Identifier("class")), ModelParser::createString("class")),
+              new ArrayItem(PhpParser::createString(strtolower($method)), PhpParser::createString("path")),
+              new ArrayItem(new ClassConstFetch(new FullyQualified($class), new Identifier("class")), PhpParser::createString("class")),
               new ArrayItem(
                 new Array_([
                   new ArrayItem(
                     new Array_([
-                      new ArrayItem(ModelParser::createString(":{$id}?"), ModelParser::createString("path")),
-                      new ArrayItem(ModelParser::createString($method), ModelParser::createString("function")),
+                      new ArrayItem(PhpParser::createString(":{$id}?"), PhpParser::createString("path")),
+                      new ArrayItem(PhpParser::createString($method), PhpParser::createString("function")),
                     ])
                   )
                 ]),
-                ModelParser::createString("children")
+                PhpParser::createString("children")
               )
             ];
 
             array_unshift($apiChildren->value->items, new Array_($arrayItem));
 
-            $modelParser->saveCode();
+            $phpParser->save();
           }
         }
       }
