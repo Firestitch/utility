@@ -48,18 +48,18 @@ class ModelTraitGeneratorModel {
       foreach ($fields as $field) {
         $fieldName = $field["Field"];
         $type = DbGeneratorModel::getPhpType($field["Type"]);
-        $null = $field["Null"] === "YES";
+        $nullable = $field["Null"] === "YES";
         $pascalFieldName = StringUtil::pascalize($fieldName);
         $str .= "  /**
    * @return static
-   * @param {$type} \$value
+   * @param {$type}" . ($nullable ? "|null" : "") . " \$value
    */
   public function set{$pascalFieldName}(\$value) {
     return \$this->setDboValue(\"{$fieldName}\", \$value);
   }
 
   /**
-   * @return {$type}
+   * @return {$type}" . ($nullable ? "|null" : "") . "
    */
   public function get{$pascalFieldName}() {
     return \$this->getDboValue(\"{$fieldName}\");
