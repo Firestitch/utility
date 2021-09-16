@@ -25,7 +25,7 @@ class {$pascalModel}Handler extends Handler {
 
     $models = [];
     foreach(${$lowerModel|camelize|plural} as ${$lowerModel|camelize}) {
-      $model = {$pascalModel}Model::create()->populate(${$lowerModel|camelize},true,false);
+      $model = {$pascalModel}Model::create()->populate(${$lowerModel|camelize},true);
       $this->applyProperties($model,${$lowerModel|camelize});
       $models[] = $model;
     }
