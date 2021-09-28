@@ -88,14 +88,12 @@
 		  ->validate()
 		  ->save();
 
-		  $this->data("{$model|camelize}",${$snakeModel|camelize}Model->arry());
-
 		  }{/if}{if in_array("delete",$methods)} elseif($this->isDelete()) {
 
 		  ${$snakeModel|camelize}Model->delete();
+		  }
 
 		  $this->data("{$model|camelize}",${$snakeModel|camelize}Model->arry());
-		  }
 		  {/if}
 		  //${$snakeModel|camelize}Model->endAudit();
 		  }
