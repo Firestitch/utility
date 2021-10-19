@@ -54,7 +54,7 @@ class ModelDescribeGeneratorModel {
 
         if (!$exists) {
           $type = "";
-          if (preg_match("/^date/", value($field, "Type")))
+          if (preg_match("/^date|json/", value($field, "Type")))
             $type = value($field, "Type");
 
           $this->appendDescribe($name, $type);
