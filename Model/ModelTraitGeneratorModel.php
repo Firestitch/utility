@@ -8,7 +8,6 @@ use Framework\Db\Db;
 use Framework\Util\FileUtil;
 use Framework\Util\StringUtil;
 
-
 class ModelTraitGeneratorModel {
 
   protected $_appDir = null;
@@ -52,7 +51,7 @@ class ModelTraitGeneratorModel {
         $pascalFieldName = StringUtil::pascalize($fieldName);
         $str .= "  /**
    * @return static
-   * @param {$type}" . ($nullable ? "|null" : "") . " \$value
+   * @param {$type}|null \$value
    */
   public function set{$pascalFieldName}(\$value) {
     return \$this->setDboValue(\"{$fieldName}\", \$value);

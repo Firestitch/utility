@@ -125,6 +125,10 @@ class DbGeneratorModel {
       return "bool";
     }
 
+    if (preg_match("/json/i", $type)) {
+      return "mixed";
+    }
+
     return "string";
   }
 
