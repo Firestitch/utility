@@ -120,9 +120,13 @@ class DbModelView extends View {
 
           if (in_array("trait", $objects)) {
             $modelFile = GeneratorModel::getModelFile(strtolower($name), $dir);
-            $modelDescribeGeneratorModel = new ModelDescribeGeneratorModel($modelFile);
-            $modelDescribeGeneratorModel->update($tablename);
-            WebApplication::addNotify('Successfully updated describe()');
+            try {
+              $modelDescribeGeneratorModel = new ModelDescribeGeneratorModel($modelFile);
+              $modelDescribeGeneratorModel->update($tablename);
+              WebApplication::addNotify('Successfully updated describe()');
+            } catch (Exception $e) {
+              WebApplication::addWarning($e->getMessage());
+            }
           }
         }
 

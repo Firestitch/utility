@@ -108,10 +108,14 @@ use Framework\Util\HtmlUtil;
         FF.msg.success(response.data.messages);
 
       if (response.data.warnings.length)
-        FF.msg.warning(response.data.warnings);
+        FF.msg.warning(response.data.warnings, {
+          append: true
+        });
 
       if (response.data.errors.length)
-        FF.msg.error(response.data.errors);
+        FF.msg.error(response.data.errors, {
+          append: true
+        });
     });
   });
 </script>
