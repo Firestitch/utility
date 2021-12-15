@@ -2,6 +2,7 @@
 
 namespace Utility\Model;
 
+use Framework\Core\Model;
 use Framework\Core\WebApplication;
 use Framework\Db\Dbq\Dbq;
 use Framework\Model\SmartyModel;
@@ -168,6 +169,9 @@ class ModelGeneratorModel {
     return $this->generateModel("handler");
   }
 
+  /**
+   * @return Model
+   */
   public static function getModel($namespace, $basename) {
     $class = "{$namespace}\\Model\\" . self::getModelClass($basename);
 
