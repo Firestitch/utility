@@ -89,13 +89,13 @@ use Framework\Util\JsonUtil;
   $(function() {
     $(".source-namespace").on("keyup", function() {
       $("#source_fields").html("Source Model Not Selected");
-      $("#source_models").load("/model/list", {
+      $("#source_models").load("/generate/model/list", {
         namespace: $('.source-namespace').val(),
         name: 'source_model',
         limit: 12
       }, function() {
         $("select[name='source_model']").bind("click keyup", function() {
-          $("#source_fields").load("/model/fields", {
+          $("#source_fields").load("/generate/model/fields", {
             model: $(this).val(),
             namespace: $('.source-namespace').val(),
             name: "source_model_column"
@@ -114,13 +114,13 @@ use Framework\Util\JsonUtil;
 
     $(".reference-namespace").on("keyup", function() {
       $("#reference_fields").html("Reference Model Not Selected");
-      $("#reference_models").load("/model/list", {
+      $("#reference_models").load("/generate/model/list", {
         namespace: $('.reference-namespace').val(),
         name: 'reference_model',
         limit: 12
       }, function() {
         $("select[name='reference_model']").bind("click keyup", function() {
-          $("#reference_fields").load("/model/fields", {
+          $("#reference_fields").load("/generate/model/fields", {
             model: $(this).val(),
             namespace: $('.reference-namespace').val(),
             name: "reference_model_column"
@@ -156,7 +156,7 @@ use Framework\Util\JsonUtil;
         })
         .attr("size", 15)
         .click(function() {
-          fields.load("/mapmodel/joinerfields/", {
+          fields.load("/generate/mapmodel/joinerfields/", {
             index: index,
             table: $(this).val()
           });
@@ -186,7 +186,7 @@ use Framework\Util\JsonUtil;
 
 
     $("#generate").click(function() {
-      $.post("/mapmodel", $("#form-relation").serializeArray(), function(response) {
+      $.post("/generate/mapmodel/api", $("#form-relation").serializeArray(), function(response) {
         FF.msg.clear();
         if (response.success) {
           FF.msg.success('Successfully generated');

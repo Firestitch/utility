@@ -100,7 +100,7 @@ use Framework\Util\HtmlUtil;
   })
 
   $("#generate").click(function() {
-    $.post("/dbmodel", $("#form-db").serializeArray(), function(response) {
+    $.post("/generate/dbmodel/api", $("#form-db").serializeArray(), function(response) {
 
       FF.msg.clear();
 
