@@ -5,13 +5,15 @@ namespace {$namespace}\Model;
 use Framework\Core\Model;
 {/if}use {$namespace}\Dbo\{$pascalModel}Dbo;
 {if $primaryObjectId}
+use Backend\Lib\Object\Model\ObjectAbstractModel;
 use Framework\Db\Db;{/if}
 {if $hasGuid}
 use Framework\Util\MiscUtil;
 {/if}
 
 
-class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Model{/if} {
+
+class {$pascalModel}Model extends {if $primaryObjectId}ObjectAbstractModel{else}Model{/if} {
 
   use Traits\{$pascalModel}Trait;
 
@@ -74,10 +76,9 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Mode
         });
 			}
 
-		$this->object(true)
+		$this
+			->object(true)
 			->setName($this->getName())
-			->setPrimaryKeyword($this->getName())
-			->setSecondaryKeyword($this->getName())
 			->setModifyDate(DB::getDateTime()){if $hasState}
 
 			->setActive(!$this->isStateDelete())
@@ -140,7 +141,7 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Mode
 	}
 
 	public function setObjectIdValue($value) {
-		$this->set{$primaryKey|pascalize}($value);
+		return $this->set{$primaryKey|pascalize}($value);
 	}
 
 	public function getObjectClass() {
@@ -150,5 +151,12 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectBaseModel{else}Mode
   public function __toString() {
     return (string)$this->getName();
   }
+
+	/*
+	 * @return ObjectAbstractModel[]
+	 */
+	public function getAuditRelatedObjects() {
+		return [];
+	}
 {/if}
 }
