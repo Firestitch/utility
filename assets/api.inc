@@ -7,7 +7,7 @@ use Backend\Handler\{$pascal_model}Handler;
 use Framework\Model\TimeModel;
 use Backend\View\Api\BaseView;
 
-class {$plural_pascal_model}View extends BaseView {
+class {$plural_pascal_model}View extends ApiView {
 
 {{$endpoint}}
 	}

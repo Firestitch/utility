@@ -1,3 +1,14 @@
+<?php
+
+use Utility\View\Application\Body\BodyView;
+
+/**
+ * @var BodyView $self
+ */
+
+
+?>
+
 <!DOCTYPE html>
 <html>
 
