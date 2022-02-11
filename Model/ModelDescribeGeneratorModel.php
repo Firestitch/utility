@@ -7,8 +7,9 @@ use Framework\Arry\Arry;
 use Framework\Db\Db;
 use Framework\PhpParser\PhpParser;
 use Framework\Util\StringUtil;
-use PhpParser\Node\Expr\ArrayItem;
+use PhpParser\Comment;
 use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Return_;
@@ -98,6 +99,7 @@ class ModelDescribeGeneratorModel {
     }
 
     $value = new Array_($items);
+    //$describeArrayItem = new ArrayItem($value, $key, false, ['comments' => [new Comment("")]]);
     $describeArrayItem = new ArrayItem($value, $key);
 
     $array_ = $this->getDescribeArray();
