@@ -8,7 +8,7 @@ use Framework\Util\FileUtil;
 use Framework\Util\HtmlUtil;
 use Framework\Util\LangUtil;
 use Framework\Util\StringUtil;
-use Backend\Manager\RouteManager;
+use Backend\Lib\Provider\RouteManager;
 use Framework\PhpParser\PhpParser;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\Node\Expr\ArrayItem;

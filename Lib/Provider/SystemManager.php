@@ -1,6 +1,6 @@
 <?php
 
-namespace Utility\Manager;
+namespace Utility\Lib\Provider;
 
 use Framework\Email\Model\EmailModel;
 use Framework\Email\Model\EmailSmtpModel;

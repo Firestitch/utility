@@ -1,6 +1,6 @@
 <?php
 
-namespace Utility\Manager;
+namespace Utility\Lib\Provider;
 
 use Backend\View\Api\WsdlView;
 use Framework\Manager\RouteManagerBase;
