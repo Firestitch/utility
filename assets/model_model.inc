@@ -59,16 +59,19 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectAbstractModel{else}
 			} else {
         DB::transaction(function () {
 {if $hasState}
-          if(!$this->getState())
+          if(!$this->getState()) {
             $this->setState(self::STATE_ACTIVE);
+					}
 
 {/if}{if $hasGuid}
-          if(!$this->getGuid())
+          if(!$this->getGuid()) {
             $this->setGuid(MiscUtil::guid());
+					}
 
 {/if}{if $hasCreateDate}
-          if(!$this->getCreateDate())
+          if(!$this->getCreateDate()) {
             $this->setCreateDate(time());
+					}
 
 {/if}
           $this->createObject();
@@ -91,16 +94,19 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectAbstractModel{else}
 			$this->getDbo("{$lowerModel}")->update();
 		} else {
 {if $hasState}
-      if(!$this->getState())
+      if(!$this->getState()) {
         $this->setState(self::STATE_ACTIVE);
+			}
 
 {/if}{if $hasGuid}
-      if(!$this->getGuid())
+      if(!$this->getGuid()) {
         $this->setGuid(MiscUtil::guid());
+			}
 
 {/if}{if $hasCreateDate}
-      if(!$this->getCreateDate())
+      if(!$this->getCreateDate()) {
         $this->setCreateDate(time());
+			}
 
 {/if}
 			$this->getDbo("{$lowerModel}")->insert();

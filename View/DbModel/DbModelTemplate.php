@@ -42,6 +42,14 @@ use Framework\Util\HtmlUtil;
       </td>
       <td>
         <div class="form-field">
+          <div class="lbl">Namespace</div>
+          <?php echo HtmlUtil::input("namespace", "Backend", ["class" => "namespace"]) ?>
+        </div>
+        <div class="form-field">
+          <div class="lbl">Name</div>
+          <?php echo HtmlUtil::input("name", "") ?>
+        </div>
+        <div class="form-field">
           <div class="lbl">Generate Classes</div>
           <?php echo HtmlUtil::checkboxes("objects", [
             "dbo" => "Ddo",
@@ -61,17 +69,6 @@ use Framework\Util\HtmlUtil;
             <?php echo HtmlUtil::checkbox("primary_object_id", "1", false, ["class" => ""], "Model extends Object") ?>
           </div>
         </div>
-
-        <div class="form-field">
-          <div class="lbl">Namespace</div>
-          <?php echo HtmlUtil::input("namespace", "Backend", ["class" => "namespace"]) ?>
-        </div>
-
-        <div class="form-field">
-          <div class="lbl">Name</div>
-          <?php echo HtmlUtil::input("name", "") ?>
-        </div>
-
         <?php echo HtmlUtil::link("javascript:;", "Generate", ["id" => "generate", "class" => "generate btn btn-primary"]) ?>
       </td>
     </tr>
