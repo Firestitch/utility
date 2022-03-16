@@ -12,10 +12,6 @@ use Framework\View\Application\NotFound\NotFoundView;
 
 class SystemManager extends SystemManagerBase {
 
-  public static function getIndexView() {
-    return null;
-  }
-
   public static function getRestrictedView() {
     return null;
   }
