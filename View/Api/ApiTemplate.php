@@ -59,7 +59,7 @@ use Framework\Util\HtmlUtil;
   $(function() {
 
     $(".namespace").on("keyup", function() {
-      $("#apis").load("/generate/api/apis", {
+      $("#apis").load("/api/apis", {
         namespace: $('.namespace').val(),
       }, function() {
         $("select[name='api']").change(function() {
@@ -74,7 +74,7 @@ use Framework\Util\HtmlUtil;
         }).trigger("change");
       });
 
-      $("#models").load("/generate/model/list", {
+      $("#models").load("/model/list", {
         namespace: $('.namespace').val(),
         name: 'model'
       }, function() {
@@ -98,7 +98,7 @@ use Framework\Util\HtmlUtil;
     $("input[name='method']").keydown(updateNamespaceExample);
 
     $("#generate").click(function() {
-      $.post("/generate/api/api", $("#form-api").serializeArray(), function(response) {
+      $.post("/api/api", $("#form-api").serializeArray(), function(response) {
 
         if (response.data.messages.length)
           FF.msg.success(response.data.messages);

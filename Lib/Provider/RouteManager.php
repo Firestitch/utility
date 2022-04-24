@@ -15,6 +15,8 @@ use Utility\View\MapModel\MapModelApi;
 use Utility\View\MapModel\MapModelView;
 use Utility\View\Model\ModelFields\ModelFieldsView;
 use Utility\View\Model\ModelList\ModelListView;
+use Utility\View\Refactor\RefactorApiView;
+use Utility\View\Refactor\RefactorView;
 
 
 class RouteManager extends RouteManagerBase {
@@ -23,10 +25,10 @@ class RouteManager extends RouteManagerBase {
     return [
       [
         "bodyClass" => BodyView::class,
-        "path" => "generate",
         "children" => [
           [
-            "path" => "model", "bodyClass" => null,
+            "path" => "model",
+            "bodyClass" => null,
             "children" => [
               ["path" => "list", "class" => ModelListView::class],
               ["path" => "fields", "class" => ModelFieldsView::class]
@@ -55,11 +57,17 @@ class RouteManager extends RouteManagerBase {
               ["path" => "", "class" => MapModelView::class],
             ]
           ],
-          ["path" => "**", "redirect" => "dbmodel"]
+          [
+            "path" => "refactor",
+            "children" => [
+              ["path" => "api", "class" => RefactorApiView::class, "bodyClass" => null],
+              ["path" => "", "class" => RefactorView::class],
+            ]
+          ],
         ]
       ],
       ["path" => "wsdl", "class" => WsdlView::class],
-      ["path" => "**", "redirect" => "/generate"]
+      ["path" => "**", "redirect" => "/dbmodel"]
     ];
   }
 }

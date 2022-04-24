@@ -18,9 +18,10 @@ use Framework\Util\ServerUtil;
             <ul class="nav navbar-nav">
 
                 <li class="dropdown">
-                <li><a href="/generate/dbmodel">Db, Model & Handler</a></li>
-                <li><a href="/generate/mapmodel">Map Model</a></li>
-                <li><a href="/generate/api">API</a></li>
+                <li><a href="/dbmodel">Db, Model & Handler</a></li>
+                <li><a href="/mapmodel">Map Model</a></li>
+                <li><a href="/refactor">Refactor</a></li>
+                <li><a href="/api">API</a></li>
                 <li><a href="/wsdl">WSDL</a></li>
             </ul>
         </div>

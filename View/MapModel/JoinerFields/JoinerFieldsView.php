@@ -24,10 +24,12 @@ class JoinerFieldsView extends View {
     $joinerColumns = Db::getInstance()
       ->getUtility()
       ->getTableFieldNames($this->post("table"));
+
     $this->_joinerColumns = array_combine($joinerColumns, $joinerColumns);
     $this->setVar("joinerList", Db::getInstance()
       ->getUtility()
       ->getTableNames());
+
     $this->setVar("index", $this->post("index"));
     $this->setVar("joinerColumns", $this->_joinerColumns);
     $this->setVar("joinerSourceColumn", $this->_joinerSourceColumn);
