@@ -114,7 +114,13 @@
 		  {/if}
 				
 	public static function getRoutes() {
-		return [
-			["path" => ":{$modelId|camelize}?", "function" => "{$method|camelize}"]
+    return [
+      [
+        "path" => "",
+        "class" => \{$namespace}\View\Api\{$pluralPascalModel}View::class,
+        "children" => [
+					["path" => ":{$modelId|camelize}?", "function" => "{$method|camelize}"]
+				]
+			]
 		];
 	}

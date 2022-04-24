@@ -213,10 +213,6 @@ class ApiGeneratorModel extends GeneratorModel {
                 PhpParser::createString("path"),
               ),
               new ArrayItem(
-                new ClassConstFetch(new FullyQualified($class), new Identifier("class")),
-                PhpParser::createString("class"),
-              ),
-              new ArrayItem(
                 new StaticCall(new FullyQualified($class), "getRoutes"),
                 PhpParser::createString("children"),
               )
