@@ -9,12 +9,12 @@ use Framework\Util\HtmlUtil;
   <div class="col">
     <div class="form-field">
       <div class="lbl">Namespace</div>
-      <?php echo HtmlUtil::input("sourceNamespace", "Backend", ["class" => "sourceNamespace"]) ?>
+      <?php echo HtmlUtil::input("namespace", "Backend", ["class" => "namespace"]) ?>
     </div>
 
     <div class="form-field">
       <div class="lbl">Model</div>
-      <div id="source_models"></div>
+      <div id="models"></div>
     </div>
   </div>
 
@@ -36,20 +36,20 @@ use Framework\Util\HtmlUtil;
     }
 
     function loadModels() {
-      $("#source_models").load("/model/list", {
-        namespace: $('.sourceNamespace').val(),
-        name: 'source_model',
+      $("#models").load("/model/list", {
+        namespace: $('.namespace').val(),
+        name: 'models',
+        multiple: true,
         limit: 30
       }, function() {});
     }
 
     $(function() {
-      $(".sourceNamespace").on("keyup", function() {
-        $("#source_fields").html("Source Model Not Selected");
+      $(".namespace").on("keyup", function() {
         loadModels();
       }).trigger('keyup');
 
-      $(".reference-namespace,.sourceNamespace").on("blur", function() {
+      $(".reference-namespace,.namespace").on("blur", function() {
         $(this).val($(this).val().sanitizeNamespace());
       });
 

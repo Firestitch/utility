@@ -20,6 +20,7 @@ class ModelListView extends View {
     $list = ModelGeneratorModel::getModels($dir);
 
     $this
+      ->setVar("multiple", $this->post("multiple"))
       ->setVar("list", $list)
       ->setVar("limit", $limit)
       ->setVar("name", $name);

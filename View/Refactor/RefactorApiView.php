@@ -20,43 +20,44 @@ class RefactorApiView extends View {
   public function init() {
     $response = new ApiResponse();
 
+    $models = (array)$this->request("models");
+    $namespace = $this->request("namespace");
+    $dir = ModelGeneratorModel::getNamespaceDir($namespace);
+
     try {
-      $sourceModel = $this->request("source_model");
-      $sourceNamespace = $this->request("sourceNamespace");
+      foreach ($models as $model) {
+        $file = (new File($dir));
 
-      $dir = ModelGeneratorModel::getNamespaceDir($sourceNamespace);
+        $file
+          ->clone()
+          ->appendDir("Model")
+          ->setFile("{$model}Model.php")
+          ->delete();
 
-      $file = (new File($dir));
+        $file
+          ->clone()
+          ->appendDir("Model/Traits")
+          ->setFile("{$model}Trait.php")
+          ->delete();
 
-      $file
-        ->clone()
-        ->appendDir("Model")
-        ->setFile("{$sourceModel}Model.php")
-        ->delete();
+        $file
+          ->clone()
+          ->appendDir("Handler")
+          ->setFile("{$model}Handler.php")
+          ->delete();
 
-      $file
-        ->clone()
-        ->appendDir("Model/Traits")
-        ->setFile("{$sourceModel}Trait.php")
-        ->delete();
+        $file
+          ->clone()
+          ->appendDir("Dbo")
+          ->setFile("{$model}Dbo.php")
+          ->delete();
 
-      $file
-        ->clone()
-        ->appendDir("Handler")
-        ->setFile("{$sourceModel}Handler.php")
-        ->delete();
-
-      $file
-        ->clone()
-        ->appendDir("Dbo")
-        ->setFile("{$sourceModel}Dbo.php")
-        ->delete();
-
-      $file
-        ->clone()
-        ->appendDir("Dbq")
-        ->setFile("{$sourceModel}Dbq.php")
-        ->delete();
+        $file
+          ->clone()
+          ->appendDir("Dbq")
+          ->setFile("{$model}Dbq.php")
+          ->delete();
+      }
     } catch (Exception $e) {
       WebApplication::addError($e->getMessage());
     }

@@ -2,21 +2,22 @@
 
 namespace Utility\Model;
 
+use Backend\Lib\Provider\RouteManager;
 use Exception;
 use Framework\Arry\Arry;
+use Framework\PhpParser\PhpParser;
 use Framework\Util\FileUtil;
 use Framework\Util\HtmlUtil;
 use Framework\Util\LangUtil;
 use Framework\Util\StringUtil;
-use Backend\Lib\Provider\RouteManager;
-use Framework\PhpParser\PhpParser;
-use PhpParser\Node\Stmt\Return_;
-use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Array_;
-use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\ClassConstFetch;
-use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Stmt\Return_;
 use ReflectionClass;
 
 
@@ -206,20 +207,18 @@ class ApiGeneratorModel extends GeneratorModel {
             });
 
           if (!$exists) {
-            $id = StringUtil::camelize($this->_modelId);
             $arrayItem = [
-              new ArrayItem(PhpParser::createString(strtolower($method)), PhpParser::createString("path")),
-              new ArrayItem(new ClassConstFetch(new FullyQualified($class), new Identifier("class")), PhpParser::createString("class")),
               new ArrayItem(
-                new Array_([
-                  new ArrayItem(
-                    new Array_([
-                      new ArrayItem(PhpParser::createString(":{$id}?"), PhpParser::createString("path")),
-                      new ArrayItem(PhpParser::createString($method), PhpParser::createString("function")),
-                    ])
-                  )
-                ]),
-                PhpParser::createString("children")
+                PhpParser::createString(strtolower($method)),
+                PhpParser::createString("path"),
+              ),
+              new ArrayItem(
+                new ClassConstFetch(new FullyQualified($class), new Identifier("class")),
+                PhpParser::createString("class"),
+              ),
+              new ArrayItem(
+                new StaticCall(new FullyQualified($class), "getRoutes"),
+                PhpParser::createString("children"),
               )
             ];
 

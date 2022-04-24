@@ -112,3 +112,9 @@
 		  }
 		  }
 		  {/if}
+				
+	public static function getRoutes() {
+		return [
+			["path" => ":{$modelId|camelize}?", "function" => "{$method|camelize}"]
+		];
+	}

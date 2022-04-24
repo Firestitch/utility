@@ -7,7 +7,7 @@ $size = count($list) > $limit ? $limit : count($list);
 ?>
 <?php if ($list) { ?>
 <?php
-  echo HtmlUtil::dropdown($name, $list, "", [],  $size === 1 ? 2 : $size);
+  echo HtmlUtil::dropdown($name, $list, "", [],  $size === 1 ? 2 : $size, $multiple);
 } else {
 ?>
   No Models available

@@ -22,13 +22,13 @@ use Framework\Util\HtmlUtil;
 </div>
 
 <div class="form-field">
-  <div class="lbl">Plural Model Name</div>
-  <?php echo HtmlUtil::input("model-plural", "", ["placeholder" => "ie. accounts"]) ?>
+  <div class="lbl">Enpoint Name</div>
+  <?php echo HtmlUtil::input("method", "", ["placeholder" => "ie. accounts"]) ?>
 </div>
 
 <div class="form-field">
-  <div class="lbl">Enpoint Name</div>
-  <?php echo HtmlUtil::input("method", "", ["placeholder" => "ie. accounts"]) ?>
+  <div class="lbl">Model Plural Name</div>
+  <?php echo HtmlUtil::input("model-plural", "", ["placeholder" => "ie. accounts"]) ?>
 </div>
 
 <div class="form-field">
