@@ -26,7 +26,9 @@ class DbModelApi extends View {
         $response = new ApiResponse();
         $tablename = strtolower($this->post("tablename"));
         $namespace = trim($this->post("namespace"), "\\");
-        $name = strtolower($this->post("name"));
+        $name = $this->post("name");
+        $pascalName = $this->post("pascalName");
+
         $primaryObjectId = $this->post("primary_object_id");
         $override = $this->post("override");
         $objects = (array)$this->post("objects");
@@ -41,16 +43,16 @@ class DbModelApi extends View {
           }
 
           if (in_array("dbq", $objects)) {
-            $hasSuccess = $dbGeneratorModel->createDbq($tablename, $namespace, $name, $override);
-            $classname = DbGeneratorModel::getDbqClass($namespace, $tablename);
+            $hasSuccess = $dbGeneratorModel->createDbq($tablename, $namespace, $name, $pascalName, $override);
+            $classname = DbGeneratorModel::getDbqClass($namespace, $pascalName);
             if ($hasSuccess) {
               WebApplication::addNotify('Successfully created ' . $classname);
             }
           }
 
           if (in_array("dbo", $objects)) {
-            $hasSuccess = $dbGeneratorModel->createDbo($tablename, $namespace, $name, $override);
-            $classname = DbGeneratorModel::getDboClass($namespace, $tablename);
+            $hasSuccess = $dbGeneratorModel->createDbo($tablename, $namespace, $name, $pascalName, $override);
+            $classname = DbGeneratorModel::getDboClass($namespace, $pascalName);
             if ($hasSuccess) {
               WebApplication::addNotify('Successfully created ' . $classname);
             }
@@ -58,16 +60,16 @@ class DbModelApi extends View {
 
           if (in_array("trait", $objects)) {
             $modelTraitGeneratorModel = new ModelTraitGeneratorModel($dir);
-            $modelTraitGeneratorModel->createTrait($tablename, $namespace, $name, $override);
-            $classname = $modelTraitGeneratorModel::getTraitName($namespace, $name);
+            $modelTraitGeneratorModel->createTrait($tablename, $namespace, $pascalName, $override);
+            $classname = $modelTraitGeneratorModel::getTraitName($namespace, $pascalName);
             WebApplication::addNotify('Successfully created ' . $classname);
           }
 
-          $modelGeneratorModel = new ModelGeneratorModel($namespace, $name, $dir, ["primary_object_id" => $primaryObjectId]);
+          $modelGeneratorModel = new ModelGeneratorModel($namespace, $name, $pascalName, $dir, ["primary_object_id" => $primaryObjectId]);
           if (in_array("cmodel", $objects)) {
             if (!is_file($modelGeneratorModel->getComplexModelFile()) || $override) {
               $modelGeneratorModel->generateComplexModel();
-              WebApplication::addNotify('Successfully created Model ' . GeneratorModel::getModelClassname($name));
+              WebApplication::addNotify('Successfully created Model ' . GeneratorModel::getModelClassname($pascalName));
             } else {
               WebApplication::addWarning("The model " . $modelGeneratorModel->getComplexModelFile() . " already exists");
             }
@@ -76,14 +78,14 @@ class DbModelApi extends View {
           if (in_array("hmodel", $objects)) {
             if (!is_file($modelGeneratorModel->getHandlerModelFile()) || $override) {
               $modelGeneratorModel->generateHandlerModel();
-              WebApplication::addNotify('Successfully created Handler ' . GeneratorModel::getHandlerClassname($name));
+              WebApplication::addNotify('Successfully created Handler ' . GeneratorModel::getHandlerClassname($pascalName));
             } else {
               WebApplication::addWarning("The handler " . $modelGeneratorModel->getHandlerModelFile() . " already exists");
             }
           }
 
           if (in_array("trait", $objects)) {
-            $modelFile = GeneratorModel::getModelFile(strtolower($name), $dir);
+            $modelFile = GeneratorModel::getModelFile($pascalName, $dir);
             try {
               $modelDescribeGeneratorModel = new ModelDescribeGeneratorModel($modelFile);
               $modelDescribeGeneratorModel->update($tablename);

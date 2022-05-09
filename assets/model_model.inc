@@ -3,7 +3,7 @@ namespace {$namespace}\Model;
 
 {if !$primaryObjectId}
 use Framework\Core\Model;
-{/if}use {$namespace}\Dbo\{$pascalModel}Dbo;
+{/if}use {$namespace}\Dbo\{$pascalName}Dbo;
 {if $primaryObjectId}
 use Backend\Lib\Object\Model\ObjectAbstractModel;
 use Framework\Db\Db;{/if}
@@ -13,9 +13,9 @@ use Framework\Util\MiscUtil;
 
 
 
-class {$pascalModel}Model extends {if $primaryObjectId}ObjectAbstractModel{else}Model{/if} {
+class {$pascalName}Model extends {if $primaryObjectId}ObjectAbstractModel{else}Model{/if} {
 
-  use Traits\{$pascalModel}Trait;
+  use Traits\{$pascalName}Trait;
 
 {if $hasState}
 	const STATE_ACTIVE	= "active";
@@ -25,14 +25,14 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectAbstractModel{else}
 
 {/if}
 	public function __construct() {
-		parent::__construct({$pascalModel}Dbo::create());
+		parent::__construct({$pascalName}Dbo::create());
   }
 {foreach $consts as $const}{if $const!="state"}
   public function is{$const.const|pascalize}()	{ return $this->get{$const.field|pascalize}()==self::{$const.const}; }
 
 {/if}
 {/foreach}
-{if $hasState}		
+{if $hasState}
 	public function getStateName()	{ return value(self::getStates(),$this->getState()); }
 
   public function delete()			{ return $this->setState(self::STATE_DELETED)->save(); }
@@ -46,7 +46,7 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectAbstractModel{else}
 	 * @return static
 	 */
 	public function save() { {if $hasMultipleKeys}
-		$this->set{$pascalModel}Id({$pascalModel}Dbq::create()
+		$this->set{$pascalName}Id({$pascalName}Dbq::create()
 {foreach $keys as $key}
 								->where("{$key}","=",$this->get_{$key}())
 {/foreach}
@@ -129,7 +129,7 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectAbstractModel{else}
 					],
 {/if}
 {/if}{if $name=="state"}						"validations"=>[
-						"key_exists"=>self::getStates()
+						"keyExists"=>self::getStates()
 					],
 {/if}{if (preg_match("/_id$/",$name) && !$column->isPrimary() && !$column->isNotNull()) || $name === "name"}						"validations"=>[
 						"required"=>true
@@ -158,9 +158,6 @@ class {$pascalModel}Model extends {if $primaryObjectId}ObjectAbstractModel{else}
     return (string)$this->getName();
   }
 
-	/*
-	 * @return ObjectAbstractModel[]
-	 */
 	public function getAuditRelatedObjects() {
 		return [];
 	}

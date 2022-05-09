@@ -45,8 +45,8 @@ class DbGeneratorModel {
     return "{$namespace}\\Dbo\\" . self::getDboClassname($basename);
   }
 
-  public function createDbo(string $tablename, string $namespace, string $name, $override = false) {
-    $classname = self::getDboClassname(strtolower($name));
+  public function createDbo(string $tablename, string $namespace, string $name, string $pascalName, $override = false) {
+    $classname = "{$pascalName}Dbo";
     $dboFile = self::getDboFile($classname, $this->_appDir);
     $hasSuccess = false;
 
@@ -90,7 +90,7 @@ class DbGeneratorModel {
   public function get" . StringUtil::pascalize($row["Field"]) . "() {
     return \$this->getColumnValue(\"" . $row["Field"] . "\");
   }
-  
+
   ";
       }
 
@@ -151,9 +151,10 @@ class DbGeneratorModel {
     return $hasSuccess;
   }
 
-  public function createDbq(string $tablename, string $namespace, string $name, $override = false) {
-    $classname = self::getDbqClassname(strtolower($name));
+  public function createDbq(string $tablename, string $namespace, string $name, string  $pascalName, $override = false) {
+    $classname = "{$pascalName}Dbq";
     $dbqFile = self::getDbqFile($classname, $this->_appDir);
+
     $hasSuccess = false;
     if (!is_file($dbqFile) || $override) {
       $str = "<?php\n\nnamespace {$namespace}\\Dbq;\n\nuse Framework\\Db\\Dbq\\Dbq;\n\nclass " . $classname . " extends Dbq {\n\n";

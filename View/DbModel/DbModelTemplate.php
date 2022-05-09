@@ -47,7 +47,7 @@ use Framework\Util\HtmlUtil;
         </div>
         <div class="form-field">
           <div class="lbl">Name</div>
-          <?php echo HtmlUtil::input("name", "") ?>
+          <?php echo HtmlUtil::input("pascalName", "") ?>
         </div>
         <div class="form-field">
           <div class="lbl">Generate Classes</div>
@@ -73,13 +73,20 @@ use Framework\Util\HtmlUtil;
       </td>
     </tr>
   </table>
+  <?php echo HtmlUtil::hidden("name", "", "name") ?>
 </form>
 
 <script>
+  function pascalize(str) {
+    return str.toLowerCase().replace(/(?:[^a-zA-Z0-9]+|^)(.)/g, function(match, chr) {
+      return chr.toUpperCase();
+    });
+  }
+
   function update_class_name(obj) {
     value = $(obj).val();
-
-    $("#name").val(get_singular(value).toUpperCase());
+    $("#pascalName").val(pascalize(get_singular(value)));
+    $("#name").val(value);
 
     update_links(value, get_singular(value));
   }

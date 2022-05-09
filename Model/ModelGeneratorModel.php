@@ -17,17 +17,17 @@ class ModelGeneratorModel {
   protected $_appDir = null;
   protected $_lowerModel = null;
   protected $_upperModel = null;
-  protected $_pascalModel = null;
+  protected $_pascalName = null;
   protected $_tablename = null;
   protected $_smarty = null;
   protected $_namespace = null;
   protected $_primaryObjectId = null;
 
-  public function __construct($namespace, $model, $appDir = null, $options = []) {
-    $this->_lowerModel = strtolower($model);
-    $this->_upperModel = strtoupper($model);
+  public function __construct($namespace, $name, $pascalName, $appDir = null, $options = []) {
+    $this->_lowerModel = LangUtil::singular($name);
+    $this->_upperModel = LangUtil::singular(strtoupper($name));
     $this->_primaryObjectId = value($options, "primary_object_id");
-    $this->_pascalModel = StringUtil::pascalize($this->_lowerModel);
+    $this->_pascalName = $pascalName;
     $this->_namespace = $namespace;
     $this->_appDir = $appDir;
     $this->_smarty = new SmartyModel();
@@ -37,9 +37,9 @@ class ModelGeneratorModel {
     $this->_smarty->registerModifierPlugin("plural", [LangUtil::class, "plural"]);
     $this->_smarty->assign("primaryObjectId", $this->_primaryObjectId);
     $this->_smarty->assign("upperModel", $this->_upperModel);
-    $this->_smarty->assign("pascalModel", $this->_pascalModel);
+    $this->_smarty->assign("pascalName", $this->_pascalName);
     $this->_smarty->assign("namespace", $namespace);
-    $this->_smarty->assign("pascalModels", LangUtil::getPlural($this->_pascalModel));
+    $this->_smarty->assign("pascalNames", LangUtil::getPlural($this->_pascalName));
     $this->_smarty->assign("lowerModel", $this->_lowerModel);
     $this->_smarty->assign("lowerModels", LangUtil::getPluralString($this->_lowerModel));
   }
@@ -106,11 +106,11 @@ class ModelGeneratorModel {
   }
 
   public function getDbo() {
-    return DbGeneratorModel::getDbo($this->_namespace, $this->_lowerModel);
+    return DbGeneratorModel::getDbo($this->_namespace, $this->_pascalName);
   }
 
   public function getDbq() {
-    return DbGeneratorModel::getDbq($this->_namespace, $this->_lowerModel);
+    return DbGeneratorModel::getDbq($this->_namespace, $this->_pascalName);
   }
 
   public static function getAbr($field) {
@@ -138,12 +138,12 @@ class ModelGeneratorModel {
   }
 
   public function getModelFile($modelType) {
-    return FileUtil::sanitizeFile($this->_appDir . StringUtil::pascalize($modelType) . "/" . StringUtil::pascalize($this->_lowerModel) . StringUtil::pascalize($modelType) . ".php");
+    return FileUtil::sanitizeFile($this->_appDir . StringUtil::pascalize($modelType) . "/" . $this->_pascalName . StringUtil::pascalize($modelType) . ".php");
   }
 
   public function generateHandlerModel() {
     $this->init();
-    $cmodel = self::getModel($this->_namespace, $this->_lowerModel);
+    $cmodel = self::getModel($this->_namespace, $this->_pascalName);
     $dbos = array_values($cmodel::create()->getDbos());
     $extendPrimaryId = null;
     $fields = [];

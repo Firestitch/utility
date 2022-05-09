@@ -18,9 +18,9 @@ class ModelTraitGeneratorModel {
     $this->_dbUtility = Db::getInstance()->getUtility();
   }
 
-  public function createTrait($tablenames, $namespace, $name, $override = false) {
+  public function createTrait($tablenames, $namespace, $pascalName, $override = false) {
     $tablenames = is_array($tablenames) ? $tablenames : [$tablenames];
-    $classname = self::getBaseName(self::getTraitName($namespace, strtolower($name)));
+    $classname = self::getBaseName(self::getTraitName($namespace, $pascalName));
 
     $traitFile = self::getTraitFile($classname, $this->_appDir);
 
@@ -63,7 +63,7 @@ class ModelTraitGeneratorModel {
   public function get{$pascalFieldName}() {
     return \$this->getDboValue(\"{$fieldName}\");
   }
-  
+
 ";
       }
       $str .= "}";
@@ -77,7 +77,7 @@ class ModelTraitGeneratorModel {
   }
 
   public static function getTraitName($namespace, $basename) {
-    return $namespace . "\\Model\\Traits\\" . StringUtil::pascalize(strtolower($basename)) . "Trait";
+    return $namespace . "\\Model\\Traits\\" . StringUtil::pascalize($basename) . "Trait";
   }
 
   public static function getTraitFile($classname, $appDir) {

@@ -2,22 +2,22 @@
 namespace {$namespace}\Handler;
 
 use Framework\Core\Handler;
-use {$namespace}\Model\{$pascalModel}Model;
-use {$namespace}\Dbq\{$pascalModel}Dbq;
+use {$namespace}\Model\{$pascalName}Model;
+use {$namespace}\Dbq\{$pascalName}Dbq;
 
 /**
- * @method {$pascalModel}Model get($id = null)
- * @method {$pascalModel}Model require($id = null)
- * @method {$pascalModel}Model[] gets()
- * @method {$pascalModel}Model[] page($limit = 25)
- * @method {$pascalModel}Model[] chunk($primaryColumn, $primaryFunc = null, $limit = 25)
+ * @method {$pascalName}Model get($id = null)
+ * @method {$pascalName}Model require($id = null)
+ * @method {$pascalName}Model[] gets()
+ * @method {$pascalName}Model[] page($limit = 25)
+ * @method {$pascalName}Model[] chunk($primaryColumn, $primaryFunc = null, $limit = 25)
  */
-class {$pascalModel}Handler extends Handler {
+class {$pascalName}Handler extends Handler {
 
   protected $_selectFields = [{$selectFields}];
 
   public function __construct() {
-    parent::__construct({$pascalModel}Dbq::create());
+    parent::__construct({$pascalName}Dbq::create());
   }
 
   public function gets() {
@@ -25,7 +25,7 @@ class {$pascalModel}Handler extends Handler {
 
     $models = [];
     foreach(${$lowerModel|camelize|plural} as ${$lowerModel|camelize}) {
-      $model = {$pascalModel}Model::create()->populate(${$lowerModel|camelize},true);
+      $model = {$pascalName}Model::create()->populate(${$lowerModel|camelize},true);
       $this->applyProperties($model,${$lowerModel|camelize});
       $models[] = $model;
     }
@@ -36,12 +36,12 @@ class {$pascalModel}Handler extends Handler {
     return $models;
   }
 
-{if $hasState}  public function whereStateActive() { return $this->setState({$pascalModel}Model::STATE_ACTIVE); }
+{if $hasState}  public function whereStateActive() { return $this->setState({$pascalName}Model::STATE_ACTIVE); }
 
 {/if}
-  public function set{$pascalModel}Ids($values)	{ return $this->where("{$tablename}.{$lowerModel}_id","IN",$values); }
+  public function set{$pascalName}Ids($values)	{ return $this->where("{$tablename}.{$lowerModel}_id","IN",$values); }
 
-  public function set{$pascalModel}Id($value)	{ return $this->where("{$tablename}.{$lowerModel}_id","=",$value); }
+  public function set{$pascalName}Id($value)	{ return $this->where("{$tablename}.{$lowerModel}_id","=",$value); }
 
 {foreach $fields as $name=>$field}  public function set{$name|pascalize}($value) { return $this->where("{$field}","=",$value); }
 
@@ -51,7 +51,7 @@ class {$pascalModel}Handler extends Handler {
   public static function create($defaults=false) {
     $hmodel = parent::create();
 {if $hasState}    if($defaults)
-      $hmodel->where("{$tablename}.state","<>",{$pascalModel}Model::STATE_DELETED);
+      $hmodel->where("{$tablename}.state","<>",{$pascalName}Model::STATE_DELETED);
 {/if}
     return $hmodel;
   }
