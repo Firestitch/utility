@@ -52,7 +52,9 @@
 		  $this->handler(${$snakeModel|camelize}Handler{if $orderBy},"{$orderBy}"{/if});
 
 		  ${$snakeModel|camelize}Arry = Arry::create(${$snakeModel|camelize}Handler->gets())
-		  ->map("arry");
+        ->map(function ({$pascalModel}Model ${$snakeModel|camelize}Model) {
+          return ${$snakeModel|camelize}Model->arry($this->arry());
+        });
 
 		  if (${$snakeModel|camelize}Id)
 		  $this->requireData("{$model|camelize}", ${$snakeModel|camelize}Arry->first());
