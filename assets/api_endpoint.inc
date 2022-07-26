@@ -57,7 +57,7 @@
         });
 
 		  if (${$snakeModel|camelize}Id)
-		  $this->requireData("{$model|camelize}", ${$snakeModel|camelize}Arry->first());
+		  $this->requireData("{$model|camelize}", ${$snakeModel|camelize}Arry->getFirst());
 		  else
 		  $this->data("{$modelPlural|camelize}", ${$snakeModel|camelize}Arry->values());
 
