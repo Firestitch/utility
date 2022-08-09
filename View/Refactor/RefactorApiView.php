@@ -6,7 +6,7 @@ use Exception;
 use Framework\Api\ApiResponse;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
-use Framework\File\File;
+use Framework\File\FilePath;
 use Utility\Model\ModelGeneratorModel;
 
 
@@ -26,7 +26,7 @@ class RefactorApiView extends View {
 
     try {
       foreach ($models as $model) {
-        $file = (new File($dir));
+        $file = (new FilePath($dir));
 
         $file
           ->clone()
