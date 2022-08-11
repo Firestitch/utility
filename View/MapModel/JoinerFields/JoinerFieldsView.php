@@ -23,7 +23,7 @@ class JoinerFieldsView extends View {
     DebugUtil::enableFormatHtml();
     $joinerColumns = Db::getInstance()
       ->getUtility()
-      ->getTableFieldNames($this->post("table"));
+      ->getTableColumnNames($this->post("table"));
 
     $this->_joinerColumns = array_combine($joinerColumns, $joinerColumns);
     $this->setVar("joinerList", Db::getInstance()
