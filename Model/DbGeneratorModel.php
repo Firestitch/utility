@@ -51,18 +51,17 @@ class DbGeneratorModel {
     $hasSuccess = false;
 
     if (!is_file($dboFile) || $override) {
-      $result = $this->_dbUtility->getTableFields($tablename);
+      $result = $this->_dbUtility->getTableColumns($tablename);
 
       $columns = [];
       foreach ($result as $row) {
-        $type = str_replace("unsigned", "", strtolower($row["Type"]));
+        $type = str_replace("unsigned", "", strtolower($row["type"]));
         $dataType = preg_replace("/[^a-z]+/", "\$1", $type);
         $size = preg_replace("/[a-z]+\\((\\d+)\\)/", "\$1", $type);
         $size = is_numeric($size) ? $size : "null";
-        $null = $row["Null"] === "YES";
-        $notNull = $null ? "true" : "false";
-        $primary = $row["Key"] === "PRI" ? "true" : "false";
-        $name = $row["Field"];
+        $notNull = $row["null"] ? "true" : "false";
+        $primary = $row["primary"] ? "true" : "false";
+        $name = $row["name"];
         $columns[] = "\$this->_columns[\"" . $name . "\"] = new Column(\"" . $dataType . "\"," . $size . "," . $notNull . "," . $primary . ");";
       }
 
@@ -73,22 +72,22 @@ class DbGeneratorModel {
       }
       $str .= "  }\n\n";
       foreach ($result as $row) {
-        $type = self::getPhpType($row["Type"]);
-        $null = $row["Null"] === "YES";
+        $type = self::getPhpType($row["type"]);
+        $null = $row["null"];
         $str .= "
   /**
    * @param {$type} \$value
    * @return static
    */
-  public function set" . StringUtil::pascalize($row["Field"]) . "(\$value) {
-    return \$this->setColumnValue(\"" . $row["Field"] . "\", \$value);
+  public function set" . StringUtil::pascalize($row["name"]) . "(\$value) {
+    return \$this->setColumnValue(\"" . $row["name"] . "\", \$value);
   }
 
   /**
    * @return {$type}
    */
-  public function get" . StringUtil::pascalize($row["Field"]) . "() {
-    return \$this->getColumnValue(\"" . $row["Field"] . "\");
+  public function get" . StringUtil::pascalize($row["name"]) . "() {
+    return \$this->getColumnValue(\"" . $row["name"] . "\");
   }
 
   ";
@@ -158,14 +157,14 @@ class DbGeneratorModel {
     $hasSuccess = false;
     if (!is_file($dbqFile) || $override) {
       $str = "<?php\n\nnamespace {$namespace}\\Dbq;\n\nuse Framework\\Db\\Dbq\\Dbq;\n\nclass " . $classname . " extends Dbq {\n\n";
-      $fields = $this->_dbUtility->getTableFields($tablename);
+      $fields = $this->_dbUtility->getTableColumns($tablename);
       $primaryKeys = [];
       foreach ($fields as $field) {
         $name = value($field, "Field");
         if ($name == "state") {
           continue;
         }
-        if (get_value($field, "Key") == "PRI") {
+        if (value($field, "primary")) {
           $primaryKeys[] = '"' . $name . '"';
         }
       }
@@ -190,10 +189,10 @@ class DbGeneratorModel {
   }
 
   public function getKeyCount($tablename) {
-    $fields = $this->_dbUtility->getTableFields($tablename);
+    $fields = $this->_dbUtility->getTableColumns($tablename);
     $count = 0;
     foreach ($fields as $field) {
-      if (get_value($field, "Key") == "PRI") {
+      if (value($field, "primary")) {
         $count++;
       }
     }

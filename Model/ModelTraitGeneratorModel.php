@@ -33,8 +33,8 @@ class ModelTraitGeneratorModel {
       $fields = [];
       foreach ($tablenames as $tablename) {
         try {
-          foreach ($this->_dbUtility->getTableFields($tablename) as $field) {
-            $fields[$field["Field"]] = $field;
+          foreach ($this->_dbUtility->getTableColumns($tablename) as $field) {
+            $fields[$field["name"]] = $field;
           }
         } catch (Exception $e) {
           WebApplication::instance()
@@ -45,9 +45,9 @@ class ModelTraitGeneratorModel {
       }
 
       foreach ($fields as $field) {
-        $fieldName = $field["Field"];
-        $type = DbGeneratorModel::getPhpType($field["Type"]);
-        $nullable = $field["Null"] === "YES";
+        $fieldName = $field["name"];
+        $type = DbGeneratorModel::getPhpType($field["type"]);
+        $nullable = $field["null"];
         $pascalFieldName = StringUtil::pascalize($fieldName);
         $str .= "  /**
    * @return static

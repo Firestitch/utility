@@ -45,8 +45,8 @@ class ModelDescribeGeneratorModel {
     $array_ = $this->getDescribeArray();
 
     foreach ((array)$tablenames as $tablename) {
-      foreach ($dbUtility->getTableFields($tablename) as $field) {
-        $name = StringUtil::camelize(strtolower(value($field, "Field")));
+      foreach ($dbUtility->getTableColumns($tablename) as $field) {
+        $name = StringUtil::camelize(strtolower(value($field, "name")));
         $exists = Arry::create($array_->items)
           ->exists(function (ArrayItem $item) use ($name) {
             return $item->key->value === $name;
@@ -54,8 +54,8 @@ class ModelDescribeGeneratorModel {
 
         if (!$exists) {
           $type = "";
-          if (preg_match("/^date|json/", value($field, "Type")))
-            $type = value($field, "Type");
+          if (preg_match("/^date|json/", value($field, "type")))
+            $type = value($field, "type");
 
           $this->appendDescribe($name, $type);
         }
