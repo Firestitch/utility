@@ -159,17 +159,19 @@ class DbGeneratorModel {
       $str = "<?php\n\nnamespace {$namespace}\\Dbq;\n\nuse Framework\\Db\\Dbq\\Dbq;\n\nclass " . $classname . " extends Dbq {\n\n";
       $fields = $this->_dbUtility->getTableColumns($tablename);
       $primaryKeys = [];
+
       foreach ($fields as $field) {
-        $name = value($field, "Field");
-        if ($name == "state") {
+        $name = value($field, "name");
+        if ($name === "state") {
           continue;
         }
+
         if (value($field, "primary")) {
           $primaryKeys[] = '"' . $name . '"';
         }
       }
 
-      $primaryKey = count($primaryKeys) == 1 ? implode(",", $primaryKeys) : "array(" . implode(",", $primaryKeys) . ")";
+      $primaryKey = count($primaryKeys) === 1 ? implode(",", $primaryKeys) : "[" . implode(",", $primaryKeys) . "]";
       $str .= "  public function __construct() {\n" . "    parent::__construct(\"" . $tablename . "\", " . $primaryKey . ");\n" . "  }\n" . "}";
       $hasSuccess = $this->writeFile($dbqFile, $str);
     } else {
