@@ -55,17 +55,10 @@ use Framework\Util\HtmlUtil;
 
       $("#generate").click(function() {
         $.post("/refactor/api", $("#form-relation").serializeArray(), function(response) {
-          FF.msg.clear();
+          displayResponse(response, 'Successfully refactored');
           if (response.success) {
             loadModels();
-            FF.msg.success('Successfully deleted');
-          } else
-            FF.msg.error(response.data.errors);
-
-          if (response.data.warnings.length)
-            FF.msg.warning(response.data.warnings, {
-              append: true
-            });
+          }
         });
       });
 

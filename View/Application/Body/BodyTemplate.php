@@ -1,11 +1,8 @@
 <?php
 
-use Framework\Core\View;
-use Framework\Core\WebAssetManager;
-
 /**
- * @var View $self
- * @var WebAssetManager $webAssetManager
+ * @var \Framework\Core\View $self
+ * @var \Framework\Core\WebAssetManager $webAssetManager
  */
 ?>
 <!DOCTYPE html>
@@ -14,9 +11,33 @@ use Framework\Core\WebAssetManager;
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 
-  <?php
-  $webAssetManager->render();
-  ?>
+  <?php $webAssetManager->render() ?>
+  <script>
+    function displayResponse(response, successMessage) {
+
+      FF.msg.clear();
+
+      if (response.data) {
+        if (response.success && successMessage) {
+          FF.msg.success(successMessage);
+        }
+
+        if (response.data.messages && response.data.messages.length)
+          FF.msg.success(response.data.messages);
+
+        if (response.data.warnings && response.data.warnings.length)
+          FF.msg.warning(response.data.warnings, {
+            append: true
+          });
+
+        if (response.data.errors && response.data.errors.length) {
+          FF.msg.error(response.data.errors, {
+            append: true
+          });
+        }
+      }
+    }
+  </script>
 </head>
 
 <body>

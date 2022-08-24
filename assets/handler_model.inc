@@ -33,6 +33,10 @@ class {$pascalName}Handler extends Handler {
     if(!$models)
       return [];
 
+    return $this->mapModels($models);
+  }
+  
+  public function mapModels($models) {
     return $models;
   }
 

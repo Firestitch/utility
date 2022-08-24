@@ -99,13 +99,7 @@ use Framework\Util\HtmlUtil;
 
     $("#generate").click(function() {
       $.post("/api/api", $("#form-api").serializeArray(), function(response) {
-
-        if (response.data.messages.length)
-          FF.msg.success(response.data.messages);
-
-        if (response.data.errors.length)
-          FF.msg.error(response.data.errors);
-
+        displayResponse(response);
       });
     });
 

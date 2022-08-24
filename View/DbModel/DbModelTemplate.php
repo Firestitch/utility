@@ -105,21 +105,7 @@ use Framework\Util\HtmlUtil;
 
   $("#generate").click(function() {
     $.post("/dbmodel/api", $("#form-db").serializeArray(), function(response) {
-
-      FF.msg.clear();
-
-      if (response.data.messages.length)
-        FF.msg.success(response.data.messages);
-
-      if (response.data.warnings.length)
-        FF.msg.warning(response.data.warnings, {
-          append: true
-        });
-
-      if (response.data.errors.length)
-        FF.msg.error(response.data.errors, {
-          append: true
-        });
+      displayResponse(response, 'Successfully generated');
     });
   });
 </script>

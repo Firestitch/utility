@@ -187,16 +187,7 @@ use Framework\Util\JsonUtil;
 
     $("#generate").click(function() {
       $.post("/mapmodel/api", $("#form-relation").serializeArray(), function(response) {
-        FF.msg.clear();
-        if (response.success) {
-          FF.msg.success('Successfully generated');
-        } else
-          FF.msg.error(response.data.errors);
-
-        if (response.data.warnings.length)
-          FF.msg.warning(response.data.warnings, {
-            append: true
-          });
+        displayResponse(response, 'Successfully generated');
       });
     });
 

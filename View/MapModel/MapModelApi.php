@@ -115,8 +115,7 @@ class MapModelApi extends View {
         }
       }
 
-      $getsCode = "
-    \$this->{$function}(\${$arrayVariable}, \$this->handler(\"{$camelizeReferenceKey}\"), \"get{$pascalSourceModelColumn}\", \"{$parentObjectFunction}\", \"{$childReferenceColumn}\");";
+      $getsCode = "\$this->{$function}(\${$arrayVariable}, \$this->handler(\"{$camelizeReferenceKey}\"), \"get{$pascalSourceModelColumn}\", \"{$parentObjectFunction}\", \"{$childReferenceColumn}\");";
 
       $referenceModelPasalize = StringUtil::pascalize($referenceModel);
       $joins = "";
@@ -216,18 +215,23 @@ class MapModelApi extends View {
         ->getNode();
       $phpParser->getClass()->stmts[] = $node;
 
-      foreach ($phpParser->getClass()->stmts as $stmt) {
-        if ($stmt instanceof ClassMethod && $stmt->name->name === "gets") {
-          $index = Arry::create($stmt->stmts)
-            ->indexOf(function ($item) {
-              return $item instanceof Return_;
-            });
+      $stmt = $this->getMethod($phpParser, "mapModels");
 
-          $node = (new BuilderFactory())->var("getsCode");
+      if (!$stmt)
+        $stmt = $this->getMethod($phpParser, "gets");
 
-          array_splice($stmt->stmts, $index, 0, [$node]);
-        }
+      if (!$stmt) {
+        throw new Exception("Failed to locate gets() or mapModels() methods");
       }
+
+      $index = Arry::create($stmt->stmts)
+        ->indexOf(function ($item) {
+          return $item instanceof Return_;
+        });
+
+      $node = (new BuilderFactory())->var("getsCode");
+
+      array_splice($stmt->stmts, $index, 0, [$node]);
 
       $code = $phpParser->getCode();
       $code = str_replace('$getsCode', $getsCode, $code);
@@ -236,6 +240,19 @@ class MapModelApi extends View {
 
       FileUtil::put($handlerFile, $code);
     }
+  }
+
+  public function getMethod($phpParser, $name) {
+    foreach ($phpParser->getClass()->stmts as $stmt) {
+      if ($stmt instanceof ClassMethod) {
+
+        if ($stmt->name->name === $name) {
+          return $stmt;
+        }
+      }
+    }
+
+    return null;
   }
 
   public function hasCode($content, $code) {
