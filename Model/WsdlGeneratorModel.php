@@ -12,6 +12,7 @@ use ReflectionMethod;
 class WsdlGeneratorModel extends GeneratorModel {
 
   protected $_dir = "";
+  protected $_api = null;
   protected $_options = [];
 
   public function __construct($dir, $api, $options = []) {
@@ -214,5 +215,4 @@ class WsdlGeneratorModel extends GeneratorModel {
   public function getRouteMangerFile() {
     return $this->getInstanceDir() . "Manager/RouteManager.php";
   }
-
 }

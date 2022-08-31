@@ -25,10 +25,12 @@ use Utility\Model\ModelGeneratorModel;
 class MapModelApi extends View {
 
   public function __construct() {
-    $this
-      ->disableAuthorization();
+    $this->disableAuthorization();
   }
 
+  /**
+   * @suppresswarnings
+   */
   public function init() {
     try {
       $response = new ApiResponse();
@@ -109,8 +111,13 @@ class MapModelApi extends View {
 
       if ($methodGets) {
         foreach ($methodGets->stmts as $stmt) {
-          if ($stmt instanceof Expression && $stmt->expr instanceof Assign && $stmt->expr->expr instanceof Array_) {
-            $arrayVariable = $stmt->expr->var->name;
+          if ($stmt instanceof Expression) {
+            if ($stmt->expr instanceof Assign) {
+              $expr = $stmt->expr;
+              if ($expr->expr instanceof Array_) {
+                $arrayVariable = $stmt->expr->var->name;
+              }
+            }
           }
         }
       }

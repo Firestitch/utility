@@ -12,6 +12,7 @@ use Framework\Util\StringUtil;
 class DbGeneratorModel {
 
   protected $_appDir = null;
+  protected $_dbUtility = null;
 
   public function __construct($appDir = null) {
     $this->_appDir = $appDir ? $appDir : WebApplication::getMainApplicationDirectory();

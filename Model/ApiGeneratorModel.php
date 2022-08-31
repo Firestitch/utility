@@ -29,6 +29,12 @@ class ApiGeneratorModel extends GeneratorModel {
   protected $_options = [];
   protected $_modelId;
   protected $_namespace;
+  protected $_pluralSnakeModel;
+  protected $_snakeModel;
+  protected $_methods;
+  protected $_method;
+  protected $_parentModel;
+  protected $_api;
 
   public function __construct($namespace, $api, $model, $modelPlural, $methods = [], $parentModel = null, $options = []) {
     $namespace = trim($namespace, "\\");
@@ -170,6 +176,9 @@ class ApiGeneratorModel extends GeneratorModel {
     return true;
   }
 
+  /**
+   * @suppresswarnings
+   */
   private function _updateRouteManager() {
     $reflector = new ReflectionClass(RouteManager::class);
 

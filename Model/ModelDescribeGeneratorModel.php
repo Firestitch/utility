@@ -37,6 +37,9 @@ class ModelDescribeGeneratorModel {
     return $describe;
   }
 
+  /**
+   * @suppress PHP0416
+   */
   public function update($tablenames) {
 
     $dbUtility = Db::getInstance()
