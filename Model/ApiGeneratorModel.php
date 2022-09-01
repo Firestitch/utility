@@ -177,7 +177,7 @@ class ApiGeneratorModel extends GeneratorModel {
   }
 
   /**
-   * @suppresswarnings
+   * @suppress PHP0416
    */
   private function _updateRouteManager() {
     $reflector = new ReflectionClass(RouteManager::class);
