@@ -12,9 +12,7 @@ use Framework\Util\LangUtil;
 use Framework\Util\StringUtil;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
-use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Identifier;
 use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Return_;
@@ -240,20 +238,25 @@ class ApiGeneratorModel extends GeneratorModel {
     if ($stmt instanceof Array_) {
       foreach ($stmt->items as $item) {
         $route = $this->_findApiRoute($item, $stmt);
+
         if ($route) {
           return $route;
         }
       }
     } elseif ($stmt instanceof ArrayItem) {
-
       if ($stmt->value instanceof Array_) {
         $route = $this->_findApiRoute($stmt->value, $stmt);
         if ($route) {
           return $route;
         }
       } elseif ($stmt->value instanceof String_) {
-        if ($stmt->key && $stmt->key->value === "path" && $stmt->value->value === "api") {
-          return $parent;
+        $value = $stmt->value;
+        $key = $stmt->key;
+
+        if ($key instanceof String_ && $value instanceof String_) {
+          if ($key->value === "path" && $value->value === "api") {
+            return $parent;
+          }
         }
       }
     }

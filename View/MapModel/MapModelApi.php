@@ -14,6 +14,7 @@ use Framework\Util\StringUtil;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Return_;
@@ -113,9 +114,14 @@ class MapModelApi extends View {
         foreach ($methodGets->stmts as $stmt) {
           if ($stmt instanceof Expression) {
             if ($stmt->expr instanceof Assign) {
+              /**
+               * @var Assign
+               */
               $expr = $stmt->expr;
               if ($expr->expr instanceof Array_) {
-                $arrayVariable = $stmt->expr->var->name;
+                if ($expr->var instanceof Variable) {
+                  $arrayVariable = $expr->var->name;
+                }
               }
             }
           }
