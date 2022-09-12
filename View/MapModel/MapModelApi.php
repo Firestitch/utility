@@ -120,7 +120,11 @@ class MapModelApi extends View {
               $expr = $stmt->expr;
               if ($expr->expr instanceof Array_) {
                 if ($expr->var instanceof Variable) {
-                  $arrayVariable = $expr->var->name;
+                  /**
+                   * @var Variable 
+                   */
+                  $var = $expr->var;
+                  $arrayVariable = $var->name;
                 }
               }
             }
