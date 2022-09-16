@@ -58,7 +58,7 @@ class ModelTraitGeneratorModel {
   }
 
   /**
-   * @return {$type}" . ($nullable ? "|null" : "") . "
+   * @return {$type}|null
    */
   public function get{$pascalFieldName}() {
     return \$this->getDboValue(\"{$fieldName}\");
