@@ -173,7 +173,7 @@ class ModelGeneratorModel {
    * @return Model
    */
   public static function getModel($namespace, $basename) {
-    $class = "{$namespace}\\Model\\" . self::getModelClass($basename);
+    $class = $namespace."\\Model\\" . self::getModelClass($basename);
 
     return new $class();
   }
