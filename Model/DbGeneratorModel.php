@@ -32,7 +32,7 @@ class DbGeneratorModel {
     return new $class();
   }
 
-  public static function getDbqClass($namespace, $basename) {
+  public static function getDbqClass(string $namespace, $basename) {
     return "{$namespace}\\Dbq\\" . self::getDbqClassname($basename);
   }
 
@@ -42,7 +42,7 @@ class DbGeneratorModel {
     return new $class();
   }
 
-  public static function getDboClass($namespace, $basename) {
+  public static function getDboClass(string $namespace, $basename) {
     return "{$namespace}\\Dbo\\" . self::getDboClassname($basename);
   }
 
