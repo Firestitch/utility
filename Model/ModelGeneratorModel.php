@@ -32,9 +32,9 @@ class ModelGeneratorModel {
     $this->_appDir = $appDir;
     $this->_smarty = new SmartyModel();
     $this->_smarty->disableSecurity();
-    $this->_smarty->registerModifierPlugin("pascalize", [StringUtil::class, "pascalize"]);
-    $this->_smarty->registerModifierPlugin("camelize", [StringUtil::class, "camelize"]);
-    $this->_smarty->registerModifierPlugin("plural", [LangUtil::class, "plural"]);
+    $this->_smarty->registerModifierPlugin("pascalize", [StringUtil::class , "pascalize"]);
+    $this->_smarty->registerModifierPlugin("camelize", [StringUtil::class , "camelize"]);
+    $this->_smarty->registerModifierPlugin("plural", [LangUtil::class , "plural"]);
     $this->_smarty->assign("primaryObjectId", $this->_primaryObjectId);
     $this->_smarty->assign("upperModel", $this->_upperModel);
     $this->_smarty->assign("pascalName", $this->_pascalName);
@@ -65,7 +65,7 @@ class ModelGeneratorModel {
 
   public function generateComplexModel() {
     $this->init();
-    $dbo = $this->getDbo($this->_lowerModel);
+    $dbo = $this->getDbo();
 
     $columns = [];
     foreach ($dbo->getColumns() as $name => $column) {
@@ -84,7 +84,7 @@ class ModelGeneratorModel {
       $consts[] = ["const" => $const, "field" => $field];
     }
 
-    $dbo = $this->getDbo($this->_lowerModel);
+    $dbo = $this->getDbo();
 
     $this->_smarty->assign("hasMultipleKeys", count($dbo->getPrimaryKeys()) > 1);
     $this->_smarty->assign("keys", array_keys($dbo->getPrimaryKeys()));
@@ -173,7 +173,7 @@ class ModelGeneratorModel {
    * @return Model
    */
   public static function getModel($namespace, $basename) {
-    $class = $namespace."\\Model\\" . self::getModelClass($basename);
+    $class = $namespace . "\\Model\\" . self::getModelClass($basename);
 
     return new $class();
   }

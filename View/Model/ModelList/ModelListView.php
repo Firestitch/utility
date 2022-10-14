@@ -13,7 +13,8 @@ class ModelListView extends View {
     $this->disableAuthorization();
   }
 
-  public function init() {;
+  public function init() {
+    ;
     $name = $this->request("name");
     $limit = ($limit = $this->request("limit")) ? $limit : 15;
     $dir = ModelGeneratorModel::getNamespaceDir($this->request("namespace"));

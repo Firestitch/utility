@@ -68,7 +68,9 @@ class WsdlView extends View {
         WebApplication::addError($e->getMessage());
         $response->data("errors", WebApplication::getErrorMessages());
       }
-      $response->data("warnings", WebApplication::getWarningMessages())
+
+      $response
+        ->data("warnings", WebApplication::getWarningMessages())
         ->data("messages", WebApplication::getNotifyMessages())
         ->render();
     }
