@@ -109,7 +109,7 @@
 		  $handler = $this->acl()->apply({$pascalModel}Handler::create(false));
 		  $ids = is_array($this->post("{$modelId|camelize}s")) ? $this->post("{$modelId|camelize}s") : explode(",",$this->post("{$modelId|camelize}s"));
 
-		  OrderingModel::create($handler,"{$modelId}")
+		  (new OrderingModel($handler,"{$modelId}"))
 		  ->reorder($ids,$this->post("page") * $this->post("limit"));
 		  }
 		  }

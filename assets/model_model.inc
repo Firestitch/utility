@@ -5,7 +5,7 @@ namespace {$namespace}\Model;
 use Framework\Core\Model;
 {/if}use {$namespace}\Dbo\{$pascalName}Dbo;
 {if $primaryObjectId}
-use Backend\Lib\Object\Model\ObjectAbstractModel;
+use Framework\Object\Model\ObjectAbstractModel;
 use Framework\Db\Db;{/if}
 {if $hasGuid}
 use Framework\Util\MiscUtil;
