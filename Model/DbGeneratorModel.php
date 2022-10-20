@@ -5,6 +5,7 @@ namespace Utility\Model;
 use Exception;
 use Framework\Core\WebApplication;
 use Framework\Db\Db;
+use Framework\Db\Dbq\Dbq;
 use Framework\Util\FileUtil;
 use Framework\Util\StringUtil;
 
@@ -151,7 +152,7 @@ class DbGeneratorModel {
     return $hasSuccess;
   }
 
-  public function createDbq(string $tablename, string $namespace, string $name, string  $pascalName, $override = false) {
+  public function createDbq(string $tablename, string $namespace, string $name, string $pascalName, $override = false) {
     $classname = "{$pascalName}Dbq";
     $dbqFile = self::getDbqFile($classname, $this->_appDir);
 
@@ -201,5 +202,16 @@ class DbGeneratorModel {
     }
 
     return $count;
+  }
+
+  public static function isPrimaryObjectId($tablename) {
+    $sql = Dbq::createSubquery("information_schema.key_column_usage")
+      ->where("referenced_table_schema", "=", Db::instance()->getDbName(), "AND", true)
+      ->where("table_name", "=", $tablename, "AND", true)
+      ->where("referenced_table_name", "=", "objects", "AND", true)
+      ->where("referenced_column_name", "=", "object_id", "AND", true)
+      ->select("table_name");
+
+    return Db::instance()->exists($sql);
   }
 }

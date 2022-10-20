@@ -29,14 +29,14 @@ class DbModelApi extends View {
         $name = $this->post("name");
         $pascalName = $this->post("pascalName");
 
-        $primaryObjectId = $this->post("primary_object_id");
         $override = $this->post("override");
-        $objects = (array)$this->post("objects");
+        $objects = (array) $this->post("objects");
         $dir = $this->_getDir(trim($namespace, "\\"));
 
         if ($this->isFormValid($tablename, $name)) {
           $dbGeneratorModel = new DbGeneratorModel($dir);
           $keyCount = $dbGeneratorModel->getKeyCount($tablename);
+          $primaryObjectId = DbGeneratorModel::isPrimaryObjectId($tablename);
 
           if (!$keyCount) {
             WebApplication::addWarning("There are no key columns for this table. If this is the intended design, please disregard this warning");
@@ -65,7 +65,7 @@ class DbModelApi extends View {
             WebApplication::addNotify('Successfully created ' . $classname);
           }
 
-          $modelGeneratorModel = new ModelGeneratorModel($namespace, $name, $pascalName, $dir, ["primary_object_id" => $primaryObjectId]);
+          $modelGeneratorModel = new ModelGeneratorModel($namespace, $name, $pascalName, $dir, ["primaryObjectId" => $primaryObjectId]);
           if (in_array("cmodel", $objects)) {
             if (!is_file($modelGeneratorModel->getComplexModelFile()) || $override) {
               $modelGeneratorModel->generateComplexModel();

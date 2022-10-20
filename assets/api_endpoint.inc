@@ -1,7 +1,5 @@
 		public function {$method|camelize}($params,$data) {
-
 		${$modelId|camelize} = value($params,"{$modelId|camelize}");{if $parentModel}
-
 		${$parentModel|camelize}Id = value($params,"{$parentModel|camelize}Id");
 
 		${$parentModel|pascalize}Model = {$pascalParentModel}Handler::create()
@@ -62,7 +60,6 @@
 		  $this->data("{$modelPlural|camelize}", ${$snakeModel|camelize}Arry->values());
 
 		  }{/if}{if in_array("post",$methods) || in_array("put",$methods) || in_array("delete",$methods)} else {
-
 		  ${$snakeModel|camelize}Model = {$pascalModel}Model::create();
 
 		  if($this->isPut() || $this->isDelete()) {
@@ -80,24 +77,23 @@
 		  if($this->isPost()) {
 		  ${$snakeModel|camelize}Model->set{$parentModel|pascalize}Id(${$parentModel|pascalize}Model->get{$parentModel|pascalize}Id());
 		  }
-		  {/if}
-		  //${$snakeModel|camelize}Model->startAudit($this->getSession()->getAccountId());
-
+		  {/if}{if $primaryObjectId}
+		  ${$snakeModel|camelize}Model->startAudit($this->getSession()->getAccountId());
+			{/if}
 		  if($this->isPost() || $this->isPut()) {
-
 		  ${$snakeModel|camelize}Model
 		  ->fill($this->posts(),["{'", "'|implode:$fillFields}"])
 		  ->validate()
 		  ->save();
 
 		  }{/if}{if in_array("delete",$methods)} elseif($this->isDelete()) {
-
-		  ${$snakeModel|camelize}Model->delete();
+		  	${$snakeModel|camelize}Model->delete();
 		  }
 
 		  $this->data("{$model|camelize}",${$snakeModel|camelize}Model->arry());
-		  {/if}
-		  //${$snakeModel|camelize}Model->endAudit();
+		  {/if}{if $primaryObjectId}
+			${$snakeModel|camelize}Model->endAudit();
+			{/if}
 		  }
 		  }
 		  {if in_array("order",$options)}
@@ -121,8 +117,8 @@
         "path" => "",
         "class" => \{$namespace}\View\Api\{$pluralPascalModel}View::class,
         "children" => [
-					["path" => ":{$modelId|camelize}?", "function" => "{$method|camelize}"]
+					["path" => ":{$modelId|camelize}?", "function" => "{$method|camelize}"],
 				]
-			]
+			],
 		];
 	}

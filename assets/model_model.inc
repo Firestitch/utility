@@ -6,6 +6,7 @@ use Framework\Core\Model;
 {/if}use {$namespace}\Dbo\{$pascalName}Dbo;
 {if $primaryObjectId}
 use Framework\Object\Model\ObjectAbstractModel;
+use Backend\Lib\Object\Traits\ObjectTrait;
 use Framework\Db\Db;{/if}
 {if $hasGuid}
 use Framework\Util\MiscUtil;
@@ -15,7 +16,7 @@ use Framework\Util\MiscUtil;
 
 class {$pascalName}Model extends {if $primaryObjectId}ObjectAbstractModel{else}Model{/if} {
 
-  use Traits\{$pascalName}Trait;
+  use Traits\{$pascalName}Trait{if $primaryObjectId}, ObjectTrait{/if};
 
 {if $hasState}
 	const STATE_ACTIVE	= "active";

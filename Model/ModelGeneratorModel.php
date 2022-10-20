@@ -26,7 +26,7 @@ class ModelGeneratorModel {
   public function __construct($namespace, $name, $pascalName, $appDir = null, $options = []) {
     $this->_lowerModel = LangUtil::singular($name);
     $this->_upperModel = LangUtil::singular(strtoupper($name));
-    $this->_primaryObjectId = value($options, "primary_object_id");
+    $this->_primaryObjectId = value($options, "primaryObjectId");
     $this->_pascalName = $pascalName;
     $this->_namespace = $namespace;
     $this->_appDir = $appDir;

@@ -91,7 +91,13 @@ class ApiGeneratorModel extends GeneratorModel {
     $cmodel = ModelGeneratorModel::getModel($this->_namespace, $this->_model);
     $orderBy = "";
     $keywords = $accessibleFields = $fields = [];
+    $primaryObjectId = false;
+
     foreach ($cmodel->getDbos() as $dbo) {
+      if (DbGeneratorModel::isPrimaryObjectId($dbo->getTablename())) {
+        $primaryObjectId = true;
+      }
+
       $fields += $dbo->getColumns();
       foreach ($dbo->getColumns() as $name => $column) {
         if (preg_match("/(name|description)/", $name)) {
@@ -102,6 +108,7 @@ class ApiGeneratorModel extends GeneratorModel {
         }
       }
     }
+
     $accessibleFields = array_values(array_filter(array_keys($fields), function ($v) {
       return !preg_match("/(" . $this->_snakeModel . "_id\$|guid|create_date|configs|_time|order|meta\$)/", $v);
     }));
@@ -122,11 +129,12 @@ class ApiGeneratorModel extends GeneratorModel {
       ->assign("options", $this->_options)
       ->assign("orderBy", $orderBy)
       ->assign("snakeModel", $this->_snakeModel)
+      ->assign("primaryObjectId", $primaryObjectId)
       ->assign("pluralSnakeModel", $this->_pluralSnakeModel)
       ->assign("modelUpper", strtoupper($this->_model))
       ->assign("pascalModel", $pascalModel)
       ->assign("method", $this->_method)
-      ->assign("loads", (array)value($this->_options, "loads"))
+      ->assign("loads", (array) value($this->_options, "loads"))
       ->assign("modelPluralUpper", strtoupper($this->_modelPlural))
       ->assign("modelPluralUpperTrim", strtoupper(str_replace("_", "", $this->_modelPlural)))
       ->assign("modelPluralProper", ucwords($this->_modelPlural))
@@ -209,20 +217,21 @@ class ApiGeneratorModel extends GeneratorModel {
             ->exists(function (ArrayItem $item) use ($method) {
               return Arry::create($item->value->items)
                 ->exists(function ($item) use ($method) {
-                  return $item->key->value === "path" && $item->value instanceof String_ && $item->value->value === $method;
-                });
+                    return $item->key->value === "path" && $item->value instanceof String_ && $item->value->value === $method;
+                  }
+                );
             });
 
           if (!$exists) {
             $arrayItem = [
               new ArrayItem(
-                PhpParser::createString(strtolower($method)),
-                PhpParser::createString("path"),
-              ),
+              PhpParser::createString(strtolower($method)),
+              PhpParser::createString("path"),
+            ),
               new ArrayItem(
-                new StaticCall(new FullyQualified($class), "getRoutes"),
-                PhpParser::createString("children"),
-              )
+              new StaticCall(new FullyQualified($class), "getRoutes"),
+              PhpParser::createString("children"),
+            )
             ];
 
             array_unshift($apiChildren->value->items, new Array_($arrayItem));

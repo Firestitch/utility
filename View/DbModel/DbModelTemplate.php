@@ -1,32 +1,12 @@
 <?php
 
-use Framework\Util\HtmlTableUtil;
 use Framework\Util\HtmlUtil;
-
 
 ?>
 <h1>Db, Model & Handler</h1>
 
 <form id="form-db">
   <?php
-  $data[] = [
-    "",
-
-  ];
-
-  $data[] = ["Name:",];
-  $data[] = [
-    "",
-    HtmlUtil::checkbox("primary_object_id", "1", false, ["class" => ""], "Model extends Object")
-  ];
-
-  $data[] = ["", HtmlUtil::checkbox("override", "1", $override, ["class" => "override"], "Override existing files")];
-  $data[] = ["", HtmlUtil::link("javascript:;", "Generate", ["id" => "generate", "class" => "btn btn-primary"])];
-  $dbTable = HtmlTableUtil::create()
-    ->setData($data)
-    ->setClass("")
-    ->setPadding(3);
-
   $tablenameDd = HtmlUtil::dropdown("tablename", $tablenameList, $tablename, [
     "onKeyUp" => "update_class_name(this)",
     "onChange" => "update_class_name(this)",
@@ -65,9 +45,6 @@ use Framework\Util\HtmlUtil;
           <div>
             <?php echo HtmlUtil::checkbox("override", "1", $override, ["class" => "override"], "Override existing files") ?>
           </div>
-          <div>
-            <?php echo HtmlUtil::checkbox("primary_object_id", "1", false, ["class" => ""], "Model extends Object") ?>
-          </div>
         </div>
         <?php echo HtmlUtil::link("javascript:;", "Generate", ["id" => "generate", "class" => "generate btn btn-primary"]) ?>
       </td>
@@ -78,7 +55,7 @@ use Framework\Util\HtmlUtil;
 
 <script>
   function pascalize(str) {
-    return str.toLowerCase().replace(/(?:[^a-zA-Z0-9]+|^)(.)/g, function(match, chr) {
+    return str.toLowerCase().replace(/(?:[^a-zA-Z0-9]+|^)(.)/g, function (match, chr) {
       return chr.toUpperCase();
     });
   }
@@ -91,20 +68,20 @@ use Framework\Util\HtmlUtil;
     update_links(value, get_singular(value));
   }
 
-  $(".objects").on("change", function() {
+  $(".objects").on("change", function () {
     $(".override").attr("checked", false);
   })
 
-  $(".namespace").on("blur", function() {
+  $(".namespace").on("blur", function () {
     $(this).val($(this).val().sanitizeNamespace());
   })
 
-  $("#name").on("input", function() {
+  $("#name").on("input", function () {
     update_links("", $(this).val());
   })
 
-  $("#generate").click(function() {
-    $.post("/dbmodel/api", $("#form-db").serializeArray(), function(response) {
+  $("#generate").click(function () {
+    $.post("/dbmodel/api", $("#form-db").serializeArray(), function (response) {
       displayResponse(response, 'Successfully generated');
     });
   });
