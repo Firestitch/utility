@@ -28,6 +28,7 @@ class {$pascalName}Model extends {if $primaryObjectId}ObjectAbstractModel{else}M
 	public function __construct() {
 		parent::__construct({$pascalName}Dbo::create());
   }
+	
 {foreach $consts as $const}{if $const!="state"}
   public function is{$const.const|pascalize}()	{ return $this->get{$const.field|pascalize}()==self::{$const.const}; }
 
@@ -129,10 +130,12 @@ class {$pascalName}Model extends {if $primaryObjectId}ObjectAbstractModel{else}M
 						"name"=>"id"
 					],
 {/if}
-{/if}{if $name=="state"}						"validations"=>[
+{/if}{if $name=="state"}						
+					"validations"=>[
 						"keyExists"=>self::getStates()
 					],
-{/if}{if (preg_match("/_id$/",$name) && !$column->isPrimary() && !$column->isNotNull()) || $name === "name"}						"validations"=>[
+{/if}{if (preg_match("/_id$/",$name) && !$column->isPrimary() && !$column->isNotNull()) || $name === "name"}						
+					"validations"=>[
 						"required"=>true
 					],
 {/if}{if $column->isPrimary() || $name=="guid" || $name=="order" || $name=="modify_date" || $name=="create_date"}

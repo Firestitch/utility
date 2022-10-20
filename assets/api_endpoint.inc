@@ -79,6 +79,7 @@
 		  }
 		  {/if}{if $primaryObjectId}
 		  ${$snakeModel|camelize}Model->startAudit($this->getSession()->getAccountId());
+			
 			{/if}
 		  if($this->isPost() || $this->isPut()) {
 		  ${$snakeModel|camelize}Model
@@ -92,6 +93,7 @@
 
 		  $this->data("{$model|camelize}",${$snakeModel|camelize}Model->arry());
 		  {/if}{if $primaryObjectId}
+			
 			${$snakeModel|camelize}Model->endAudit();
 			{/if}
 		  }
