@@ -5,6 +5,7 @@ use Framework\Core\Handler;
 use {$namespace}\Model\{$pascalName}Model;
 use {$namespace}\Dbq\{$pascalName}Dbq;
 
+
 /**
  * @method {$pascalName}Model get($id = null)
  * @method {$pascalName}Model require($id = null)
