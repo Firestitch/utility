@@ -10,6 +10,7 @@ use Framework\Util\HtmlTableUtil;
 use Framework\Util\HtmlUtil;
 use Framework\View\Application\NotFound\NotFoundView;
 
+
 class SystemManager extends SystemManagerBase {
 
   public static function getRestrictedView() {
@@ -23,12 +24,14 @@ class SystemManager extends SystemManagerBase {
   public static function initialize() {
     parent::initialize();
 
-    HtmlUtil::setDefaults([
-      "input" => ["class" => "form-control"],
-      "button" => ["class" => "btn btn-default"],
-      "textarea" => ["class" => "form-control"],
-      "dropdown" => ["class" => "form-control"]
-    ]);
+    HtmlUtil::setDefaults(
+      [
+        "input" => ["class" => "form-control"],
+        "button" => ["class" => "btn btn-default"],
+        "textarea" => ["class" => "form-control"],
+        "dropdown" => ["class" => "form-control"]
+      ]
+    );
 
     HtmlTableUtil::setDefaults("table table-striped table-bordered", "", "");
   }
