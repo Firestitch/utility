@@ -53,6 +53,9 @@ class {$pascalName}Handler extends Handler {
   public function set{$name|pascalize}s($values) { return $this->where("{$field}","IN",$values); }
 
 {/foreach}
+  /**
+   * @return static
+   */
   public static function create($defaults=false) {
     $hmodel = parent::create();
 {if $hasState}    if($defaults)
