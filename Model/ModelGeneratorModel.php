@@ -32,9 +32,9 @@ class ModelGeneratorModel {
     $this->_appDir = $appDir;
     $this->_smarty = new SmartyModel();
     $this->_smarty->disableSecurity();
-    $this->_smarty->registerModifierPlugin("pascalize", [StringUtil::class , "pascalize"]);
-    $this->_smarty->registerModifierPlugin("camelize", [StringUtil::class , "camelize"]);
-    $this->_smarty->registerModifierPlugin("plural", [LangUtil::class , "plural"]);
+    $this->_smarty->registerModifierPlugin("pascalize", [StringUtil::class, "pascalize"]);
+    $this->_smarty->registerModifierPlugin("camelize", [StringUtil::class, "camelize"]);
+    $this->_smarty->registerModifierPlugin("plural", [LangUtil::class, "plural"]);
     $this->_smarty->assign("primaryObjectId", $this->_primaryObjectId);
     $this->_smarty->assign("upperModel", $this->_upperModel);
     $this->_smarty->assign("pascalName", $this->_pascalName);
@@ -154,11 +154,12 @@ class ModelGeneratorModel {
       }
 
       foreach ($dbo->getColumns() as $name => $column) {
-        if (!$column->isPrimary() && preg_match("/(^state\$|_id\$|guid)/", $name)) {
+        if (preg_match("/(^state\$|_id\$|guid)/", $name)) {
           $fields[$name] = $dbo->getTablename() . "." . $name;
         }
       }
     }
+
     $this->_smarty->assign("selectFields", '"' . implode('.*","', $tablenames) . '.*"');
     $this->_smarty->assign("extendPrimaryId", $extendPrimaryId);
     $this->_smarty->assign("extendTablename", value($tablenames, 0));
