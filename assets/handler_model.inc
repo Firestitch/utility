@@ -44,10 +44,6 @@ class {$pascalName}Handler extends Handler {
 {if $hasState}  public function whereStateActive() { return $this->setState({$pascalName}Model::STATE_ACTIVE); }
 
 {/if}
-  public function set{$pascalName}Ids($values)	{ return $this->where("{$tablename}.{$lowerModel}_id","IN",$values); }
-
-  public function set{$pascalName}Id($value)	{ return $this->where("{$tablename}.{$lowerModel}_id","=",$value); }
-
 {foreach $fields as $name=>$field}  public function set{$name|pascalize}($value) { return $this->where("{$field}","=",$value); }
 
   public function set{$name|pascalize}s($values) { return $this->where("{$field}","IN",$values); }
