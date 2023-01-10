@@ -5,6 +5,7 @@ namespace Utility\Model;
 use Exception;
 use Framework\Core\WebApplication;
 use Framework\Db\Db;
+use Framework\Db\Dbo\Dbo;
 use Framework\Db\Dbq\Dbq;
 use Framework\Util\FileUtil;
 use Framework\Util\StringUtil;
@@ -27,20 +28,24 @@ class DbGeneratorModel {
     return $dbq ? $dbq->getTablename() : "";
   }
 
-  public static function getDbq($namespace, $basename) {
+  public static function getDbq($namespace, $basename): Dbq {
     $class = self::getDbqClass($namespace, $basename);
 
-    return new $class();
+    /** @var Dbq */
+    $dbq = new $class();
+
+    return $dbq;
   }
 
   public static function getDbqClass(string $namespace, $basename) {
     return "{$namespace}\\Dbq\\" . self::getDbqClassname($basename);
   }
 
-  public static function getDbo($namespace, $basename) {
+  public static function getDbo($namespace, $basename): Dbo {
     $class = self::getDboClass($namespace, $basename);
-
-    return new $class();
+    /** @var Dbo */
+    $dbo = new $class();
+    return $dbo;
   }
 
   public static function getDboClass(string $namespace, $basename) {

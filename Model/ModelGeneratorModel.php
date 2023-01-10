@@ -4,6 +4,7 @@ namespace Utility\Model;
 
 use Framework\Core\Model;
 use Framework\Core\WebApplication;
+use Framework\Db\Dbo\Dbo;
 use Framework\Db\Dbq\Dbq;
 use Framework\Model\SmartyModel;
 use Framework\Util\FileUtil;
@@ -105,11 +106,11 @@ class ModelGeneratorModel {
     $this->_smarty->assign("columns", $dbo->getColumns());
   }
 
-  public function getDbo() {
+  public function getDbo(): Dbo {
     return DbGeneratorModel::getDbo($this->_namespace, $this->_pascalName);
   }
 
-  public function getDbq() {
+  public function getDbq(): Dbq {
     return DbGeneratorModel::getDbq($this->_namespace, $this->_pascalName);
   }
 
@@ -176,7 +177,10 @@ class ModelGeneratorModel {
   public static function getModel($namespace, $basename) {
     $class = $namespace . "\\Model\\" . self::getModelClass($basename);
 
-    return new $class();
+    /** @var Model */
+    $model = new $class();
+
+    return $model;
   }
 
   public static function getModelClass($basename) {
