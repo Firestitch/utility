@@ -5,7 +5,6 @@ namespace {$namespace}\Model;
 use Framework\Core\Model;
 {/if}use {$namespace}\Dbo\{$pascalName}Dbo;
 {if $primaryObjectId}
-use Framework\Object\Model\ObjectAbstractModel;
 use Backend\Lib\Object\Traits\ObjectTrait;
 use Framework\Db\Db;{/if}
 {if $hasGuid}
@@ -14,7 +13,7 @@ use Framework\Util\MiscUtil;
 
 
 
-class {$pascalName}Model extends {if $primaryObjectId}ObjectAbstractModel{else}Model{/if} {
+class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\ObjectModel{else}Model{/if} {
 
   use Traits\{$pascalName}Trait{if $primaryObjectId}, ObjectTrait{/if};
 
@@ -22,7 +21,9 @@ class {$pascalName}Model extends {if $primaryObjectId}ObjectAbstractModel{else}M
 	const STATE_ACTIVE	= "active";
 	const STATE_DELETED	= "deleted";
 
-	public static function getStates()	{ return [self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"]; }
+	public static function getStates()	{ 
+		return [self::STATE_ACTIVE=>"Active",self::STATE_DELETED=>"Deleted"]; 
+	}
 
 {/if}
 	public function __construct() {
@@ -30,18 +31,30 @@ class {$pascalName}Model extends {if $primaryObjectId}ObjectAbstractModel{else}M
   }
 	
 {foreach $consts as $const}{if $const!="state"}
-  public function is{$const.const|pascalize}()	{ return $this->get{$const.field|pascalize}()==self::{$const.const}; }
+  public function is{$const.const|pascalize}()	{ 
+		return $this->get{$const.field|pascalize}() === self::{$const.const}; 
+	}
 
 {/if}
 {/foreach}
 {if $hasState}
-	public function getStateName()	{ return value(self::getStates(),$this->getState()); }
+	public function getStateName()	{ 
+		return value(self::getStates(),$this->getState()); 
+	}
 
-  public function delete()			{ return $this->setState(self::STATE_DELETED)->save(); }
+  public function delete() { 
+		return $this
+			->setState(self::STATE_DELETED)
+			->save(); 
+	}
 
-  public function isStateDelete()	{ return $this->getState() === self::STATE_DELETED; }
+  public function isStateDelete()	{ 
+		return $this->getState() === self::STATE_DELETED; 
+	}
 
-	public function isStateActive()	{ return $this->getState() === self::STATE_ACTIVE; }
+	public function isStateActive()	{ 
+		return $this->getState() === self::STATE_ACTIVE; 
+	}
 {/if}
 
 	/**
