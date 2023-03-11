@@ -4,7 +4,6 @@ namespace Utility\View\DbModel;
 
 use Framework\Core\View;
 use Framework\Db\Db;
-use Framework\Util\ArrayUtil;
 
 
 class DbModelView extends View {
@@ -30,11 +29,6 @@ class DbModelView extends View {
     $dbUtility = Db::getInstance()->getUtility();
 
     $tablenameList = $dbUtility->getTableNames();
-    $sql = "SELECT `table_name` FROM `information_schema`.`columns` WHERE `table_schema` = '" . Db::getInstance()
-      ->getDbName() . "' AND `column_name` = 'state'";
-
-    $stateColumnTables = ArrayUtil::getListFromArray(Db::getInstance()
-      ->select($sql), "table_name");
 
     $this->setVar("tablenameList", $tablenameList);
     $this->setVar("classname", $this->_classname);
@@ -43,6 +37,5 @@ class DbModelView extends View {
     $this->setVar("createDbq", $this->_createDbq);
     $this->setVar("createDbo", $this->_createDbo);
     $this->setVar("override", $this->_override);
-    $this->setVar("stateColumnTables", $stateColumnTables);
   }
 }
