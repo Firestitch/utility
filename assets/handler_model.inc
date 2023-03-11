@@ -7,7 +7,7 @@ use {$namespace}\Dbq\{$pascalName}Dbq;
 
 
 /**
- * @method {$pascalName}Model get($id = null)
+ * @method ?{$pascalName}Model get($id = null)
  * @method {$pascalName}Model require($id = null)
  * @method {$pascalName}Model[] gets()
  * @method {$pascalName}Model[] page($limit = 25)
