@@ -79,7 +79,7 @@ class DbGeneratorModel {
       }
       $str .= "  }\n\n";
       foreach ($result as $row) {
-        $type = self::getPhpType($row["type"]);
+        $type = self::getPhpType($row["type"], $row["length"]);
         $null = $row["null"];
         $str .= "
   /**
@@ -110,7 +110,11 @@ class DbGeneratorModel {
     return $hasSuccess;
   }
 
-  public static function getPhpType($type) {
+  public static function getPhpType($type, $length) {
+    if (preg_match("/tinyint/i", $type) && $length === 1) {
+      return "int|bool";
+    }
+
     if (preg_match("/int/i", $type)) {
       return "int";
     }

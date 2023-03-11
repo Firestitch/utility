@@ -46,7 +46,7 @@ class ModelTraitGeneratorModel {
 
       foreach ($fields as $field) {
         $fieldName = $field["name"];
-        $type = DbGeneratorModel::getPhpType($field["type"]);
+        $type = DbGeneratorModel::getPhpType($field["type"], $field["length"]);
         $nullable = $field["null"];
         $pascalFieldName = StringUtil::pascalize($fieldName);
         $str .= "  /**
