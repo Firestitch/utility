@@ -48,7 +48,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 			->save(); 
 	}
 
-  public function isStateDelete()	{ 
+  public function isStateDeleted()	{ 
 		return $this->getState() === self::STATE_DELETED; 
 	}
 
@@ -99,7 +99,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 			->setName($this->getName())
 			->setModifyDate(DB::getDateTime()){if $hasState}
 
-			->setActive(!$this->isStateDelete())
+			->setActive(!$this->isStateDeleted())
 {/if}
 			->save();
 
