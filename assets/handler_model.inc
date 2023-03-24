@@ -36,15 +36,13 @@ class {$pascalName}Handler extends Handler {
 
     $this->mapModels($models);
 
-    return $this;
+    return $models;
   }
   
   public function mapModels($models) {
     return $models;
   }
-
-{if $hasState}  public function whereStateActive() { return $this->setState({$pascalName}Model::STATE_ACTIVE); }
-
+  
 {/if}
 {foreach $fields as $name=>$field}  public function set{$name|pascalize}($value) { return $this->where("{$field}","=",$value); }
 
