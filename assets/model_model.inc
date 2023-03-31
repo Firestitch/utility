@@ -70,7 +70,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 {if $primaryObjectId}
 
 			if($this->get{$primaryKey|pascalize}()) {
-				$this->getDbo("{$lowerModel}")->update();
+				$this->getDbo("{$dboName}")->update();
 			} else {
         DB::transaction(function () {
 {if $hasState}
@@ -90,7 +90,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 
 {/if}
           $this->createObject();
-          $this->getDbo("{$lowerModel}")->insert();
+          $this->getDbo("{$dboName}")->insert();
         });
 			}
 
@@ -106,7 +106,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 {else}
 
 		if($this->get{$primaryKey|pascalize}()) {
-			$this->getDbo("{$lowerModel}")->update();
+			$this->getDbo("{$dboName}")->update();
 		} else {
 {if $hasState}
       if(!$this->getState()) {
@@ -124,7 +124,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 			}
 
 {/if}
-			$this->getDbo("{$lowerModel}")->insert();
+			$this->getDbo("{$dboName}")->insert();
 		}
 {/if}
 		return $this;

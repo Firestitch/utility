@@ -43,7 +43,6 @@ class {$pascalName}Handler extends Handler {
     return $models;
   }
   
-{/if}
 {foreach $fields as $name=>$field}  public function set{$name|pascalize}($value) { return $this->where("{$field}","=",$value); }
 
   public function set{$name|pascalize}s($values) { return $this->where("{$field}","IN",$values); }

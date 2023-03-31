@@ -43,6 +43,7 @@ class ModelGeneratorModel {
     $this->_smarty->assign("pascalNames", LangUtil::getPlural($this->_pascalName));
     $this->_smarty->assign("lowerModel", $this->_lowerModel);
     $this->_smarty->assign("lowerModels", LangUtil::getPluralString($this->_lowerModel));
+    $this->_smarty->assign("dboName", $pascalName);
   }
 
   public static function getHandlerClass($basename) {
