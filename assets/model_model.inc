@@ -7,6 +7,9 @@ use Framework\Core\Model;
 {if $primaryObjectId}
 use Backend\Lib\Object\Traits\ObjectTrait;
 use Framework\Db\Db;{/if}
+{if $primaryObjectId && $hasModifyAccountId}
+
+use Framework\Audit\Model\AuditorModel;{/if}
 {if $hasGuid}
 use Framework\Util\MiscUtil;
 {/if}
@@ -56,6 +59,16 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 		return $this->getState() === self::STATE_ACTIVE; 
 	}
 {/if}
+{if $primaryObjectId && $hasModifyAccountId}
+
+  /**
+   * @return static
+   */
+  public function startAudit(?int $accountId = null, ?AuditorModel $auditorModel = null) {
+    $this->setModifyAccountId($accountId);
+    return parent::startAudit($accountId, $auditorModel);
+  }
+{/if}
 
 	/**
 	 * @return static
@@ -67,61 +80,67 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 {/foreach}
 								->one("{$lowerModel}_id"));
 {/if}
+{if $hasModifyDate}
+    
+		$this->setModifyDate(time());
+{/if}
 {if $primaryObjectId}
-
-			if($this->get{$primaryKey|pascalize}()) {
-				$this->getDbo("{$dboName}")->update();
-			} else {
-        DB::transaction(function () {
-{if $hasState}
-          if(!$this->getState()) {
-            $this->setState(self::STATE_ACTIVE);
-					}
-
-{/if}{if $hasGuid}
-          if(!$this->getGuid()) {
-            $this->setGuid(MiscUtil::guid());
-					}
-
-{/if}{if $hasCreateDate}
-          if(!$this->getCreateDate()) {
-            $this->setCreateDate(time());
-					}
-
-{/if}
-          $this->createObject();
-          $this->getDbo("{$dboName}")->insert();
-        });
-			}
-
-		$this
-			->object(true)
-			->setName($this->getName())
-			->setModifyDate(DB::getDateTime()){if $hasState}
-
-			->setActive(!$this->isStateDeleted())
-{/if}
-			->save();
-
-{else}
 
 		if($this->get{$primaryKey|pascalize}()) {
 			$this->getDbo("{$dboName}")->update();
 		} else {
+			DB::transaction(function () {
 {if $hasState}
-      if(!$this->getState()) {
-        $this->setState(self::STATE_ACTIVE);
-			}
+				if(!$this->getState()) {
+					$this->setState(self::STATE_ACTIVE);
+				}
 
 {/if}{if $hasGuid}
-      if(!$this->getGuid()) {
-        $this->setGuid(MiscUtil::guid());
-			}
+				if(!$this->getGuid()) {
+					$this->setGuid(MiscUtil::guid());
+				}
 
 {/if}{if $hasCreateDate}
-      if(!$this->getCreateDate()) {
-        $this->setCreateDate(time());
-			}
+				if(!$this->getCreateDate()) {
+					$this->setCreateDate(time());
+				}
+
+{/if}
+				$this->createObject();
+				$this->getDbo("{$dboName}")->insert();
+			});
+		}
+
+	$this
+		->object(true)
+		{if $hasName}
+		->setName($this->getName())
+{/if}
+		->setModifyDate(time()){if $hasState}
+
+		->setActive(!$this->isStateDeleted())
+{/if}
+		->save();
+
+{else}
+
+	if($this->get{$primaryKey|pascalize}()) {
+		$this->getDbo("{$dboName}")->update();
+	} else {
+{if $hasState}
+		if(!$this->getState()) {
+			$this->setState(self::STATE_ACTIVE);
+		}
+
+{/if}{if $hasGuid}
+		if(!$this->getGuid()) {
+			$this->setGuid(MiscUtil::guid());
+		}
+
+{/if}{if $hasCreateDate}
+		if(!$this->getCreateDate()) {
+			$this->setCreateDate(time());
+		}
 
 {/if}
 			$this->getDbo("{$dboName}")->insert();
@@ -172,7 +191,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 	}
 
   public function __toString() {
-    return (string)$this->getName();
+    return (string){if $hasName}$this->getName(){else}$this->get{$primaryKey|pascalize}(){/if};
   }
 
 	public function getAuditRelatedObjects() {

@@ -94,6 +94,9 @@ class ModelGeneratorModel {
     $this->_smarty->assign("hasGuid", array_key_exists("guid", $columns));
     $this->_smarty->assign("hasState", array_key_exists("state", $columns));
     $this->_smarty->assign("hasCreateDate", array_key_exists("create_date", $columns));
+    $this->_smarty->assign("hasModifyDate", array_key_exists("modify_date", $columns));
+    $this->_smarty->assign("hasName", array_key_exists("name", $columns));
+    $this->_smarty->assign("hasModifyAccountId", array_key_exists("modify_account_id", $columns));
     $this->_smarty->assign("hasObjectId", array_key_exists("object_id", $columns));
     $this->_smarty->assign("consts", $consts);
     $this->_smarty->assign("id", self::getAbr($this->_lowerModel) . "id");
