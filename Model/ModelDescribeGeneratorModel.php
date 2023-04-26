@@ -7,8 +7,9 @@ use Framework\Arry\Arry;
 use Framework\Db\Db;
 use Framework\PhpParser\PhpParser;
 use Framework\Util\StringUtil;
-use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
+use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Return_;
@@ -77,9 +78,24 @@ class ModelDescribeGeneratorModel {
   public function getDescribeArray(): Array_ {
     $describe = $this->getDescribeMethod();
     $return = value($describe->stmts, 0);
+
     if ($return instanceof Return_) {
       if ($return->expr instanceof Array_) {
         return $return->expr;
+      }
+
+      if ($return->expr instanceof FuncCall) {
+        /**
+         * @var FuncCall
+         */
+        $expr = $return->expr;
+        if ($expr->name->parts === ["array_merge"]) {
+          foreach ($expr->args as $arg) {
+            if ($arg->value instanceof Array_) {
+              return $arg->value;
+            }
+          }
+        }
       }
     }
 
