@@ -5,7 +5,6 @@ namespace Utility\View\Model\ModelFields;
 use Framework\Arry\Arry;
 use Framework\Core\View;
 use Framework\Db\Dbo\Dbo;
-use Utility\Model\DbGeneratorModel;
 use Utility\Model\ModelGeneratorModel;
 
 class ModelFieldsView extends View {
@@ -24,14 +23,11 @@ class ModelFieldsView extends View {
     $model = ModelGeneratorModel::getModel($namespace, $model);
     $list = Arry::create($model->getDbos())
       ->reduce(function ($list, Dbo $dbo) {
-        return Arry::create($dbo->getColumns())
-          ->concat($list)
-          ->get();
+        return array_merge($list, array_keys($dbo->getColumns()));
       }, [])
-      ->map(function ($column, $name) {
-        return $name;
-      })
       ->get();
+
+    $list = array_combine($list, $list);
 
     $this
       ->setVar("list", $list)
