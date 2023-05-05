@@ -29,10 +29,10 @@
 		${$snakeModel|camelize}Handler->setState({$pascalModel}Model::STATE_ACTIVE);
 		{elseif preg_match("/(name|description)/",$name)}{continue}{elseif $column->isDataType("date") || $column->isDataType("datetime")}
 
-		if(!is_null($value=$this->get("from{$name|pascalize}")))
+		if(!is_null($value=$this->get("{$name|pascalize}From")))
 		${$snakeModel|camelize}Handler->where("{$dbo->getTablename()}.{$name}",">",TimeModel::create($value)->db());
 
-		if(!is_null($value=$this->get("to{$name|pascalize}")))
+		if(!is_null($value=$this->get("{$name|pascalize}To")))
 		${$snakeModel|camelize}Handler->where("{$dbo->getTablename()}.{$name}","<",TimeModel::create($value)->db());
 		  {else}
 
