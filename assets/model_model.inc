@@ -113,9 +113,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 
 	$this
 		->object(true)
-		{if $hasName}
-		->setName($this->getName())
-{/if}
+		->setName((string)$this)
 		->setModifyDate(time()){if $hasState}
 
 		->setActive(!$this->isStateDeleted())
