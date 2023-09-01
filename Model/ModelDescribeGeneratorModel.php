@@ -7,8 +7,8 @@ use Framework\Arry\Arry;
 use Framework\Db\Db;
 use Framework\PhpParser\PhpParser;
 use Framework\Util\StringUtil;
-use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -75,7 +75,7 @@ class ModelDescribeGeneratorModel {
     $this->_phpParser->save();
   }
 
-  public function getDescribeArray(): Array_ {
+  public function getDescribeArray(): ?Array_ {
     $describe = $this->getDescribeMethod();
     $return = value($describe->stmts, 0);
 
