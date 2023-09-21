@@ -7,6 +7,8 @@ use Framework\Core\Model;
 {if $primaryObjectId}
 use Backend\Lib\Object\Traits\ObjectTrait;
 use Framework\Db\Db;{/if}
+{if $primaryObjectId || $hasCreateDate || $hasModifyDate}
+use Framework\Model\TimeModel;{/if}
 {if $primaryObjectId && $hasModifyAccountId}
 
 use Framework\Audit\Model\AuditorModel;{/if}
@@ -82,7 +84,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 {/if}
 {if $hasModifyDate}
     
-		$this->setModifyDate(time());
+		$this->setModifyDate(TimeModel::now());
 {/if}
 {if $primaryObjectId}
 
@@ -102,7 +104,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 
 {/if}{if $hasCreateDate}
 				if(!$this->getCreateDate()) {
-					$this->setCreateDate(time());
+					$this->setCreateDate(TimeModel::now());
 				}
 
 {/if}
@@ -114,7 +116,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 	$this
 		->object(true)
 		->setName((string)$this)
-		->setModifyDate(time()){if $hasState}
+		->setModifyDate(TimeModel::now()){if $hasState}
 
 		->setActive(!$this->isStateDeleted())
 {/if}
@@ -137,7 +139,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 
 {/if}{if $hasCreateDate}
 		if(!$this->getCreateDate()) {
-			$this->setCreateDate(time());
+			$this->setCreateDate(TimeModel::now());
 		}
 
 {/if}
