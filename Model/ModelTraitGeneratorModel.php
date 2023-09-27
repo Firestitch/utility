@@ -81,7 +81,7 @@ class ModelTraitGeneratorModel {
   }
 
   public static function getTraitFile($classname, $appDir) {
-    return FileUtil::sanitizeFile($appDir . "/Model/Traits/" . $classname . ".php");
+    return FileUtil::getSanitizedFile($appDir . "/Model/Traits/" . $classname . ".php");
   }
 
   public function writeFile($file, $string) {

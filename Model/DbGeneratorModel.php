@@ -147,7 +147,7 @@ class DbGeneratorModel {
   }
 
   public static function getDboFile($classname, $appDir) {
-    return FileUtil::sanitizeFile($appDir . "Dbo/" . $classname . ".php");
+    return FileUtil::getSanitizedFile($appDir . "Dbo/" . $classname . ".php");
   }
 
   public function writeFile($file, $string) {
@@ -198,7 +198,7 @@ class DbGeneratorModel {
   }
 
   public static function getDbqFile($classname, $appDir) {
-    return FileUtil::sanitizeFile($appDir . "Dbq/" . $classname . ".php");
+    return FileUtil::getSanitizedFile($appDir . "Dbq/" . $classname . ".php");
   }
 
   public function getKeyCount($tablename) {

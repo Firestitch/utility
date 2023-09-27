@@ -24,7 +24,7 @@ class GeneratorModel {
   }
 
   public static function getModelFile($classname, $dir) {
-    return FileUtil::sanitizeFile($dir . "/Model/" . self::getModelClassname($classname) . ".php");
+    return FileUtil::getSanitizedFile($dir . "/Model/" . self::getModelClassname($classname) . ".php");
   }
 
   public static function getModelClass($basename) {
