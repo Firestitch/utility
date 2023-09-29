@@ -27,7 +27,7 @@ class WsdlGeneratorModel extends GeneratorModel {
       if (!$this->writeTemplate(PathModel::getAssetsDirectory() . "wsdl.inc", $this->getWsdlFile())) {
         throw new Exception("Failed to generate " . $this->getWsdlFile());
       }
-      $messages[] = "Successfully added the file " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($this->getWsdlFile()), FileUtil::sanitizeFile($this->getWsdlFile()));
+      $messages[] = "Successfully added the file " . HtmlUtil::getLink("file:" . FileUtil::getSanitizedFile($this->getWsdlFile()), FileUtil::getSanitizedFile($this->getWsdlFile()));
     }
     $viewName = "\\Backend\\View\\Api\\" . $this->_api . "View";
     $class = new ReflectionClass($viewName);
@@ -166,7 +166,7 @@ class WsdlGeneratorModel extends GeneratorModel {
         throw new Exception("There was a problem trying to located the end of the class");
       }
       $wsdlCode = substr_replace($wsdlCode, $functionCode, $pos, 0);
-      $messages[] = "Added the {$method}() to " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($this->getWsdlFile()), FileUtil::sanitizeFile($this->getWsdlFile()));
+      $messages[] = "Added the {$method}() to " . HtmlUtil::getLink("file:" . FileUtil::getSanitizedFile($this->getWsdlFile()), FileUtil::getSanitizedFile($this->getWsdlFile()));
     }
     FileUtil::put($this->getWsdlFile(), $wsdlCode);
     //update RouteManager with wsdl class if not already defined.

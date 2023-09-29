@@ -76,7 +76,7 @@ class ApiGeneratorModel extends GeneratorModel {
     }
 
     FileUtil::put($file, $code);
-    $messages = ["Successfully updated the file " . HtmlUtil::getLink("file:" . FileUtil::sanitizeFile($file), FileUtil::sanitizeFile($file))];
+    $messages = ["Successfully updated the file " . HtmlUtil::getLink("file:" . FileUtil::getSanitizedFile($file), FileUtil::getSanitizedFile($file))];
   }
 
   public function getFile() {
@@ -134,7 +134,7 @@ class ApiGeneratorModel extends GeneratorModel {
       ->assign("modelUpper", strtoupper($this->_model))
       ->assign("pascalModel", $pascalModel)
       ->assign("method", $this->_method)
-      ->assign("loads", (array) value($this->_options, "loads"))
+      ->assign("loads", (array)value($this->_options, "loads"))
       ->assign("modelPluralUpper", strtoupper($this->_modelPlural))
       ->assign("modelPluralUpperTrim", strtoupper(str_replace("_", "", $this->_modelPlural)))
       ->assign("modelPluralProper", ucwords($this->_modelPlural))
@@ -216,7 +216,8 @@ class ApiGeneratorModel extends GeneratorModel {
           $exists = Arry::create($apiChildren->value->items)
             ->exists(function (ArrayItem $item) use ($method) {
               return Arry::create($item->value->items)
-                ->exists(function ($item) use ($method) {
+                ->exists(
+                  function ($item) use ($method) {
                     return $item->key->value === "path" && $item->value instanceof String_ && $item->value->value === $method;
                   }
                 );
@@ -225,13 +226,13 @@ class ApiGeneratorModel extends GeneratorModel {
           if (!$exists) {
             $arrayItem = [
               new ArrayItem(
-              PhpParser::createString(strtolower($method)),
-              PhpParser::createString("path"),
-            ),
+                PhpParser::createString(strtolower($method)),
+                PhpParser::createString("path"),
+              ),
               new ArrayItem(
-              new StaticCall(new FullyQualified($class), "getRoutes"),
-              PhpParser::createString("children"),
-            )
+                new StaticCall(new FullyQualified($class), "getRoutes"),
+                PhpParser::createString("children"),
+              )
             ];
 
             array_unshift($apiChildren->value->items, new Array_($arrayItem));

@@ -143,7 +143,7 @@ class ModelGeneratorModel {
   }
 
   public function getModelFile($modelType) {
-    return FileUtil::sanitizeFile($this->_appDir . StringUtil::pascalize($modelType) . "/" . $this->_pascalName . StringUtil::pascalize($modelType) . ".php");
+    return FileUtil::getSanitizedFile($this->_appDir . StringUtil::pascalize($modelType) . "/" . $this->_pascalName . StringUtil::pascalize($modelType) . ".php");
   }
 
   public function generateHandlerModel() {
