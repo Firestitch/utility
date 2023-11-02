@@ -1,0 +1,23 @@
+
+.row-container {
+  overflow: auto;  
+}
+
+.col {
+  margin-right: 30px;
+}
+
+.row {
+  display: flex;
+  margin: 0;
+}
+
+.object-name-custom {
+  display: inline-block;
+  margin-bottom: 4px;
+  width: 200px;
+}
+
+code {
+  white-space: break-spaces;
+}

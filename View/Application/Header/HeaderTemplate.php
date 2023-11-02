@@ -11,7 +11,8 @@ use Framework\Util\ServerUtil;
             <a class="navbar-brand" href="/">
                 <?php
                 echo ServerUtil::getServerHost();
-                ?> </a>
+                ?>
+            </a>
         </div>
 
         <div class="collapse navbar-collapse">
@@ -20,7 +21,7 @@ use Framework\Util\ServerUtil;
                 <li class="dropdown">
                 <li><a href="/dbmodel">Db, Model & Handler</a></li>
                 <li><a href="/mapmodel">Map Model</a></li>
-                <li><a href="/refactor">Refactor</a></li>
+                <li><a href="/model/interface">Model Interface</a></li>
                 <li><a href="/api">API</a></li>
                 <li><a href="/wsdl">WSDL</a></li>
             </ul>

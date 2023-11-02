@@ -15,6 +15,8 @@ use Utility\View\MapModel\MapModelApi;
 use Utility\View\MapModel\MapModelView;
 use Utility\View\Model\ModelFields\ModelFieldsView;
 use Utility\View\Model\ModelList\ModelListView;
+use Utility\View\ModelInterface\ModelInterfaceApi;
+use Utility\View\ModelInterface\ModelInterfaceView;
 use Utility\View\Refactor\RefactorApiView;
 use Utility\View\Refactor\RefactorView;
 
@@ -26,6 +28,13 @@ class RouteManager extends RouteManagerBase {
       [
         "bodyClass" => BodyView::class,
         "children" => [
+          [
+            "path" => "model/interface",
+            "children" => [
+              ["path" => "api", "class" => ModelInterfaceApi::class, "bodyClass" => null,],
+              ["path" => "", "class" => ModelInterfaceView::class],
+            ]
+          ],
           [
             "path" => "model",
             "bodyClass" => null,
