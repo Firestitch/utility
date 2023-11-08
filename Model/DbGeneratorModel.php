@@ -64,12 +64,11 @@ class DbGeneratorModel {
       foreach ($result as $row) {
         $type = str_replace("unsigned", "", strtolower($row["type"]));
         $dataType = preg_replace("/[^a-z]+/", "\$1", $type);
-        $size = preg_replace("/[a-z]+\\((\\d+)\\)/", "\$1", $type);
-        $size = is_numeric($size) ? $size : "null";
+        $length = $row["length"] ? $row["length"] : "null";
         $notNull = $row["null"] ? "true" : "false";
         $primary = $row["primary"] ? "true" : "false";
         $name = $row["name"];
-        $columns[] = "\$this->_columns[\"" . $name . "\"] = new Column(\"" . $dataType . "\"," . $size . "," . $notNull . "," . $primary . ");";
+        $columns[] = "\$this->_columns[\"" . $name . "\"] = new Column(\"" . $dataType . "\"," . $length . "," . $notNull . "," . $primary . ");";
       }
 
       $str = "<?php\n\nnamespace {$namespace}\\Dbo;\n\nuse Framework\\Db\\Dbo\\Dbo;\nuse Framework\\Db\\Dbo\\Column;\n\nclass " . $classname . " extends Dbo {\n\n";
@@ -77,10 +76,10 @@ class DbGeneratorModel {
       foreach ($columns as $column) {
         $str .= "    " . $column . "\n";
       }
+
       $str .= "  }\n\n";
       foreach ($result as $row) {
         $type = self::getPhpType($row["type"], $row["length"]);
-        $null = $row["null"];
         $str .= "
   /**
    * @param {$type} \$value
@@ -111,7 +110,7 @@ class DbGeneratorModel {
   }
 
   public static function getPhpType($type, $length) {
-    if (preg_match("/tinyint/i", $type) && $length === 1) {
+    if (preg_match("/tinyint/i", $type) && (int)$length === 1) {
       return "int|bool";
     }
 
