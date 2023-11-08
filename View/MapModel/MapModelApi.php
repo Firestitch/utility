@@ -80,13 +80,14 @@ class MapModelApi extends View {
       $referenceNameGet = "";
 
       if (!$mapChild)
-        $referenceNameGet = "  /**
+        $referenceNameGet = "
+  /**
    * @return " . GeneratorModel::getModelClassname($referenceModel) . "[]
    */";
 
       $referenceNameGet .= "
   public function {$referenceNameGetFunction}(\$handler = false){$getFunctionType} {
-    if(\$handler && !\$this->hasData(\"{$camelizeReferenceKey}\") && \$this->get{$pascalSourceModelColumn}())
+    if(\$handler && \$this->get{$pascalSourceModelColumn}() && (!\$this->hasData(\"{$camelizeReferenceKey}\") || \$handler instanceof Handler))
       \$this->data(
         \"{$camelizeReferenceKey}\",
         {$sourceModelHandler}::create{$pascalReferenceKey}Handler(\$handler)
