@@ -54,6 +54,11 @@ class ModelInterfaceApi extends View {
             $name = $arryName;
           }
 
+          if ($type = value($value, ["type"])) {
+            if (strpos($type, "date") !== false)
+              $dataType = "Date";
+          }
+
           if ($dataType === null) {
             $method = "get" . StringUtil::pascalize($name);
             $reflection = new ReflectionClass($class);
