@@ -190,6 +190,10 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 		return ObjectModel::CLASS_{$upperModel};
 	}
 
+  public static function getObjectHandler() {
+    return {$pascalName}Handler::class;
+  }
+
   public function __toString() {
     return (string){if $hasName}$this->getName(){else}$this->get{$primaryKey|pascalize}(){/if};
   }
