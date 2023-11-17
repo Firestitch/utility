@@ -6,6 +6,7 @@ use Framework\Core\Model;
 {/if}use {$namespace}\Dbo\{$pascalName}Dbo;
 {if $primaryObjectId}
 use Backend\Lib\Object\Traits\ObjectTrait;
+use \{$namespace}\Handler\{$pascalName}Handler;
 use Framework\Db\Db;{/if}
 {if $primaryObjectId || $hasCreateDate || $hasModifyDate}
 use Framework\Model\TimeModel;{/if}
