@@ -191,7 +191,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 		return ObjectModel::CLASS_{$upperModel};
 	}
 
-  public static function getObjectHandler() {
+  public static function getModelHandler() {
     return {$pascalName}Handler::class;
   }
 
