@@ -33,12 +33,16 @@ class ModelInterfaceApi extends View {
        * @var Model
        */
       $model = new $class;
-
       $items = Arry::create($model->describe())
-        ->reduce(function ($accum, $value, $name) use ($model, $class) {
+        ->unique(function ($value1, $key1, $value2, $key2) {
+          $name1 = ($arryName1 = value($value1, ["arry", "name"])) ? $arryName1 : $key1;
+          $name2 = ($arryName2 = value($value2, ["arry", "name"])) ? $arryName2 : $key2;
+          return $name1 === $name2;
+        })
+        ->reduce(function ($accum, $value, $key) use ($model, $class) {
           $dataType = null;
 
-          if ($column = $model->getColumn(StringUtil::snakeize($name))) {
+          if ($column = $model->getColumn(StringUtil::snakeize($key))) {
             if ($column->isDataTypeDate() || $column->isDataTypeDatetime()) {
               $dataType = "Date";
             } elseif ($column->isDataTypeBool()) {
@@ -50,17 +54,13 @@ class ModelInterfaceApi extends View {
             }
           }
 
-          if ($arryName = value($value, ["arry", "name"])) {
-            $name = $arryName;
-          }
-
           if ($type = value($value, ["type"])) {
             if (strpos($type, "date") !== false)
               $dataType = "Date";
           }
 
           if ($dataType === null) {
-            $method = "get" . StringUtil::pascalize($name);
+            $method = "get" . StringUtil::pascalize($key);
             $reflection = new ReflectionClass($class);
 
             try {
@@ -88,7 +88,7 @@ class ModelInterfaceApi extends View {
           }
 
           $dataType = $dataType ? $dataType : 'any';
-
+          $name = ($arryName = value($value, ["arry", "name"])) ? $arryName : $key;
           $code = "  {$name}?: {$dataType}";
 
           return array_merge($accum, [$code]);
