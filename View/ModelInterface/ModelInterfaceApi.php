@@ -39,6 +39,7 @@ class ModelInterfaceApi extends View {
           $name2 = ($arryName2 = value($value2, ["arry", "name"])) ? $arryName2 : $key2;
           return $name1 === $name2;
         })
+        ->sortKeys()
         ->reduce(function ($accum, $value, $key) use ($model, $class) {
           $dataType = null;
 
