@@ -190,14 +190,14 @@ class MapModelApi extends View {
 
     $namespace = $phpParser->getNamespace();
     if ($namespace) {
-      $exists = $this->_useExists($namespace, [$sourceModelHandler]);
+      $exists = $this->_useExists($namespace, [$sourceNamespace, "Handler", $sourceModelHandler]);
       if (!$exists) {
         $this->_useInsert($namespace, [$sourceNamespace, "Handler", $sourceModelHandler]);
       }
 
       $exists = $this->_useExists($namespace, ["Framework", "Core", "Handler"]);
       if (!$exists) {
-        $this->_useInsert($namespace, [$sourceNamespace, "Core", "Handler"]);
+        $this->_useInsert($namespace, ["Framework", "Core", "Handler"]);
       }
     }
 
