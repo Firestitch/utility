@@ -18,6 +18,7 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
+use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\Node\Stmt\UseUse;
@@ -189,24 +190,14 @@ class MapModelApi extends View {
 
     $namespace = $phpParser->getNamespace();
     if ($namespace) {
-      $exists = Arry::create($namespace->stmts)
-        ->filter(function ($stmt) {
-          return $stmt instanceof Use_;
-        })
-        ->exists(function ($stmt) use ($sourceModelHandler) {
-          return Arry::create($stmt->uses)
-            ->exists(function ($use) use ($sourceModelHandler) {
-              return strpos((string)$use->name, $sourceModelHandler);
-            });
-        });
-
+      $exists = $this->_useExists($namespace, [$sourceModelHandler]);
       if (!$exists) {
-        $index = Arry::create($namespace->stmts)
-          ->findIndex(function ($stmt) {
-            return $stmt instanceof Use_;
-          });
+        $this->_useInsert($namespace, [$sourceNamespace, "Handler", $sourceModelHandler]);
+      }
 
-        array_splice($namespace->stmts, $index + 1, 0, [new Use_([new UseUse(new Name([$sourceNamespace, "Handler", $sourceModelHandler]))])]);
+      $exists = $this->_useExists($namespace, ["Framework", "Core", "Handler"]);
+      if (!$exists) {
+        $this->_useInsert($namespace, [$sourceNamespace, "Core", "Handler"]);
       }
     }
 
@@ -305,5 +296,28 @@ class MapModelApi extends View {
     $code = preg_replace("/\\s/", "", $code);
 
     return strpos($content, $code);
+  }
+
+  private function _useExists(Namespace_ $namespace, $classParts) {
+    $class = implode("\\", $classParts);
+    return Arry::create($namespace->stmts)
+      ->filter(function ($stmt) {
+        return $stmt instanceof Use_;
+      })
+      ->exists(function ($stmt) use ($class) {
+        return Arry::create($stmt->uses)
+          ->exists(function ($use) use ($class) {
+            return strpos((string)$use->name, $class) !== false;
+          });
+      });
+  }
+
+  private function _useInsert(Namespace_ &$namespace, $classParts) {
+    $index = Arry::create($namespace->stmts)
+      ->findIndex(function ($stmt) {
+        return $stmt instanceof Use_;
+      });
+
+    array_splice($namespace->stmts, $index + 1, 0, [new Use_([new UseUse(new Name($classParts))])]);
   }
 }
