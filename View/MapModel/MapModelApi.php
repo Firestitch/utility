@@ -15,9 +15,12 @@ use PhpParser\BuilderFactory;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Return_;
+use PhpParser\Node\Stmt\Use_;
+use PhpParser\Node\Stmt\UseUse;
 use Utility\Model\GeneratorModel;
 use Utility\Model\ModelDescribeGeneratorModel;
 use Utility\Model\ModelGeneratorModel;
@@ -35,7 +38,7 @@ class MapModelApi extends View {
   public function init() {
     try {
       $response = new ApiResponse();
-      $sourceModel = strtolower($this->request("source_model"));
+      $sourceModel = $this->request("source_model");
       $sourceModelColumn = $this->request("source_model_column");
       $referenceModelColumn = $this->request("reference_model_column");
       $referenceModel = $this->request("reference_model");
@@ -98,7 +101,8 @@ class MapModelApi extends View {
     return " . ($mapChild ? "" : "(array)") . "\$this->data(\"{$camelizeReferenceKey}\");
   }
   ";
-      $this->_saveModel($camelizeReferenceKey, $modelFile, $referenceNameSetFunction, $referenceNameGetFunction, $referenceNameSet, $referenceNameGet);
+      $this->_saveModel($camelizeReferenceKey, $modelFile, $referenceNameSetFunction, $referenceNameGetFunction, $referenceNameSet, $referenceNameGet, $sourceNamespace, $sourceModelHandler);
+
 
       $function = $mapChild ? "mapChild" : "mapChildren";
       $parentObjectFunction = "set" . StringUtil::pascalize($mapChild ? $referenceName : $referenceNamePlual);
@@ -180,8 +184,31 @@ class MapModelApi extends View {
       ->render();
   }
 
-  private function _saveModel($name, $modelFile, $referenceNameSetFunction, $referenceNameGetFunction, $referenceNameSet, $referenceNameGet) {
+  private function _saveModel($name, $modelFile, $referenceNameSetFunction, $referenceNameGetFunction, $referenceNameSet, $referenceNameGet, $sourceNamespace, $sourceModelHandler) {
     $phpParser = new phpParser($modelFile);
+
+    $namespace = $phpParser->getNamespace();
+    if ($namespace) {
+      $exists = Arry::create($namespace->stmts)
+        ->filter(function ($stmt) {
+          return $stmt instanceof Use_;
+        })
+        ->exists(function ($stmt) use ($sourceModelHandler) {
+          return Arry::create($stmt->uses)
+            ->exists(function ($use) use ($sourceModelHandler) {
+              return strpos((string)$use->name, $sourceModelHandler);
+            });
+        });
+
+      if (!$exists) {
+        $index = Arry::create($namespace->stmts)
+          ->findIndex(function ($stmt) {
+            return $stmt instanceof Use_;
+          });
+
+        array_splice($namespace->stmts, $index + 1, 0, [new Use_([new UseUse(new Name([$sourceNamespace, "Handler", $sourceModelHandler]))])]);
+      }
+    }
 
     $setExists = $phpParser->getClass()->getMethod($referenceNameSetFunction);
     $getExists = $phpParser->getClass()->getMethod($referenceNameGetFunction);
