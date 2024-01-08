@@ -18,7 +18,6 @@ use Framework\Util\MiscUtil;
 {/if}
 
 
-
 class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\ObjectModel{else}Model{/if} {
 
   use Traits\{$pascalName}Trait{if $primaryObjectId}, ObjectTrait{/if};
@@ -34,8 +33,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 {/if}
 	public function __construct() {
 		parent::__construct({$pascalName}Dbo::create());
-  }
-	
+  }	
 {foreach $consts as $const}{if $const!="state"}
   public function is{$const.const|pascalize}()	{ 
 		return $this->get{$const.field|pascalize}() === self::{$const.const}; 
@@ -76,17 +74,25 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 	/**
 	 * @return static
 	 */
-	public function save() { {if $hasMultipleKeys}
-		$this->set{$pascalName}Id({$pascalName}Dbq::create()
-{foreach $keys as $key}
-								->where("{$key}","=",$this->get_{$key}())
+	public function save() { {if $uniqueIndex}
+
+		$this->set{$pascalName}Id(
+			{$pascalName}Dbq::create()
+{foreach $uniqueIndex["columns"] as $key}
+				->where("{$key}","=",$this->get{$key|pascalize}())
 {/foreach}
-								->one("{$lowerModel}_id"));
+				->one("{$lowerModel}_id")
+		);
 {/if}
+{if !$uniqueIndex}
 {if $hasModifyDate}
     
 		$this->setModifyDate(TimeModel::now());
 {/if}
+{if $primaryKeys}
+	
+		$this->getDbo("{$dboName}")->upsert();
+{else}
 {if $primaryObjectId}
 
 		if($this->get{$primaryKey|pascalize}()) {
@@ -147,36 +153,39 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 			$this->getDbo("{$dboName}")->insert();
 		}
 {/if}
+{/if}
+{/if}
+
 		return $this;
 	}
 
 	public function describe() {
 		return [
 {foreach from=$columns key=name item=column name=columns}
-				"{$name|camelize}"=> [{if $column->isPrimary() || $column->isDataTypeDatetime() || $column->isDataTypeDate()}
+			"{$name|camelize}" => [{if $column->isPrimary() || $column->isDataTypeDatetime() || $column->isDataTypeDate()}
 {if $column->isDataTypeDatetime() || $column->isDataTypeDate()}
 
-					"type"=>"{$column->getDataType()}",
+				"type" => "{$column->getDataType()}",
 {/if}{if $column->isPrimary()}
 
-					"arry"=>[
-						"name"=>"id"
-					],
+				"arry" => [
+					"name"=>"id"
+				],
 {/if}
 {/if}{if $name=="state"}						
-					"validations"=>[
-						"keyExists"=>self::getStates()
-					],
+				"validations" => [
+					"keyExists" => self::getStates()
+				],
 {/if}{if (preg_match("/_id$/",$name) && !$column->isPrimary() && !$column->isNotNull()) || $name === "name"}						
-					"validations"=>[
-						"required"=>true
-					],
+				"validations" => [
+					"required" => true
+				],
 {/if}{if $column->isPrimary() || $name=="guid" || $name=="order" || $name=="modify_date" || $name=="create_date"}
-					"diff"=>false
-{/if}{if $column->isPrimary() || $name=="guid" || $name=="order" || $name=="state" || $name=="modify_date" || $name=="create_date" || $column->isDataTypeDatetime() || $column->isDataTypeDate()}					{/if}]{if !$smarty.foreach.columns.last},
+				"diff" => false
+{/if}{if $column->isPrimary() || $name=="guid" || $name=="order" || $name=="state" || $name=="modify_date" || $name=="create_date" || $column->isDataTypeDatetime() || $column->isDataTypeDate()}{/if}    ]{if !$smarty.foreach.columns.last},
 {/if}{/foreach}
-			
-			];
+		
+		];
 	}
 {if $primaryObjectId}
 

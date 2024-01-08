@@ -2,8 +2,10 @@
 
 namespace Utility\Model;
 
+use Framework\Arry\Arry;
 use Framework\Core\Model;
 use Framework\Core\WebApplication;
+use Framework\Db\Db;
 use Framework\Db\Dbo\Dbo;
 use Framework\Db\Dbq\Dbq;
 use Framework\Model\SmartyModel;
@@ -79,6 +81,8 @@ class ModelGeneratorModel {
     $refl = new ReflectionClass(dbq::class);
     $dbqConsts = array_keys($refl->getConstants());
     $diffConsts = array_diff($objectConsts, $dbqConsts);
+    $dbo = $this->getDbo();
+    $primaryKeys = array_keys($dbo->getPrimaryKeys());
 
     $consts = [];
     foreach ($diffConsts as $const) {
@@ -86,20 +90,26 @@ class ModelGeneratorModel {
       $consts[] = ["const" => $const, "field" => $field];
     }
 
-    $dbo = $this->getDbo();
+    $uniqueIndex = Arry::create(Db::getInstance()->getUtility()->getIndexes($dbo->getTablename()))
+      ->find(function ($index) use ($primaryKeys) {
+        return value($index, "unique") && array_diff($primaryKeys, value($index, "columns"));
+      });
 
-    $this->_smarty->assign("hasMultipleKeys", count($dbo->getPrimaryKeys()) > 1);
-    $this->_smarty->assign("keys", array_keys($dbo->getPrimaryKeys()));
-    $this->_smarty->assign("primaryKey", value(array_keys($dbo->getPrimaryKeys()), 0));
-    $this->_smarty->assign("hasGuid", array_key_exists("guid", $columns));
-    $this->_smarty->assign("hasState", array_key_exists("state", $columns));
-    $this->_smarty->assign("hasCreateDate", array_key_exists("create_date", $columns));
-    $this->_smarty->assign("hasModifyDate", array_key_exists("modify_date", $columns));
-    $this->_smarty->assign("hasName", array_key_exists("name", $columns));
-    $this->_smarty->assign("hasModifyAccountId", array_key_exists("modify_account_id", $columns));
-    $this->_smarty->assign("hasObjectId", array_key_exists("object_id", $columns));
-    $this->_smarty->assign("consts", $consts);
-    $this->_smarty->assign("id", self::getAbr($this->_lowerModel) . "id");
+    $this->_smarty
+      ->assign("uniqueIndex", $uniqueIndex)
+      ->assign("keys", $primaryKeys)
+      ->assign("primaryKeys", $primaryKeys)
+      ->assign("primaryKey", value($primaryKeys, 0))
+      ->assign("hasGuid", array_key_exists("guid", $columns))
+      ->assign("hasState", array_key_exists("state", $columns))
+      ->assign("hasCreateDate", array_key_exists("create_date", $columns))
+      ->assign("hasModifyDate", array_key_exists("modify_date", $columns))
+      ->assign("hasName", array_key_exists("name", $columns))
+      ->assign("hasModifyAccountId", array_key_exists("modify_account_id", $columns))
+      ->assign("hasObjectId", array_key_exists("object_id", $columns))
+      ->assign("consts", $consts)
+      ->assign("id", self::getAbr($this->_lowerModel) . "id");
+
     $this->_smarty->allowPhpTag();
 
     return $this->generateModel("model");
