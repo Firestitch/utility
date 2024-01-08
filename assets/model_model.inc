@@ -175,6 +175,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 					"diff"=>false
 {/if}{if $column->isPrimary() || $name=="guid" || $name=="order" || $name=="state" || $name=="modify_date" || $name=="create_date" || $column->isDataTypeDatetime() || $column->isDataTypeDate()}					{/if}]{if !$smarty.foreach.columns.last},
 {/if}{/foreach}
+			
 			];
 	}
 {if $primaryObjectId}
