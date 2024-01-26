@@ -19,7 +19,7 @@ use Utility\View\Namespaces\NamespacesView;
       <?php echo HtmlUtil::dropdown("interfaceDir", $interfaceDirs, array_keys($interfaceDirs)[0]) ?>
     </div>
 
-    <?php echo HtmlUtil::button("update", "Update") ?>
+    <?php echo HtmlUtil::button("update", "Update", ["class" => "btn-primary"]) ?>
   </div>
 
   <div class="col">
