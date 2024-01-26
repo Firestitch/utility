@@ -1,6 +1,7 @@
 <?php
 
 use Framework\Util\HtmlUtil;
+use Utility\View\Namespaces\NamespacesView;
 
 ?>
 <h1>Db, Model & Handler</h1>
@@ -10,7 +11,7 @@ use Framework\Util\HtmlUtil;
   $tablenameDd = HtmlUtil::dropdown("tablename", $tablenameList, $tablename, [
     "onKeyUp" => "update_class_name(this)",
     "onChange" => "update_class_name(this)",
-    "size" => 30
+    "size" => 30,
   ], 50);
   ?>
 
@@ -21,10 +22,7 @@ use Framework\Util\HtmlUtil;
         <?php echo $tablenameDd ?>
       </td>
       <td>
-        <div class="form-field">
-          <div class="lbl">Namespace</div>
-          <?php echo HtmlUtil::input("namespace", "Backend", ["class" => "namespace"]) ?>
-        </div>
+        <?php NamespacesView::create()->setClass("namespace")->show(); ?>
         <div class="form-field">
           <div class="lbl">Name</div>
           <?php echo HtmlUtil::input("pascalName", "") ?>
@@ -36,7 +34,7 @@ use Framework\Util\HtmlUtil;
             "dbq" => "Dbq",
             "trait" => "Trait",
             "cmodel" => "Model",
-            "hmodel" => "Handler"
+            "hmodel" => "Handler",
           ], ["dbo", "dbq", "trait"], ["class" => "objects"]) ?>
         </div>
 
@@ -70,10 +68,6 @@ use Framework\Util\HtmlUtil;
 
   $(".objects").on("change", function () {
     $(".override").attr("checked", false);
-  })
-
-  $(".namespace").on("blur", function () {
-    $(this).val($(this).val().sanitizeNamespace());
   })
 
   $("#name").on("input", function () {

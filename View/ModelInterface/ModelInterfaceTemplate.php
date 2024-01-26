@@ -1,22 +1,25 @@
 <?php
-
 use Framework\Util\HtmlUtil;
-
+use Utility\View\Namespaces\NamespacesView;
 
 ?>
 <h1>Model Interface</h1>
 
 <div class="row row-container">
   <div class="col">
-    <div class="form-field">
-      <div class="lbl">Namespace</div>
-      <?php echo HtmlUtil::input("namespace", "Backend", ["class" => "source-namespace"]) ?>
-    </div>
+    <?php NamespacesView::create()->setClass("source-namespace")->show(); ?>
 
     <div class="form-field">
       <div class="lbl">Model</div>
       <div id="sourceModels"></div>
     </div>
+
+    <div class="form-field">
+      <div class="lbl">Interface Directory</div>
+      <?php echo HtmlUtil::dropdown("interfaceDir", $interfaceDirs, array_keys($interfaceDirs)[0]) ?>
+    </div>
+
+    <?php echo HtmlUtil::button("update", "Update") ?>
   </div>
 
   <div class="col">
@@ -37,31 +40,27 @@ use Framework\Util\HtmlUtil;
   }
 
   $(function () {
-    $(".source-namespace").on("keyup", function () {
-      $("#sourceModels").load("/model/list", {
-        namespace: $('.source-namespace').val(),
-        name: 'sourceModel',
-        limit: 30
-      }, function () {
-        $("select[name='sourceModel']").bind("click keyup", function () {
-          $.post("/model/interface/api", $("#form-relation").serializeArray(), function (response) {
-            $('#output').html(response);
+    $(".source-namespace")
+      .on("change", function () {
+        $("#sourceModels").load("/model/list", {
+          namespace: $('.source-namespace').val(),
+          name: 'sourceModel',
+          limit: 30
+        }, function () {
+          $("select[name='sourceModel']").bind("click keyup", function () {
+            $.post("/model/interface/api/preview", $("#form").serializeArray(), function (response) {
+              $('#output').html(response);
+            });
           });
         });
-      });
-    }).trigger('keyup');
+      }).trigger('change');
 
-    $(".source-namespace").on("blur", function () {
-      $(".reference-namespace").val($(this).val().sanitizeNamespace());
-      $(".reference-namespace").trigger("keyup");
-    });
-
-    $("#generate").click(function () {
-      $.post("/model/interface/api", $("#form-relation").serializeArray(), function (response) {
-        debugger;
-        displayResponse(response, 'Successfully generated');
+    $("#update")
+      .click(function () {
+        $.post("/model/interface/api/update", $("#form").serializeArray(), function (response) {
+          displayResponse(response, 'Successfully updated');
+        });
       });
-    });
 
   });
 </script>

@@ -2,6 +2,7 @@
 
 use Framework\Util\HtmlUtil;
 use Framework\Util\JsonUtil;
+use Utility\View\Namespaces\NamespacesView;
 
 
 ?>
@@ -9,10 +10,11 @@ use Framework\Util\JsonUtil;
 
 <div class="row row-container">
   <div class="col">
-    <div class="form-field">
-      <div class="lbl">Source Namespace</div>
-      <?php echo HtmlUtil::input("source-namespace", "Backend", ["class" => "source-namespace"]) ?>
-    </div>
+    <?php NamespacesView::create()
+      ->setClass("source-namespace")
+      ->setLabel("Source Namespace")
+      ->show();
+    ?>
 
     <div class="form-field">
       <div class="lbl">Source Model</div>
@@ -38,10 +40,11 @@ use Framework\Util\JsonUtil;
 
 
   <div class="col">
-    <div class="form-field">
-      <div class="lbl">Reference Namespace</div>
-      <?php echo HtmlUtil::input("reference-namespace", "Backend", ["class" => "reference-namespace"]) ?>
-    </div>
+    <?php NamespacesView::create()
+      ->setClass("reference-namespace")
+      ->setLabel("Reference Namespace")
+      ->show();
+    ?>
 
     <div class="form-field">
       <div class="lbl">Reference Model</div>
@@ -86,21 +89,21 @@ use Framework\Util\JsonUtil;
     });
   }
 
-  $(function() {
-    $(".source-namespace").on("keyup", function() {
+  $(function () {
+    $(".source-namespace").on("change", function () {
       $("#source_fields").html("Source Model Not Selected");
       $("#source_models").load("/model/list", {
         namespace: $('.source-namespace').val(),
         name: 'source_model',
         limit: 12
-      }, function() {
-        $("select[name='source_model']").bind("click keyup", function() {
+      }, function () {
+        $("select[name='source_model']").bind("click keyup", function () {
           $("#source_fields").load("/model/fields", {
             model: $(this).val(),
             namespace: $('.source-namespace').val(),
             name: "source_model_column"
-          }, function() {
-            $("select[name='source_model_column']").on("click keyup", function() {
+          }, function () {
+            $("select[name='source_model_column']").on("click keyup", function () {
               $(".object-name").val(camelize($(this).val().replace(/_id$/, '')));
             });
           });
@@ -110,21 +113,21 @@ use Framework\Util\JsonUtil;
           $("select[name='source_model']").trigger("click");
         }
       });
-    }).trigger('keyup');
+    }).trigger('change');
 
-    $(".reference-namespace").on("keyup", function() {
+    $(".reference-namespace").on("change", function () {
       $("#reference_fields").html("Reference Model Not Selected");
       $("#reference_models").load("/model/list", {
         namespace: $('.reference-namespace').val(),
         name: 'reference_model',
         limit: 12
-      }, function() {
-        $("select[name='reference_model']").bind("click keyup", function() {
+      }, function () {
+        $("select[name='reference_model']").bind("click keyup", function () {
           $("#reference_fields").load("/model/fields", {
             model: $(this).val(),
             namespace: $('.reference-namespace').val(),
             name: "reference_model_column"
-          }, function() {
+          }, function () {
             $("#reference_model_column").find("option[value='" + $("#source_model_column").val() + "']").attr("selected", "selected");
           });
         });
@@ -133,51 +136,42 @@ use Framework\Util\JsonUtil;
           $("select[name='reference_model']").trigger("click");
         }
       });
-    }).trigger('keyup');
+    }).trigger('change');
 
-    $(".reference-namespace,.source-namespace").on("blur", function() {
-      $(this).val($(this).val().sanitizeNamespace());
-    });
-
-    $(".source-namespace").on("blur", function() {
-      $(".reference-namespace").val($(this).val().sanitizeNamespace());
-      $(".reference-namespace").trigger("keyup");
-    });
-
-    $("#add-joiner").on("click", function() {
+    $("#add-joiner").on("click", function () {
       var fields = $("<div>", {
         "class": "joiner-fields"
       });
       var index = $(".joiner").length;
       var tables = JSON.parse($("#joiner_tables").val());
       var select = $("<select>", {
-          name: 'joiners[' + index + '][table]',
-          'class': 'form-control'
-        })
+        name: 'joiners[' + index + '][table]',
+        'class': 'form-control'
+      })
         .attr("size", 15)
-        .click(function() {
+        .click(function () {
           fields.load("/mapmodel/joinerfields/", {
             index: index,
             table: $(this).val()
           });
         });
 
-      $.each(tables, function(index, value) {
+      $.each(tables, function (index, value) {
         select.append($("<option>", {
           name: index
         }).text(value));
       });
 
       $("#joiners").append($("<div>", {
-          'class': 'joiner col'
-        })
+        'class': 'joiner col'
+      })
         .append('<div class="lbl">Joiner Table</div>')
         .append(select)
         .append(fields));
     });
 
 
-    $("#add-join").click(function() {
+    $("#add-join").click(function () {
       if ($(this).is(":checked")) {
         $("#joiner").show();
       } else
@@ -185,8 +179,8 @@ use Framework\Util\JsonUtil;
     });
 
 
-    $("#generate").click(function() {
-      $.post("/mapmodel/api", $("#form-relation").serializeArray(), function(response) {
+    $("#generate").click(function () {
+      $.post("/mapmodel/api", $("#form-relation").serializeArray(), function (response) {
         displayResponse(response, 'Successfully generated');
       });
     });

@@ -1,15 +1,13 @@
 <?php
 
 use Framework\Util\HtmlUtil;
+use Utility\View\Namespaces\NamespacesView;
 
 ?>
 
 <h1>API Generation</h1>
 
-<div class="form-field">
-  <div class="lbl">Namespace</div>
-  <?php echo HtmlUtil::input("namespace", "Backend", ["class" => "namespace"]) ?>
-</div>
+<?php NamespacesView::create()->show(); ?>
 
 <div class="form-field">
   <div class="lbl">API</div>
@@ -40,7 +38,7 @@ use Framework\Util\HtmlUtil;
       "get",
       "put",
       "post",
-      "delete"
+      "delete",
     ]
   ) ?>
 </div>
@@ -56,13 +54,13 @@ use Framework\Util\HtmlUtil;
 <?php echo HtmlUtil::button("generate", "Generate", ["type" => "button", "id" => "generate", "class" => "btn-primary"]) ?>
 
 <script>
-  $(function() {
+  $(function () {
 
-    $(".namespace").on("keyup", function() {
+    $(".namespace").on("change", function () {
       $("#apis").load("/api/apis", {
         namespace: $('.namespace').val(),
-      }, function() {
-        $("select[name='api']").change(function() {
+      }, function () {
+        $("select[name='api']").change(function () {
           updateNamespaceExample();
 
           var existing = $(".api-existing").parents("tr");
@@ -77,9 +75,9 @@ use Framework\Util\HtmlUtil;
       $("#models").load("/model/list", {
         namespace: $('.namespace').val(),
         name: 'model'
-      }, function() {
+      }, function () {
 
-        $("select[name='model']").on("change click", function() {
+        $("select[name='model']").on("change click", function () {
 
           if ($(this).val()) {
             $("input[name='model-plural']").val($(this).val().plural());
@@ -93,12 +91,12 @@ use Framework\Util\HtmlUtil;
         });
 
       });
-    }).trigger('keyup');
+    }).trigger('change');
 
     $("input[name='method']").keydown(updateNamespaceExample);
 
-    $("#generate").click(function() {
-      $.post("/api/api", $("#form-api").serializeArray(), function(response) {
+    $("#generate").click(function () {
+      $.post("/api/api", $("#form-api").serializeArray(), function (response) {
         displayResponse(response);
       });
     });

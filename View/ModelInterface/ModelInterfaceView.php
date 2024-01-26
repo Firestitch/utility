@@ -2,8 +2,12 @@
 
 namespace Utility\View\ModelInterface;
 
+use Framework\Arry\Arry;
 use Framework\Core\View;
+use Framework\Core\WebApplication;
 use Framework\Db\Db;
+use Framework\Util\FileUtil;
+use Framework\Util\JsonUtil;
 
 
 class ModelInterfaceView extends View {
@@ -17,7 +21,7 @@ class ModelInterfaceView extends View {
     $this
       ->setTemplate("./ModelInterfaceTemplate.php")
       ->setStyle("./ModelInterface.scss")
-      ->setForm("javascript:;", false, "form-relation")
+      ->setForm("javascript:;", false, "form")
       ->disableAuthorization();
   }
 
@@ -26,10 +30,22 @@ class ModelInterfaceView extends View {
       ->getUtility()
       ->getTableNames();
 
-    $this->setVar("joiner", $this->_joiner);
-    $this->setVar("referenceModel", $this->_referenceModel);
-    $this->setVar("joinerList", $joinerList);
-    $this->setVar("sourceModelColumn", $this->_sourceModelColumn);
-    $this->setVar("model", $this->_model);
+    $interfaceDirs = Arry::create(JsonUtil::decode(FileUtil::get(WebApplication::getMainFrontendDirectory() . "angular.json")))
+      ->select("projects")
+      ->getReduce(function ($accum, $project) {
+        $dir = $project["sourceRoot"] . "/app/common";
+
+        return array_merge($accum, [
+          $dir => $dir,
+        ]);
+      }, []);
+
+    $this
+      ->setVar("interfaceDirs", $interfaceDirs)
+      ->setVar("joiner", $this->_joiner)
+      ->setVar("referenceModel", $this->_referenceModel)
+      ->setVar("joinerList", $joinerList)
+      ->setVar("sourceModelColumn", $this->_sourceModelColumn)
+      ->setVar("model", $this->_model);
   }
 }

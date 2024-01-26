@@ -14,11 +14,10 @@
   <?php $webAssetManager->render() ?>
   <script>
     function displayResponse(response, successMessage) {
-
       FF.msg.clear();
 
       if (response.data) {
-        if (response.success && successMessage) {
+        if (response.code === 200 && successMessage) {
           FF.msg.success(successMessage);
         }
 

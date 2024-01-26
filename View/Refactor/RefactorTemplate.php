@@ -41,22 +41,22 @@ use Framework\Util\HtmlUtil;
         name: 'models',
         multiple: true,
         limit: 30
-      }, function() {});
+      }, function () { });
     }
 
-    $(function() {
-      $(".namespace").on("keyup", function() {
+    $(function () {
+      $(".namespace").on("keyup", function () {
         loadModels();
       }).trigger('keyup');
 
-      $(".reference-namespace,.namespace").on("blur", function() {
+      $(".reference-namespace,.namespace").on("blur", function () {
         $(this).val($(this).val().sanitizeNamespace());
       });
 
-      $("#generate").click(function() {
-        $.post("/refactor/api", $("#form-relation").serializeArray(), function(response) {
+      $("#generate").click(function () {
+        $.post("/refactor/api", $("#form-relation").serializeArray(), function (response) {
           displayResponse(response, 'Successfully refactored');
-          if (response.success) {
+          if (response.code === 200) {
             loadModels();
           }
         });
