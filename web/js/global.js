@@ -59,7 +59,7 @@
     })
 }(window.jQuery)
 
-function get_singular(s) {
+function getSingular(s) {
 
     if (s.match(/sses$/))
         return s.replace(/sses$/, 'ss');
@@ -74,16 +74,6 @@ function get_singular(s) {
         return s.replace(/s$/, '');
 
     return s;
-}
-
-var active_table = active_model = "";
-
-function update_links(table, model) {
-    if (model)
-        active_model = model;
-
-    if (table)
-        active_table = table;
 }
 
 String.prototype.sanitizeNamespace = function() {

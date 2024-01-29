@@ -14,11 +14,11 @@ FormUtil::create()
   ->render();
 ?>
 <script>
-  $(function() {
+  $(function () {
 
     var apiLoads = $(".api-loads").hide();
 
-    $("select[name='api']").change(function() {
+    $("select[name='api']").change(function () {
 
       updateNamespaceExample();
 
@@ -33,12 +33,12 @@ FormUtil::create()
 
     $("input[name='method']").keydown(updateNamespaceExample);
 
-    $("select[name='model']").change(function() {
+    $("select[name='model']").change(function () {
 
       if ($(this).val()) {
         $("input[name='model-plural']").val($(this).val().plural());
         var method = $("input[name='model-plural']").val()
-          .replace(get_singular($(".api-name").val()) + '_', '')
+          .replace(getSingular($(".api-name").val()) + '_', '')
           .replace('_', '');
         $("input[name='method']").val(method);
       }
@@ -46,8 +46,8 @@ FormUtil::create()
       updateNamespaceExample();
     });
 
-    $("#generate").click(function() {
-      $.post("/wsdl", $("#form-api").serializeArray(), function(response) {
+    $("#generate").click(function () {
+      $.post("/wsdl", $("#form-api").serializeArray(), function (response) {
         displayResponse(response, 'Successfully generated');
       });
     });

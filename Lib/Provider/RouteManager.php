@@ -47,7 +47,8 @@ class RouteManager extends RouteManagerBase {
           [
             "path" => "dbmodel",
             "children" => [
-              ["path" => "api", "class" => DbModelApi::class, "bodyClass" => null,],
+              ["path" => "api/generate", "class" => DbModelApi::class, "bodyClass" => null, "data" => ["action" => "generate"]],
+              ["path" => "api/exists", "class" => DbModelApi::class, "bodyClass" => null, "data" => ["action" => "exists"]],
               ["path" => "", "class" => DbModelView::class],
             ],
           ],

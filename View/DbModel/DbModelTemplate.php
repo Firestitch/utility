@@ -9,12 +9,11 @@ use Utility\View\Namespaces\NamespacesView;
 <form id="form-db">
   <?php
   $tablenameDd = HtmlUtil::dropdown("tablename", $tablenameList, $tablename, [
-    "onKeyUp" => "update_class_name(this)",
-    "onChange" => "update_class_name(this)",
+    "onKeyUp" => "tablenameChange(this)",
+    "onChange" => "tablenameChange(this)",
     "size" => 30,
   ], 50);
   ?>
-
   <table>
     <tr>
       <td>
@@ -58,24 +57,44 @@ use Utility\View\Namespaces\NamespacesView;
     });
   }
 
-  function update_class_name(obj) {
+  function tablenameChange(obj) {
     value = $(obj).val();
-    $("#pascalName").val(pascalize(get_singular(value)));
+    $("#pascalName").val(pascalize(getSingular(value)));
     $("#name").val(value);
+    exists();
+  }
 
-    update_links(value, get_singular(value));
+  function exists() {
+    $.post("/dbmodel/api/exists", $("#form-db").serializeArray(), function (response) {
+      $('input[value="cmodel"]').prop("checked", response.data.modelExists ? false : true);
+      $('input[value="hmodel"]').prop("checked", response.data.handlerExists ? false : true);
+
+      if (!response.data.dbqExists) {
+        $('input[value="dbq"]').prop("checked", true);
+      }
+
+      if (!response.data.dboExists) {
+        $('input[value="dbo"]').prop("checked", true);
+      }
+
+      if (!response.data.traitExists) {
+        $('input[value="trait"]').prop("checked", true);
+      }
+
+      $('#override').prop("checked", response.data.dbqExists || response.data.dboExists ? true : false);
+    });
   }
 
   $(".objects").on("change", function () {
-    $(".override").attr("checked", false);
-  })
+    $(".override").prop("checked", false);
+  });
 
-  $("#name").on("input", function () {
-    update_links("", $(this).val());
-  })
+  $("#namespace").on("change", function () {
+    exists();
+  });
 
   $("#generate").click(function () {
-    $.post("/dbmodel/api", $("#form-db").serializeArray(), function (response) {
+    $.post("/dbmodel/api/generate", $("#form-db").serializeArray(), function (response) {
       displayResponse(response, 'Successfully generated');
     });
   });

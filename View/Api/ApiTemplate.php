@@ -83,7 +83,7 @@ use Utility\View\Namespaces\NamespacesView;
             $("input[name='model-plural']").val($(this).val().plural());
 
             var method = $("input[name='model-plural']").val()
-              .replace(get_singular($(".api-name").val()) + '_', '');
+              .replace(getSingular($(".api-name").val()) + '_', '');
             $("input[name='method']").val(method);
           }
 

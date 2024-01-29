@@ -23,7 +23,6 @@ class ModelInterfaceApi extends View {
   public function init() {
     $response = new ApiResponse();
     try {
-
       $routeModel = WebApplication::getRouteManager()::create()->getActivatedRoute(WebApplication::instance()->getUrl());
 
       switch (value($routeModel->getData(), "action")) {
