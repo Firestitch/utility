@@ -89,7 +89,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
     
 		$this->setModifyDate(TimeModel::now());
 {/if}
-{if $primaryKeys}
+{if count($primaryKeys)>1}
 	
 		$this->getDbo("{$dboName}")->upsert();
 {else}
