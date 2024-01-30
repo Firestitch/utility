@@ -59,9 +59,9 @@ class {$pascalName}Handler extends Handler {
     return $hmodel;
   }
 
-  /*
   public function acl($options = []) {
     return [
+      /*
       AclModel::LEVEL_PROJECT => [
         "wheres" => [
           ["orders.project_id", "IN", value($options, "projectIds")]
@@ -75,7 +75,7 @@ class {$pascalName}Handler extends Handler {
           ["projects.environment_id", "IN", value($options, "environmentIds")]
         ]
       ]
+      */
     ];
   }
-  */
 }
