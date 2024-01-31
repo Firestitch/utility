@@ -33,7 +33,10 @@ class ModelInterfaceView extends View {
     $interfaceDirs = Arry::create(JsonUtil::decode(FileUtil::get(WebApplication::getMainFrontendDirectory() . "angular.json")))
       ->select("projects")
       ->getReduce(function ($accum, $project) {
-        $dir = $project["sourceRoot"] . "/app/common";
+        $path = value($project, "projectType") === "application" ?
+          "/app/common" : "";
+
+        $dir = $project["sourceRoot"] . $path;
 
         return array_merge($accum, [
           $dir => $dir,
