@@ -39,13 +39,13 @@ class MapModelApi extends View {
   public function init() {
     try {
       $response = new ApiResponse();
-      $sourceModel = $this->request("source_model");
-      $sourceModelColumn = $this->request("source_model_column");
-      $referenceModelColumn = $this->request("reference_model_column");
-      $referenceModel = $this->request("reference_model");
+      $sourceModel = $this->request("sourceModel");
+      $sourceModelColumn = $this->request("sourceModelColumn");
+      $referenceModelColumn = $this->request("referenceModelColumn");
+      $referenceModel = $this->request("referenceModel");
       $referenceModelPlual = LangUtil::plural($referenceModel);
       $joiners = (array)$this->request("joiners");
-      $sourceNamespace = $this->request("source-namespace");
+      $sourceNamespace = $this->request("sourceNamespace");
       $mapChild = $this->request("relationship") === "child";
       $sourceModelHandler = ModelGeneratorModel::getHandlerClass($sourceModel);
       $dir = ModelGeneratorModel::getNamespaceDir($sourceNamespace);

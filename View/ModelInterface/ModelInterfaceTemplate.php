@@ -7,7 +7,7 @@ use Utility\View\Namespaces\NamespacesView;
 
 <div class="row row-container">
   <div class="col">
-    <?php NamespacesView::create()->setClass("source-namespace")->show(); ?>
+    <?php NamespacesView::create()->setName("sourceNamespace")->show(); ?>
 
     <div class="form-field">
       <div class="lbl">Model</div>

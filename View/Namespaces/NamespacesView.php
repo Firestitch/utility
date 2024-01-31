@@ -6,13 +6,14 @@ use Framework\Arry\Arry;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
 use Framework\Util\FileUtil;
+use Framework\Util\StringUtil;
 
 
 class NamespacesView extends View {
 
   private $_label = "Namespace";
 
-  private $_class = "namespace";
+  private $_name = "namespace";
 
   public function __construct() {
     $this
@@ -48,12 +49,13 @@ class NamespacesView extends View {
 
     $this
       ->setVar("namespaces", $namespaces)
-      ->setVar("class", $this->_class)
+      ->setVar("class", str_replace("_", "-", StringUtil::snakeize($this->_name)))
+      ->setVar("name", $this->_name)
       ->setVar("label", $this->_label);
   }
 
-  public function setClass($class) {
-    $this->_class = $class;
+  public function setName($name) {
+    $this->_name = $name;
     return $this;
   }
 

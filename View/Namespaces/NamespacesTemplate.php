@@ -8,5 +8,5 @@ use Framework\Util\HtmlUtil;
   <div class="lbl">
     <?php echo $label ?>
   </div>
-  <?php echo HtmlUtil::dropdown("namespace", $namespaces, "Backend", ["class" => $class]) ?>
+  <?php echo HtmlUtil::dropdown($name, $namespaces, "Backend", ["class" => $class]) ?>
 </div>

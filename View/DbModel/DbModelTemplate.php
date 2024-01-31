@@ -21,7 +21,7 @@ use Utility\View\Namespaces\NamespacesView;
         <?php echo $tablenameDd ?>
       </td>
       <td>
-        <?php NamespacesView::create()->setClass("namespace")->show(); ?>
+        <?php NamespacesView::create()->show(); ?>
         <div class="form-field">
           <div class="lbl">Name</div>
           <?php echo HtmlUtil::input("pascalName", "") ?>

@@ -11,14 +11,14 @@ use Utility\View\Namespaces\NamespacesView;
 <div class="row row-container">
   <div class="col">
     <?php NamespacesView::create()
-      ->setClass("source-namespace")
+      ->setName("sourceNamespace")
       ->setLabel("Source Namespace")
       ->show();
     ?>
 
     <div class="form-field">
       <div class="lbl">Source Model</div>
-      <div id="source_models"></div>
+      <div id="sourceModels"></div>
     </div>
 
     <div>
@@ -41,14 +41,14 @@ use Utility\View\Namespaces\NamespacesView;
 
   <div class="col">
     <?php NamespacesView::create()
-      ->setClass("reference-namespace")
+      ->setName("referenceNamespace")
       ->setLabel("Reference Namespace")
       ->show();
     ?>
 
     <div class="form-field">
       <div class="lbl">Reference Model</div>
-      <div id="reference_models"></div>
+      <div id="referenceModels"></div>
     </div>
 
     <div class=" mt10">
@@ -92,48 +92,48 @@ use Utility\View\Namespaces\NamespacesView;
   $(function () {
     $(".source-namespace").on("change", function () {
       $("#source_fields").html("Source Model Not Selected");
-      $("#source_models").load("/model/list", {
+      $("#sourceModels").load("/model/list", {
         namespace: $('.source-namespace').val(),
-        name: 'source_model',
+        name: 'sourceModel',
         limit: 12
       }, function () {
-        $("select[name='source_model']").bind("click keyup", function () {
+        $("select[name='sourceModel']").bind("click keyup", function () {
           $("#source_fields").load("/model/fields", {
             model: $(this).val(),
             namespace: $('.source-namespace').val(),
-            name: "source_model_column"
+            name: "sourceModelColumn"
           }, function () {
-            $("select[name='source_model_column']").on("click keyup", function () {
+            $("select[name='sourceModelColumn']").on("click keyup", function () {
               $(".object-name").val(camelize($(this).val().replace(/_id$/, '')));
             });
           });
         });
 
-        if ($("select[name='source_model'] option:selected").length) {
-          $("select[name='source_model']").trigger("click");
+        if ($("select[name='sourceModel'] option:selected").length) {
+          $("select[name='sourceModel']").trigger("click");
         }
       });
     }).trigger('change');
 
     $(".reference-namespace").on("change", function () {
       $("#reference_fields").html("Reference Model Not Selected");
-      $("#reference_models").load("/model/list", {
+      $("#referenceModels").load("/model/list", {
         namespace: $('.reference-namespace').val(),
-        name: 'reference_model',
+        name: 'referenceModel',
         limit: 12
       }, function () {
-        $("select[name='reference_model']").bind("click keyup", function () {
+        $("select[name='referenceModel']").bind("click keyup", function () {
           $("#reference_fields").load("/model/fields", {
             model: $(this).val(),
             namespace: $('.reference-namespace').val(),
-            name: "reference_model_column"
+            name: "referenceModelColumn"
           }, function () {
-            $("#reference_model_column").find("option[value='" + $("#source_model_column").val() + "']").attr("selected", "selected");
+            $("#referenceModelColumn").find("option[value='" + $("#sourceModelColumn").val() + "']").attr("selected", "selected");
           });
         });
 
-        if ($("select[name='reference_model'] option:selected").length) {
-          $("select[name='reference_model']").trigger("click");
+        if ($("select[name='referenceModel'] option:selected").length) {
+          $("select[name='referenceModel']").trigger("click");
         }
       });
     }).trigger('change');
