@@ -7,7 +7,7 @@ use Utility\View\Namespaces\NamespacesView;
 
 <div class="row row-container">
   <div class="col">
-    <?php NamespacesView::create()->setName("sourceNamespace")->show(); ?>
+    <?php NamespacesView::create()->setName("namespace")->show(); ?>
 
     <div class="form-field">
       <div class="lbl">Model</div>
@@ -40,10 +40,10 @@ use Utility\View\Namespaces\NamespacesView;
   }
 
   $(function () {
-    $(".source-namespace")
+    $(".namespace")
       .on("change", function () {
         $("#sourceModels").load("/model/list", {
-          namespace: $('.source-namespace').val(),
+          namespace: $('.namespace').val(),
           name: 'sourceModel',
           limit: 30
         }, function () {
