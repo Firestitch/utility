@@ -166,7 +166,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 {if $column->isDataTypeDatetime() || $column->isDataTypeDate()}
 
 				"type" => "{$column->getDataType()}",
-{/if}{if $column->isPrimary()}
+{/if}{if $column->isPrimary() && count($primaryKeys) === 1}
 
 				"arry" => [
 					"name"=>"id"
