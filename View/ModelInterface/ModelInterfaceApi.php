@@ -136,6 +136,7 @@ class ModelInterfaceApi extends View {
           }
         }
 
+
         if ($dataType === null) {
           if (value($value, "type") === "array") {
             $dataType = "any[]";
@@ -171,7 +172,9 @@ class ModelInterfaceApi extends View {
     }
 
     if (preg_match("/(.+)Model(\[\])?/", $value, $matches)) {
-      return value($matches, 1) . value($matches, 2);
+      $parts = explode("\\", value($matches, 1));
+
+      return array_pop($parts) . value($matches, 2);
     }
 
     return null;
