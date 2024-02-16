@@ -75,7 +75,6 @@ class ModelInterfaceApi extends View {
 
       FileUtil::put($indexFile, $index);
     }
-
   }
 
   public function getInterface() {
@@ -94,27 +93,36 @@ class ModelInterfaceApi extends View {
         return $name1 === $name2;
       })
       ->sortKeys()
-      ->reduce(function ($accum, $value, $key) use ($model, $class) {
+      ->reduce(function ($accum, $value, $key) use ($model, $class, $sourceModel) {
         $dataType = null;
 
-        if ($column = $model->getColumn(StringUtil::snakeize($key))) {
-          if ($column->isDataTypeDate() || $column->isDataTypeDatetime()) {
-            $dataType = "Date";
-          } elseif ($column->isDataTypeBool()) {
-            $dataType = "boolean";
-          } elseif ($column->isDataTypeInt() || $column->isDataTypeDecimal()) {
-            $dataType = "number";
-          } elseif ($column->isDataTypeString()) {
-            $dataType = "string";
+        $keyExists = !!value($value, ["validations", "keyExists"]);
+
+        if ($keyExists) {
+          $dataType = $sourceModel . ucfirst($key);
+        }
+
+        if (!$dataType) {
+          if ($column = $model->getColumn(StringUtil::snakeize($key))) {
+            if ($column->isDataTypeDate() || $column->isDataTypeDatetime()) {
+              $dataType = "Date";
+            } elseif ($column->isDataTypeBool()) {
+              $dataType = "boolean";
+            } elseif ($column->isDataTypeInt() || $column->isDataTypeDecimal()) {
+              $dataType = "number";
+            } elseif ($column->isDataTypeString()) {
+              $dataType = "string";
+            }
+          }
+
+          if ($type = value($value, ["type"])) {
+            if (strpos($type, "date") !== false)
+              $dataType = "Date";
           }
         }
 
-        if ($type = value($value, ["type"])) {
-          if (strpos($type, "date") !== false)
-            $dataType = "Date";
-        }
-
         if ($dataType === null) {
+
           $method = "get" . StringUtil::pascalize($key);
           $reflection = new ReflectionClass($class);
 
