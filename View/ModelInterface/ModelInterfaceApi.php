@@ -82,10 +82,12 @@ class ModelInterfaceApi extends View {
     $sourceModel = $this->request("sourceModel");
     $sourceNamespace = $this->request("namespace");
     $class = $sourceNamespace . "\\Model\\" . ModelGeneratorModel::getModelClass($sourceModel);
+
     /**
      * @var Model
      */
     $model = new $class;
+
     $items = Arry::create($model->describe())
       ->unique(function ($value1, $key1, $value2, $key2) {
         $name1 = ($arryName1 = value($value1, ["arry", "name"])) ? $arryName1 : $key1;
@@ -122,7 +124,6 @@ class ModelInterfaceApi extends View {
         }
 
         if ($dataType === null) {
-
           $method = "get" . StringUtil::pascalize($key);
           $reflection = new ReflectionClass($class);
 
