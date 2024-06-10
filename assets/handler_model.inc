@@ -7,11 +7,7 @@ use {$namespace}\Dbq\{$pascalName}Dbq;
 
 
 /**
- * @method ?{$pascalName}Model get($id = null)
- * @method {$pascalName}Model require($id = null)
- * @method {$pascalName}Model[] gets()
- * @method {$pascalName}Model[] page($limit = 25)
- * @method {$pascalName}Model[] chunk($primaryColumn, $primaryFunc = null, $limit = 25)
+ * @extends Handler<{$pascalName}Model>
  */
 class {$pascalName}Handler extends Handler {
 
@@ -38,11 +34,11 @@ class {$pascalName}Handler extends Handler {
 
     return $models;
   }
-  
+
   public function mapModels($models) {
     return $models;
   }
-  
+
 {foreach $fields as $name=>$field}  public function set{$name|pascalize}($value) { return $this->where("{$field}","=",$value); }
 
   public function set{$name|pascalize}s($values) { return $this->where("{$field}","IN",$values); }
