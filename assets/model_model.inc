@@ -6,8 +6,8 @@ use Framework\Core\Model;
 {/if}use {$namespace}\Dbo\{$pascalName}Dbo;
 use \{$namespace}\Handler\{$pascalName}Handler;
 {if $primaryObjectId}
-use Backend\Lib\Object\Traits\ObjectTrait;
-use Framework\Db\Db;{/if}
+use Framework\Db\Db;
+{/if}
 {if $primaryObjectId || $hasCreateDate || $hasModifyDate}
 use Framework\Model\TimeModel;{/if}
 {if $primaryObjectId && $hasModifyAccountId}
@@ -18,9 +18,9 @@ use Framework\Util\MiscUtil;
 {/if}
 
 
-class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\ObjectModel{else}Model{/if} {
+class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\BaseObjectModel{else}Model{/if} {
 
-  use Traits\{$pascalName}Trait{if $primaryObjectId}, ObjectTrait{/if};
+  use Traits\{$pascalName}Trait{if $primaryObjectId}{/if};
 
 {if $hasState}
 	const STATE_ACTIVE	= "active";
@@ -98,7 +98,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ob
 		if($this->get{$primaryKey|pascalize}()) {
 			$this->getDbo("{$dboName}")->update();
 		} else {
-			DB::transaction(function () {
+			Db::transaction(function () {
 {if $hasState}
 				if(!$this->getState()) {
 					$this->setState(self::STATE_ACTIVE);
