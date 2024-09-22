@@ -63,9 +63,6 @@
 		  ${$snakeModel|camelize}Model = {$pascalModel}Model::create();
 
 		  if($this->isPut() || $this->isDelete()) {
-		  /**
-		  * @var {$pascalModel}Model
-		  */
 		  ${$snakeModel|camelize}Model = $this->acl()->write({$pascalModel}Handler::create(false){if $parentModel}
 
 		  ->set{$parentModel|pascalize}Id(${$parentModel|camelize}id){/if}

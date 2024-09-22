@@ -83,16 +83,12 @@ class DbGeneratorModel {
         $str .= "
   /**
    * @param {$type} \$value
-   * @return static
    */
-  public function set" . StringUtil::pascalize($row["name"]) . "(\$value) {
+  public function set" . StringUtil::pascalize($row["name"]) . "(\$value): static {
     return \$this->setColumnValue(\"" . $row["name"] . "\", \$value);
   }
 
-  /**
-   * @return {$type}
-   */
-  public function get" . StringUtil::pascalize($row["name"]) . "() {
+  public function get" . StringUtil::pascalize($row["name"]) . "(): {$type} {
     return \$this->getColumnValue(\"" . $row["name"] . "\");
   }
 

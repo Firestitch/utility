@@ -39,15 +39,12 @@ class {$pascalName}Handler extends Handler {
     return $models;
   }
 
-{foreach $fields as $name=>$field}  public function set{$name|pascalize}($value) { return $this->where("{$field}","=",$value); }
+{foreach $fields as $name=>$field}  public function set{$name|pascalize}($value): static { return $this->where("{$field}","=",$value); }
 
-  public function set{$name|pascalize}s($values) { return $this->where("{$field}","IN",$values); }
+  public function set{$name|pascalize}s($values): static { return $this->where("{$field}","IN",$values); }
 
 {/foreach}
-  /**
-   * @return static
-   */
-  public static function create($defaults=false) {
+  public static function create($defaults=false): static {
     $hmodel = parent::create();
 {if $hasState}    if($defaults)
       $hmodel->where("{$tablename}.state","<>",{$pascalName}Model::STATE_DELETED);

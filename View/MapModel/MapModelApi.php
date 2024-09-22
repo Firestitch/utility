@@ -152,19 +152,13 @@ class MapModelApi extends View {
       $defaultBoolean = $mapChild ? "false" : "true";
 
       $loadFunctionCode = "
-  /**
-   * @return static
-   */
-  public function load{$pascalPluralReferenceName}(\$handler = null) {
+  public function load{$pascalPluralReferenceName}(\$handler = null): static {
     \$this->handler(\"{$camelizeReferenceKey}\", \$this->create{$pascalReferenceKey}Handler(\$handler));
     return \$this;
   }";
 
       $createFunctionCode = "
       
-  /**
-   * @return {$referenceModelPasalize}Handler
-   */
   public static function create{$pascalReferenceKey}Handler(\$handler = null): {$referenceModelPasalize}Handler {
     \$handler = \$handler instanceof {$referenceModelPasalize}Handler ? \$handler : {$referenceModelPasalize}Handler::create({$defaultBoolean});
     return \$handler{$joins};
