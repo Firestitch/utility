@@ -48,14 +48,17 @@ class ModelTraitGeneratorModel {
         $fieldName = $field["name"];
         $type = DbGeneratorModel::getPhpType($field["type"], $field["length"]);
         $pascalFieldName = StringUtil::pascalize($fieldName);
+
+        $type = $type === "mixed" ? "mixed" : $type . "|null";
+
         $str .= "  /*
-   * @param {$type}|null \$value
+   * @param {$type} \$value
    */
   public function set{$pascalFieldName}(\$value): static {
     return \$this->setDboValue(\"{$fieldName}\", \$value);
   }
 
-  public function get{$pascalFieldName}(): {$type}|null {
+  public function get{$pascalFieldName}(): {$type} {
     return \$this->getDboValue(\"{$fieldName}\");
   }
 
