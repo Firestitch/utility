@@ -10,3 +10,15 @@ use Framework\Util\HtmlUtil;
   </div>
   <?php echo HtmlUtil::dropdown($name, $namespaces, "Backend", ["class" => $class]) ?>
 </div>
+
+<script>
+  (function () {
+    var el = document.querySelector('select[name="<?php echo $name ?>"]');
+    el.addEventListener('change', function () {
+      console.log(el.value);
+      window.localStorage.setItem('namespaceSelect-<?php echo $name ?>', el.value);
+    });
+
+    el.value = window.localStorage.getItem('namespaceSelect-<?php echo $name ?>');
+  })();
+</script>
