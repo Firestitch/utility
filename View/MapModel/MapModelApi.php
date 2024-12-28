@@ -68,10 +68,8 @@ class MapModelApi extends View {
       $camelizeReferenceKey = StringUtil::camelize($referenceKey);
       $setFunctionType = $mapChild ? "?" . GeneratorModel::getModelClassname($referenceModel) . " \$value" : "\$value";
 
-      $referenceNameSet = "  /**
-   * @return static
-   */
-  public function {$referenceNameSetFunction}({$setFunctionType}) { 
+      $referenceNameSet = "
+  public function {$referenceNameSetFunction}({$setFunctionType}): static { 
     return \$this->data(\"{$camelizeReferenceKey}\",\$value);
   }";
       $whereColumn = StringUtil::snakeize($referenceModelPlual) . "." . $referenceModelColumn;

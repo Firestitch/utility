@@ -62,18 +62,12 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ba
 {/if}
 {if $primaryObjectId && $hasModifyAccountId}
 
-  /**
-   * @return static
-   */
   public function startAudit(?int $accountId = null, ?AuditorModel $auditorModel = null) {
     $this->setModifyAccountId($accountId);
     return parent::startAudit($accountId, $auditorModel);
   }
 {/if}
 
-	/**
-	 * @return static
-	 */
 	public function save() { {if $uniqueIndex}
 
 		$this->set{$pascalName}Id(
