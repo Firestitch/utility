@@ -62,5 +62,14 @@ use Utility\View\Namespaces\NamespacesView;
         });
       });
 
+    var el = document.querySelector('select[name="interfaceDir"]');
+    el.addEventListener('change', function () {
+      window.localStorage.setItem('interfaceDir', el.value);
+    });
+
+    if (window.localStorage.getItem('interfaceDir')) {
+      el.value = window.localStorage.getItem('interfaceDir');
+    }
+
   });
 </script>

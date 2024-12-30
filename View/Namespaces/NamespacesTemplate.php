@@ -15,7 +15,6 @@ use Framework\Util\HtmlUtil;
   (function () {
     var el = document.querySelector('select[name="<?php echo $name ?>"]');
     el.addEventListener('change', function () {
-      console.log(el.value);
       window.localStorage.setItem('namespaceSelect-<?php echo $name ?>', el.value);
     });
 
