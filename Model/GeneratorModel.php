@@ -2,10 +2,8 @@
 
 namespace Utility\Model;
 
-use Framework\Model\SmartyModel;
 use Framework\Util\FileUtil;
 use Framework\Util\StringUtil;
-
 
 class GeneratorModel {
 

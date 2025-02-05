@@ -8,7 +8,6 @@ use Framework\Core\WebApplication;
 use Framework\Db\Db;
 use Framework\Db\Dbo\Dbo;
 use Framework\Db\Dbq\Dbq;
-use Framework\Model\SmartyModel;
 use Framework\Util\FileUtil;
 use Framework\Util\LangUtil;
 use Framework\Util\StringUtil;

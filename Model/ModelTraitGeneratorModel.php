@@ -8,6 +8,7 @@ use Framework\Db\Db;
 use Framework\Util\FileUtil;
 use Framework\Util\StringUtil;
 
+
 class ModelTraitGeneratorModel {
 
   protected $_appDir = null;
