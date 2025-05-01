@@ -4,7 +4,7 @@
 }
 
 body {
-  margin: 0 100px 50px 100px;
+  margin: 0 50px 50px 50px;
 }
 
 #header {
@@ -43,5 +43,5 @@ h1 {
 
 .form-field {
   margin-bottom: 13px;
-  width: 300px;
+  min-width: 300px;
 }
