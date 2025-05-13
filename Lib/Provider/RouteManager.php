@@ -27,10 +27,10 @@ class RouteManager extends RouteManagerBase {
     return [
       [
         "bodyClass" => BodyView::class,
-        "children" => [
+        "children" => fn() => [
           [
             "path" => "model/interface",
-            "children" => [
+            "children" => fn() => [
               ["path" => "api/update", "class" => ModelInterfaceApi::class, "bodyClass" => null, "data" => ["action" => "update"]],
               ["path" => "api/preview", "class" => ModelInterfaceApi::class, "bodyClass" => null, "data" => ["action" => "preview"]],
               ["path" => "", "class" => ModelInterfaceView::class],
@@ -39,14 +39,14 @@ class RouteManager extends RouteManagerBase {
           [
             "path" => "model",
             "bodyClass" => null,
-            "children" => [
+            "children" => fn() => [
               ["path" => "list", "class" => ModelListView::class],
               ["path" => "fields", "class" => ModelFieldsView::class],
             ],
           ],
           [
             "path" => "dbmodel",
-            "children" => [
+            "children" => fn() => [
               ["path" => "api/generate", "class" => DbModelApi::class, "bodyClass" => null, "data" => ["action" => "generate"]],
               ["path" => "api/exists", "class" => DbModelApi::class, "bodyClass" => null, "data" => ["action" => "exists"]],
               ["path" => "", "class" => DbModelView::class],
@@ -54,7 +54,7 @@ class RouteManager extends RouteManagerBase {
           ],
           [
             "path" => "api",
-            "children" => [
+            "children" => fn() => [
               ["path" => "apis", "class" => ApisView::class, "bodyClass" => null],
               ["path" => "api", "class" => ApiApi::class, "bodyClass" => null],
               ["path" => "", "class" => ApiView::class],
@@ -62,7 +62,7 @@ class RouteManager extends RouteManagerBase {
           ],
           [
             "path" => "mapmodel",
-            "children" => [
+            "children" => fn() => [
               ["path" => "api", "class" => MapModelApi::class, "bodyClass" => null],
               ["path" => "joinerfields", "class" => JoinerFieldsView::class, "bodyClass" => null],
               ["path" => "", "class" => MapModelView::class],
@@ -70,7 +70,7 @@ class RouteManager extends RouteManagerBase {
           ],
           [
             "path" => "refactor",
-            "children" => [
+            "children" => fn() => [
               ["path" => "api", "class" => RefactorApiView::class, "bodyClass" => null],
               ["path" => "", "class" => RefactorView::class],
             ],
