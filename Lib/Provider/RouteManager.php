@@ -26,6 +26,14 @@ class RouteManager extends RouteManagerBase {
   public function getRoutes() {
     return [
       [
+        "path" => "model",
+        "bodyClass" => null,
+        "children" => fn() => [
+          ["path" => "list", "class" => ModelListView::class],
+          ["path" => "fields", "class" => ModelFieldsView::class],
+        ],
+      ],
+      [
         "bodyClass" => BodyView::class,
         "children" => fn() => [
           [
@@ -34,14 +42,6 @@ class RouteManager extends RouteManagerBase {
               ["path" => "api/update", "class" => ModelInterfaceApi::class, "bodyClass" => null, "data" => ["action" => "update"]],
               ["path" => "api/preview", "class" => ModelInterfaceApi::class, "bodyClass" => null, "data" => ["action" => "preview"]],
               ["path" => "", "class" => ModelInterfaceView::class],
-            ],
-          ],
-          [
-            "path" => "model",
-            "bodyClass" => null,
-            "children" => fn() => [
-              ["path" => "list", "class" => ModelListView::class],
-              ["path" => "fields", "class" => ModelFieldsView::class],
             ],
           ],
           [
