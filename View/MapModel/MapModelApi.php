@@ -89,7 +89,7 @@ class MapModelApi extends View {
 
       $referenceNameGet .= "
   public function {$referenceNameGetFunction}(\$handler = false){$getFunctionType} {
-    if(\$handler && \$this->get{$pascalSourceModelColumn}() && (!\$this->hasData(\"{$camelizeReferenceKey}\") || \$handler instanceof Handler))
+    if(\$handler !== false && \$this->get{$pascalSourceModelColumn}() && (!\$this->hasData(\"{$camelizeReferenceKey}\") || \$handler instanceof Handler || \$handler === null))
       \$this->data(
         \"{$camelizeReferenceKey}\",
         {$sourceModelHandler}::create{$pascalReferenceKey}Handler(\$handler)
