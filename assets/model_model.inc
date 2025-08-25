@@ -156,8 +156,8 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ba
 	public function describe() {
 		return [
 {foreach from=$columns key=name item=column name=columns}
-			"{$name|camelize}" => [{if $column->isPrimary() || $column->isDataTypeDatetime() || $column->isDataTypeDate()}
-{if $column->isDataTypeDatetime() || $column->isDataTypeDate()}
+			"{$name|camelize}" => [{if $column->isPrimary() || $column->isDataTypeDatetime() || $column->isDataTypeDate() || $column->isDataTypeJson()}
+{if $column->isDataTypeDatetime() || $column->isDataTypeDate() || $column->isDataTypeJson()}
 
 				"type" => "{$column->getDataType()}",
 {/if}{if $column->isPrimary() && count($primaryKeys) === 1}

@@ -18,7 +18,7 @@
 
 		{if $keywords}
 		if(strlen($value=$this->get("keyword"))) {
-			${$snakeModel|camelize}Handler->likeKeyword(["{$keywords[0].tablename}.{$keywords[0].name}"],$value);
+			${$snakeModel|camelize}Handler->like(["{$keywords[0].tablename}.{$keywords[0].name}"],$value);
 		}
 		{/if}
 		{/if}{foreach $dbos as $dbo}{foreach $dbo->getColumns() as $name=>$column}{if in_array($name,$accessibleFields)}{if $name=="state"}

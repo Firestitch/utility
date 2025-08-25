@@ -21,7 +21,7 @@ class ModelGeneratorModel {
   protected $_upperModel = null;
   protected $_pascalName = null;
   protected $_tablename = null;
-  protected $_smarty = null;
+  protected ?SmartyModel $_smarty = null;
   protected $_namespace = null;
   protected $_primaryObjectId = null;
 
