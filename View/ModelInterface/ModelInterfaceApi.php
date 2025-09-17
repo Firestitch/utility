@@ -134,9 +134,11 @@ class ModelInterfaceApi extends View {
               $returnType = $reflectionMethod->getReturnType();
 
               if ($returnType) {
-                $type = $returnType instanceof \ReflectionUnionType ?
-                  $returnType->getTypes()[0]->getName() :
-                  $returnType->getName();
+                if ($returnType instanceof \ReflectionUnionType) {
+                  $dataType = $returnType->getTypes()[0];
+                } else {
+                  $dataType = (string)$returnType;
+                }
 
                 $parts = explode("\\", $type);
                 $dataType = $this->_getMethodDataType(array_pop($parts));
