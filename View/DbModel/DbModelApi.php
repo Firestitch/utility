@@ -7,6 +7,7 @@ use Framework\Api\ApiResponse;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
 use Framework\Model\PathModel;
+use Framework\Util\ServerUtil;
 use Utility\Model\DbGeneratorModel;
 use Utility\Model\GeneratorModel;
 use Utility\Model\ModelDescribeGeneratorModel;
@@ -24,7 +25,7 @@ class DbModelApi extends View {
     if ($this->isPost()) {
       $response = new ApiResponse();
       try {
-        $routeModel = WebApplication::getRouteManager()::create()->getActivatedRoute(WebApplication::instance()->getUrl());
+        $routeModel = WebApplication::getRouteManager()::create()->getActivatedRoute(WebApplication::instance()->getUrl(), ServerUtil::getMethod());
 
         switch (value($routeModel->getData(), "action")) {
           case "generate":
