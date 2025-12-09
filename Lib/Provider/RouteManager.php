@@ -2,7 +2,6 @@
 
 namespace Utility\Lib\Provider;
 
-use Backend\View\Api\WsdlView;
 use Framework\Manager\RouteManagerBase;
 use Utility\View\Api\ApiApi;
 use Utility\View\Api\Apis\ApisView;
@@ -77,7 +76,6 @@ class RouteManager extends RouteManagerBase {
           ],
         ],
       ],
-      ["path" => "wsdl", "class" => WsdlView::class],
       ["path" => "**", "redirect" => "/dbmodel"],
     ];
   }

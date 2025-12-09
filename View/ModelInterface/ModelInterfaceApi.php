@@ -9,6 +9,7 @@ use Framework\Core\Model;
 use Framework\Core\View;
 use Framework\Core\WebApplication;
 use Framework\Util\FileUtil;
+use Framework\Util\ServerUtil;
 use Framework\Util\StringUtil;
 use ReflectionClass;
 use Utility\Model\ModelGeneratorModel;
@@ -23,7 +24,7 @@ class ModelInterfaceApi extends View {
   public function init() {
     $response = new ApiResponse();
     try {
-      $routeModel = WebApplication::getRouteManager()::create()->getActivatedRoute(WebApplication::instance()->getUrl());
+      $routeModel = WebApplication::getRouteManager()::create()->getActivatedRoute(WebApplication::instance()->getUrl(), ServerUtil::getMethod());
 
       switch (value($routeModel->getData(), "action")) {
         case "update":
