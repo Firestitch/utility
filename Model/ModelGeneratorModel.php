@@ -111,6 +111,12 @@ class ModelGeneratorModel {
 
     $this->_smarty->allowPhpTag();
 
+    // Generate state enum if needed
+    $hasState = array_key_exists("state", $columns);
+    if ($hasState) {
+      $this->generateStateEnum();
+    }
+
     return $this->generateModel("model");
   }
 
@@ -137,9 +143,11 @@ class ModelGeneratorModel {
   }
 
   public function generateModel($modelType) {
-    $templateFile = PathModel::getAssetsDirectory() . $modelType . "_model.inc";
+    $templateFile = \Utility\Model\PathModel::getAssetsDirectory() . $modelType . "_model.inc";
+    if (!file_exists($templateFile)) {
+      throw new \Exception("Template file does not exist: {$templateFile}");
+    }
     $content = $this->_smarty->fetch($templateFile);
-
     return $this->writeFile($this->getModelFile($modelType), $content);
   }
 
@@ -215,5 +223,95 @@ class ModelGeneratorModel {
   public static function getNamespaceDir($namespace) {
     $namespace = lcfirst($namespace);
     return FileUtil::sanitize(WebApplication::getInstanceDirectory() . $namespace . "/");
+  }
+
+  /**
+   * Get the directory path for a namespace
+   */
+  private function _getNamespaceDir($namespace) {
+    $path = "";
+    $dir = "";
+
+    if (preg_match('/^Backend(?:$|\\\)(.*)/', $namespace, $matches)) {
+      $path = value($matches, 1);
+      $dir = \Framework\Model\PathModel::getBackendDir();
+    }
+
+    if (preg_match("/^Framework(?:$|\\\)(.*)/", $namespace, $matches)) {
+      $path = value($matches, 1);
+      $dir = \Framework\Model\PathModel::getFrameworkDir();
+    }
+
+    if (preg_match("/^Utility(?:$|\\\)(.*)/", $namespace, $matches)) {
+      $path = value($matches, 1);
+      $dir = \Framework\Model\PathModel::getInstanceDir();
+    }
+
+    if (!$dir) {
+      throw new \Exception("Invalid namespace: {$namespace}");
+    }
+
+    $path = trim($path, "\\");
+    if ($path) {
+      $dir .= str_replace("\\", "/", "/" . $path);
+    }
+
+    return $dir . "/";
+  }
+
+  /**
+   * Generate the StateEnum class if it doesn't exist
+   */
+  public function generateStateEnum() {
+    $enumClass = $this->_namespace . "\\Enum\\" . $this->_pascalName . "StateEnum";
+
+    // Check if enum already exists
+    if (class_exists($enumClass)) {
+      return false;
+    }
+
+    $enumDir = $this->_getNamespaceDir($this->_namespace) . "Enum/";
+    $enumFile = $enumDir . $this->_pascalName . "StateEnum.php";
+
+    // Don't overwrite if file exists
+    if (file_exists($enumFile)) {
+      return false;
+    }
+
+    $enumContent = $this->_generateStateEnumContent();
+
+    FileUtil::mkdir($enumDir);
+    FileUtil::put($enumFile, $enumContent);
+    WebApplication::addNotify('Successfully added the file ' . basename($enumFile));
+
+    return true;
+  }
+
+  /**
+   * Generate the content for the StateEnum class
+   */
+  private function _generateStateEnumContent() {
+    $namespace = $this->_namespace . "\\Enum";
+    $enumName = $this->_pascalName . "StateEnum";
+
+    return <<<PHP
+<?php
+
+namespace {$namespace};
+
+enum {$enumName}: string {
+
+  case Active = "active";
+  case Deleted = "deleted";
+
+  public function label(): string {
+    return match (\$this) {
+      self::Active => 'Active',
+      self::Deleted => 'Deleted',
+    };
+  }
+}
+
+PHP;
   }
 }

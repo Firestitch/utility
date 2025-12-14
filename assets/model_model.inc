@@ -15,9 +15,23 @@ use Framework\Model\TimeModel;{/if}
 use Framework\Audit\Model\AuditorModel;{/if}
 {if $hasGuid}
 use Framework\Util\MiscUtil;
+
+{/if}
+use Framework\Model\Attribute\Describe;
+use Framework\Model\Enum\TypeEnum;
+use Framework\Model\Attribute\Property;
+{if $hasState}
+use {$namespace}\Enum\{$pascalName}StateEnum;
+use Framework\Model\Attribute\Default\DefaultValue;
+use Framework\Model\Attribute\Validation\ValidationRequired;
+{/if}
+{if count($primaryKeys) === 1 && $primaryObjectId}
+use Framework\Model\Attribute\ToArray\ToArray;
 {/if}
 
 
+#[Describe(properties: [
+])]
 class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\BaseObjectModel{else}Model{/if} {
 
   use Traits\{$pascalName}Trait{if $primaryObjectId}{/if};
@@ -151,35 +165,6 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ba
 {/if}
 
 		return $this;
-	}
-
-	public function describe() {
-		return [
-{foreach from=$columns key=name item=column name=columns}
-			"{$name|camelize}" => [{if $column->isPrimary() || $column->isDataTypeDatetime() || $column->isDataTypeDate() || $column->isDataTypeJson()}
-{if $column->isDataTypeDatetime() || $column->isDataTypeDate() || $column->isDataTypeJson()}
-
-				"type" => "{$column->getDataType()}",
-{/if}{if $column->isPrimary() && count($primaryKeys) === 1}
-
-				"arry" => [
-					"name"=>"id"
-				],
-{/if}
-{/if}{if $name=="state"}						
-				"validations" => [
-					"keyExists" => self::getStates()
-				],
-{/if}{if (preg_match("/_id$/",$name) && !$column->isPrimary() && !$column->isNotNull()) || $name === "name"}						
-				"validations" => [
-					"required" => true
-				],
-{/if}{if $column->isPrimary() || $name=="guid" || $name=="order" || $name=="modify_date" || $name=="create_date"}
-				"diff" => false
-{/if}{if $column->isPrimary() || $name=="guid" || $name=="order" || $name=="state" || $name=="modify_date" || $name=="create_date" || $column->isDataTypeDatetime() || $column->isDataTypeDate()}{/if}    ]{if !$smarty.foreach.columns.last},
-{/if}{/foreach}
-		
-		];
 	}
 {if $primaryObjectId}
 
