@@ -521,7 +521,7 @@ class ModelDescribeGeneratorModel {
     try {
       $dbo = DbGeneratorModel::getDbo($dboNamespace, $basename);
       return $dbo->getColumns();
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
       return [];
     }
   }
@@ -675,7 +675,7 @@ PHP;
     }
 
     if (!$dir) {
-      throw new \Exception("Invalid namespace: {$namespace}");
+      throw new Exception("Invalid namespace: {$namespace}");
     }
 
     $path = trim($path, "\\");
