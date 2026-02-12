@@ -51,7 +51,7 @@ class MapModelApi extends View {
       $dir = ModelGeneratorModel::getNamespaceDir($sourceNamespace);
       $modelFile = $dir . "Model/" . ModelGeneratorModel::getModelClass($sourceModel) . ".php";
       $handlerFile = $dir . "Handler/" . $sourceModelHandler . ".php";
-      $referenceName = $this->post("object_name");
+      $referenceName = $this->post("objectName");
 
       if (!$referenceName) {
         throw new Exception("Invalid object name");
