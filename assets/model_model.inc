@@ -99,12 +99,12 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ba
 {/if}
 {if count($primaryKeys)>1}
 	
-		$this->getDbo("{$dboName}")->upsert();
+		$this->getDbo({$pascalName}Dbo::class)->upsert();
 {else}
 {if $primaryObjectId}
 
 		if($this->get{$primaryKey|pascalize}()) {
-			$this->getDbo("{$dboName}")->update();
+			$this->getDbo({$pascalName}Dbo::class)->update();
 		} else {
 			Db::transaction(function () {
 {if $hasState}
@@ -124,7 +124,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ba
 
 {/if}
 				$this->createObject();
-				$this->getDbo("{$dboName}")->insert();
+				$this->getDbo({$pascalName}Dbo::class)->insert();
 			});
 		}
 
@@ -140,7 +140,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ba
 {else}
 
 	if($this->get{$primaryKey|pascalize}()) {
-		$this->getDbo("{$dboName}")->update();
+		$this->getDbo({$pascalName}Dbo::class)->update();
 	} else {
 {if $hasState}
 		if(!$this->getState()) {
@@ -158,7 +158,7 @@ class {$pascalName}Model extends {if $primaryObjectId}\Framework\Object\Model\Ba
 		}
 
 {/if}
-			$this->getDbo("{$dboName}")->insert();
+			$this->getDbo({$pascalName}Dbo::class)->insert();
 		}
 {/if}
 {/if}
