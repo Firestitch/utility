@@ -4,7 +4,6 @@ namespace Utility\View\MapModel\JoinerFields;
 
 use Framework\Core\View;
 use Framework\Db\Db;
-use Framework\Util\DebugUtil;
 
 
 class JoinerFieldsView extends View {
@@ -20,7 +19,6 @@ class JoinerFieldsView extends View {
   }
 
   public function init() {
-    DebugUtil::enableFormatHtml();
     $joinerColumns = Db::getInstance()
       ->getUtility()
       ->getTableColumnNames($this->post("table"));

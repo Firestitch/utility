@@ -209,7 +209,8 @@ class DbGeneratorModel {
   }
 
   public static function isPrimaryObjectId($tablename) {
-    $sql = Dbq::createSubquery("information_schema.key_column_usage")
+    $sql = Dbq::create("information_schema.key_column_usage")
+      ->createSubquery()
       ->where("referenced_table_schema", "=", Db::instance()->getDbName(), "AND", true)
       ->where("table_name", "=", $tablename, "AND", true)
       ->where("referenced_table_name", "=", "objects", "AND", true)
