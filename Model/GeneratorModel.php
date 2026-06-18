@@ -64,8 +64,4 @@ class GeneratorModel {
 
     return $this->_smartyModel;
   }
-
-  public function registerAutoload() {
-    spl_autoload_register([$this, "autoload"], true, true);
-  }
 }
